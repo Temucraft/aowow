@@ -2,6 +2,31 @@
 
 [🇬🇧 English](README.md) | [ 🇪🇸 Spanish](README_ES.md)
 
+## Temucraft Database
+
+This is the Temucraft fork: the database site for the Temucraft server (AzerothCore 3.3.5a with the Temucraft
+modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport work of the `combined` branch, and:
+
+- **Temucraft branding**: the cat logo (`static/images/logos/`, `icon.png`, favicon) and the site name
+  "Temucraft Database" (`setup/updates/2026_11_18_01.sql`; new installs get it from `setup/2_db_structure.sql`).
+- **Custom races**: races 9 and 12-31 from the server's ChrRaces/CharBaseInfo DBCs (the custom-race modules) are
+  first-class: `php aowow --sql=races` writes the server's race masks to `config/races.inc.php` and their names,
+  files and sides to `static/js/races-custom.js`, so race filters, requirements, quest/item race masks and the
+  Races menu include them. Every race/class combination the DBCs allow (mod-arac) shows on the race and class pages.
+- **Our data**: everything comes from the server's own world database and from the DBCs and images *as the client
+  sees them*. Extract the client **with the Temucraft patches** (see below), so new maps (Darkspear Islands, the
+  Cataclysm / Mists dungeons, the lost lands), items, creatures, spells and races are all there.
+
+### Extracting the Temucraft client for the setup
+
+AoWoW reads `setup/mpqdata/<locale>/` (DBFilesClient, Interface, ...). Extract in the client's load order, later
+archives overwriting earlier ones: `common.MPQ`, `common-2.MPQ`, `expansion.MPQ`, `lichking.MPQ`, `patch.MPQ`,
+`patch-2.MPQ`, `patch-3.MPQ`, then the server's patches (`patch-4.MPQ` ... `patch-Z.MPQ`, digits before letters),
+then `<locale>/locale-<locale>.MPQ` ... `patch-<locale>-3.MPQ` and the locale patches with letters
+(`patch-<locale>-C.MPQ`, `patch-<locale>-T.MPQ`). The AzerothCore map extractor in the Temucraft core also exports
+the DBCs exactly as the client uses them; those can replace `DBFilesClient`. Then run the usual setup
+(`php aowow --setup`, or `--sql=races,...` / `--build=...` for single parts) against the Temucraft world database.
+
 ## Introduction
 
 AoWoW is a Database tool for World of Warcraft v3.3.5 (build 12340)

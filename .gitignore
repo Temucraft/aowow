@@ -70,3 +70,6 @@
 # model viewer data, made by setup/tools/modelviewer/extract.py from the game client
 /static/modelviewer/data/
 __pycache__/
+
+# written by setup (the server's own races)
+/config/races.inc.php

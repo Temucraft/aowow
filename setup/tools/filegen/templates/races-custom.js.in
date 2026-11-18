@@ -1,0 +1,18 @@
+/* adds g_custom_races (id => {file, side, names{localeId => name}}) to the race lists of the site */
+(function () {
+    var localeId = (typeof Locale != 'undefined' && Locale.getId) ? Locale.getId() : 0;
+    var sides = {};
+    for (var id in g_custom_races) {
+        var r = g_custom_races[id], name = r.names[localeId] || r.names[0] || ('Race ' + id);
+        if (typeof g_chr_races != 'undefined') g_chr_races[id] = name;
+        if (typeof g_file_races != 'undefined') g_file_races[id] = r.file;
+        sides[id] = r.side;
+        if (typeof mn_races != 'undefined') {
+            // after the last race of its side in the Races menu (1 Alliance, 2 Horde, other: at the end)
+            var at = mn_races.length;
+            for (var i = 0; i < mn_races.length; i++)
+                if (mn_races[i][0] === undefined && i > 0 && r.side == 1) { at = i; break; }
+            mn_races.splice(at, 0, [parseInt(id), name, '?race=' + id, , { smallIcon: 'race_' + r.file + '_female' }]);
+        }
+    }
+})();

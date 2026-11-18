@@ -205,6 +205,7 @@ class GenericPage
         [SC_JS_FILE,  'js/locale_%s.js',         SC_FLAG_LOCALIZED                           ],
         [SC_JS_FILE,  'js/global.js'                                                         ],
         [SC_JS_FILE,  'js/locale.js'                                                         ],
+        [SC_JS_FILE,  'js/races-custom.js'                                                   ],
         [SC_JS_FILE,  'js/Markup.js'                                                         ],
         [SC_CSS_FILE, 'css/basic.css'                                                        ],
         [SC_CSS_FILE, 'css/global.css'                                                       ],

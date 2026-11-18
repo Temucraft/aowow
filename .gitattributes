@@ -12,3 +12,4 @@ prQueue text eol=lf
 *.gif binary
 *.ttf binary
 *.swf binary
+*.ico binary

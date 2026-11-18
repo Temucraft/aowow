@@ -420,7 +420,7 @@ CLISetup::registerSetup("build", new class extends SetupScript
 
     private function sumTotal(array &$sumArr, int $raceMask = -1, int $classMask= -1) : void
     {
-        foreach (ChrRace::cases() as $ra)
+        foreach (ChrRace::playable() as $ra)
         {
             if (!$ra->matches($raceMask))
                 continue;

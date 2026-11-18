@@ -440,6 +440,14 @@ enum ChrClass : int
     }
 }
 
+// Race masks: stock 3.3.5a, or the server's own playable races (custom races) as `php aowow --sql=races` writes them to
+// config/races.inc.php. Custom races use ids 12-31 (9 is the unused goblin slot); higher ids don't fit in race masks.
+if (!defined('AOWOW_RACE_MASK_ALL') && file_exists(__DIR__.'/../config/races.inc.php'))
+    require_once __DIR__.'/../config/races.inc.php';
+defined('AOWOW_RACE_MASK_ALLIANCE') || define('AOWOW_RACE_MASK_ALLIANCE', 0x44D);
+defined('AOWOW_RACE_MASK_HORDE')    || define('AOWOW_RACE_MASK_HORDE',    0x2B2);
+defined('AOWOW_RACE_MASK_ALL')      || define('AOWOW_RACE_MASK_ALL',      0x6FF);
+
 enum ChrRace : int
 {
     case HUMAN         = 1;
@@ -452,10 +460,22 @@ enum ChrRace : int
     case TROLL         = 8;
     case BLOODELF      = 10;
     case DRAENEI       = 11;
+    // the server's own races (only those in MASK_ALL exist on a server; see playable())
+    case GOBLIN        = 9;
+    case CUSTOM_12 = 12; case CUSTOM_13 = 13; case CUSTOM_14 = 14; case CUSTOM_15 = 15; case CUSTOM_16 = 16;
+    case CUSTOM_17 = 17; case CUSTOM_18 = 18; case CUSTOM_19 = 19; case CUSTOM_20 = 20; case CUSTOM_21 = 21;
+    case CUSTOM_22 = 22; case CUSTOM_23 = 23; case CUSTOM_24 = 24; case CUSTOM_25 = 25; case CUSTOM_26 = 26;
+    case CUSTOM_27 = 27; case CUSTOM_28 = 28; case CUSTOM_29 = 29; case CUSTOM_30 = 30; case CUSTOM_31 = 31;
 
-    public const MASK_ALLIANCE = 0x44D;
-    public const MASK_HORDE    = 0x2B2;
-    public const MASK_ALL      = 0x6FF;
+    public const MASK_ALLIANCE = AOWOW_RACE_MASK_ALLIANCE;
+    public const MASK_HORDE    = AOWOW_RACE_MASK_HORDE;
+    public const MASK_ALL      = AOWOW_RACE_MASK_ALL;
+
+    /** The races that exist on this server (stock ones plus the custom races in MASK_ALL). */
+    public static function playable() : array
+    {
+        return array_values(array_filter(self::cases(), fn(self $r) => $r->toMask() & self::MASK_ALL));
+    }
 
     public function matches(int $raceMask) : bool
     {
@@ -514,14 +534,15 @@ enum ChrRace : int
             self::GNOME    => 'gnome',
             self::TROLL    => 'troll',
             self::BLOODELF => 'bloodelf',
-            self::DRAENEI  => 'draenei'
+            self::DRAENEI  => 'draenei',
+            default        => 'race'.$this->value      // custom races: static/js/races-custom.js maps the rest
         };
     }
 
     public static function fromMask(int $raceMask = self::MASK_ALL) : array
     {
         $x = [];
-        foreach (self::cases() as $cl)
+        foreach (self::playable() as $cl)
             if ($cl->toMask() & $raceMask)
                 $x[] = $cl->value;
 
