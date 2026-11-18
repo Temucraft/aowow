@@ -1,0 +1,20 @@
+/* Temucraft Companion (?companion) */
+.tool-companion .cp-chars { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.tool-companion .cp-char { padding: 6px 10px; border: 1px solid #444; border-radius: 4px; background: #1a1a1a; }
+.tool-companion .cp-char.on { border-color: #ffd100; background: #2a2410; }
+.tool-companion .cp-char small { color: #999; }
+.tool-companion .cp-tabs { border-bottom: 1px solid #444; margin: 10px 0; }
+.tool-companion .cp-tabs a { display: inline-block; padding: 6px 12px; margin-right: 4px; border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; }
+.tool-companion .cp-tabs a.on { background: #2a2410; color: #ffd100; }
+.tool-companion .cp-cols { display: flex; gap: 16px; }
+.tool-companion .cp-col { flex: 1; min-width: 0; }
+.tool-companion .cp-row { display: block; padding: 6px 8px; margin-bottom: 4px; border: 1px solid #333; border-radius: 4px; }
+.tool-companion .cp-row.on { border-color: #ffd100; }
+.tool-companion .cp-row span { display: block; font-size: 11px; }
+.tool-companion .cp-pick { display: block; padding: 3px 0; }
+.tool-companion .cp-table { width: 100%; border-collapse: collapse; }
+.tool-companion .cp-table td, .tool-companion .cp-table th { padding: 4px 6px; border-bottom: 1px solid #333; text-align: left; }
+.tool-companion .cp-dim { color: #999; }
+.tool-companion .cp-good { color: #1eff00; }
+.tool-companion .cp-note { padding: 6px 10px; background: #2a2410; border: 1px solid #665a20; border-radius: 4px; }
+.tool-companion .cp-msg { color: #ff6060; }

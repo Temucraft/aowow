@@ -1186,6 +1186,7 @@ var mn_tools = [
     [10,"Buscador de objetos","?item-finder"],
     [11,"Composición de banda","?raid-composition"],
     [14,"Seguimiento de misiones","?quest-tracker"],
+    [16,"Companion","?companion"],
     [3,"Comparación de objetos","?compare"],
     [5,"Perfiles","?profiler",[
         [0,"Personajes","?profiles"],

@@ -1186,6 +1186,7 @@ var mn_tools = [
     [10,"Поиск предметов","?item-finder"],
     [11,"Состав рейда","?raid-composition"],
     [14,"Учёт заданий","?quest-tracker"],
+    [16,"Companion","?companion"],
     [3,"Сравнение предметов","?compare"],
     [5,"Профили персонажей","?profiler",[
         [0,"Просмотр","?profiles"],

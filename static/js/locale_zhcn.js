@@ -1232,6 +1232,7 @@ var mn_tools = [
     [10,"物品查找器","?item-finder"],
     [11,"团队配置","?raid-composition"],
     [14,"任务完成追踪","?quest-tracker"],
+    [16,"Companion","?companion"],
     [3,"物品比较","?compare"],
     [5,"Profiler","?profiler",[
         [0,"角色","?profiles"],

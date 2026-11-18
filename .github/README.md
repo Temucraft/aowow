@@ -13,6 +13,10 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
   first-class: `php aowow --sql=races` writes the server's race masks to `config/races.inc.php` and their names,
   files and sides to `static/js/races-custom.js`, so race filters, requirements, quest/item race masks and the
   Races menu include them. Every race/class combination the DBCs allow (mod-arac) shows on the race and class pages.
+- **Companion page** (Tools → Companion, `?companion`): with the game account linked (same link as the quest
+  tracker), each character's followers, offered and running missions, expeditions, key fragments and disguises; start
+  a mission or collect finished ones from the browser. Orders go to the characters database
+  (`mod_temucraft_web_order`) and mod-temucraft-mission-table carries them out (at once if online, else at login).
 - **Our data**: everything comes from the server's own world database and from the DBCs and images *as the client
   sees them*. Extract the client **with the Temucraft patches** (see below), so new maps (Darkspear Islands, the
   Cataclysm / Mists dungeons, the lost lands), items, creatures, spells and races are all there.
