@@ -923,6 +923,7 @@ $lang = array(
         'emailInvalid'  => "Недопустимый адрес email.", // message_emailnotvalid
         'emailNotFound' => "The email address you entered is not associated with any account.<br><br>If you forgot the email you registered your account with email CFG_CONTACT_EMAIL for assistance.",
         'createAccSent' => "An email was sent to <b>%s</b>. Simply follow the instructions to create your account.",
+        'gameAccCreated' => 'Your game account <b>%s</b> is ready. Sign in here with it, and log in to the game with the same name and password.',
         'recovUserSent' => "An email was sent to <b>%s</b>. Simply follow the instructions to recover your username.",
         'recovPassSent' => "An email was sent to <b>%s</b>. Simply follow the instructions to reset your password.",
         'accActivated'  => 'Your account has been activated.<br>Proceed to <a href="?account=signin&token=%s">sign in</a>',

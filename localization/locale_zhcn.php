@@ -923,6 +923,7 @@ $lang = array(
         'emailInvalid'  => "该电子邮件地址无效。", // message_emailnotvalid
         'emailNotFound' => "你输入的电子邮件地址与任何帐户不关联。<br><br>如果您忘记了使用哪个电子邮件注册了您的帐户，请发送电子邮件至CFG_CONTACT_EMAIL寻求帮助。",
         'createAccSent' => "电子邮件发送到<b>%s</b>。只需按照说明创建你的帐户。",
+        'gameAccCreated' => 'Your game account <b>%s</b> is ready. Sign in here with it, and log in to the game with the same name and password.',
         'recovUserSent' => "电子邮件发送到<b>%s</b>。只需按照说明恢复你的用户名。",
         'recovPassSent' => "电子邮件发送到<b>%s</b>。只需按照说明重置你的密码。",
         'accActivated'  => '你的帐户已被激活。<br>继续<a href="?account=signin&token=%s">登录</a>',

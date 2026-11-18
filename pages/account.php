@@ -148,7 +148,10 @@ class AccountPage extends GenericPage
                 if (!Cfg::get('ACC_ALLOW_REGISTER'))
                     $this->error();
 
-                if (Cfg::get('ACC_AUTH_MODE') != AUTH_MODE_SELF)
+                // game accounts (AzerothCore / realm auth): the site creates the game account itself, unless an
+                // external sign-up page is set
+                $gameAccount = in_array(Cfg::get('ACC_AUTH_MODE'), [AUTH_MODE_ACORE, AUTH_MODE_REALM]);
+                if (Cfg::get('ACC_AUTH_MODE') != AUTH_MODE_SELF && (!$gameAccount || Cfg::get('ACC_EXT_CREATE_URL')))
                 {
                     if (Cfg::get('ACC_EXT_CREATE_URL'))
                         header('Location: '.Cfg::get('ACC_EXT_CREATE_URL'), true, 302);
@@ -158,7 +161,17 @@ class AccountPage extends GenericPage
 
                 $this->tpl = 'acc-signUp';
                 $nStep = 1;
-                if ($this->_post['username'] || $this->_post['password'] || $this->_post['c_password'] || $this->_post['email'])
+                if ($gameAccount && ($this->_post['username'] || $this->_post['password'] || $this->_post['c_password'] || $this->_post['email']))
+                {
+                    if ($err = $this->doGameSignUp())
+                        $this->error = $err;
+                    else
+                    {
+                        $nStep = 2;
+                        $this->text = sprintf(Lang::account('gameAccCreated'), $this->_post['username']);
+                    }
+                }
+                else if ($this->_post['username'] || $this->_post['password'] || $this->_post['c_password'] || $this->_post['email'])
                 {
                     if ($err = $this->doSignUp())
                         $this->error = $err;
@@ -393,6 +406,46 @@ Markup.printHtml("description text here", "description-generic", { allow: Markup
             default:
                 return;
         }
+    }
+
+    // a game account in the auth database (AzerothCore / realm auth); the site account follows at first sign-in
+    private function doGameSignUp()
+    {
+        $name  = $this->_post['username'];
+        $pass  = $this->_post['password'];
+        $email = $this->_post['email'];
+
+        if (!User::isValidName($name, $e))
+            return Lang::account($e == 1 ? 'errNameLength' : 'errNameChars');
+        if (mb_strlen($pass) < 6 || mb_strlen($pass) > 16)
+            return Lang::account('errPassLength');
+        if ($pass != $this->_post['c_password'])
+            return Lang::account('passMismatch');
+        if (((bool)(Cfg::get('ACC_EMAIL') ?? 1) || $email) && !Util::isValidEmail($email))
+            return Lang::account('emailInvalid');
+        if (!User::$ip || !DB::isConnectable(DB_AUTH))
+            return Lang::main('intError');
+
+        // same limit on new accounts per address as site accounts
+        $ip = DB::Aowow()->selectRow('SELECT ip, count, unbanDate FROM ?_account_bannedips WHERE type = 1 AND ip = ?', User::$ip);
+        if ($ip && $ip['count'] >= Cfg::get('ACC_FAILED_AUTH_COUNT') && $ip['unbanDate'] >= time())
+            return sprintf(Lang::account('signupExceeded'), Util::formatTime(Cfg::get('ACC_FAILED_AUTH_BLOCK') * 1000));
+
+        $upper = mb_strtoupper($name);
+        if (DB::Auth()->selectCell('SELECT id FROM account WHERE username = ?', $upper))
+            return Lang::account('nameInUse');
+        if ($email && DB::Auth()->selectCell('SELECT id FROM account WHERE email = ?', $email))
+            return Lang::account('mailInUse');
+
+        [$salt, $verifier] = User::makeSRP6($upper, mb_strtoupper($pass));
+        $ok = DB::Auth()->query('INSERT INTO account (username, salt, verifier, email, reg_mail, joindate, last_ip, expansion) VALUES (?, ?, ?, ?, ?, NOW(), ?, 2)',
+            $upper, $salt, $verifier, $email, $email, User::$ip);
+        if (!$ok)
+            return Lang::main('intError');
+
+        DB::Aowow()->query('INSERT INTO ?_account_bannedips (ip, type, count, unbanDate) VALUES (?, 1, 1, UNIX_TIMESTAMP() + ?d) ON DUPLICATE KEY UPDATE count = count + 1, unbanDate = UNIX_TIMESTAMP() + ?d',
+            User::$ip, Cfg::get('ACC_FAILED_AUTH_BLOCK'), Cfg::get('ACC_FAILED_AUTH_BLOCK'));
+        return '';
     }
 
     private function doSignUp()

@@ -923,6 +923,7 @@ $lang = array(
         'emailInvalid'  => "Esa dirección de correo electrónico no es válida.", // message_emailnotvalid
         'emailNotFound' => "El correo electrónico que ingresaste no está asociado con ninguna cuenta.<br><br>Si olvistaste el correo electronico con el que registraste la cuenta, escribe a CFG_CONTACT_EMAIL para asistencia.",
         'createAccSent' => "Un correo fue enviado a <b>%s</b>. Siga las instrucciones para crear su cuenta.",
+        'gameAccCreated' => 'Your game account <b>%s</b> is ready. Sign in here with it, and log in to the game with the same name and password.',
         'recovUserSent' => "Un correo fue enviado a <b>%s</b>. Siga las instrucciones para recuperar su nombre de usuario.",
         'recovPassSent' => "Un correo fue enviado a <b>%s</b>. Siga las instrucciones para reiniciar su contraseña.",
         'accActivated'  => 'Su cuenta ha sido activada.<br>Ingrese a <a href="?account=signin&token=%s">para ingresar</a>',

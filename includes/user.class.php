@@ -405,6 +405,17 @@ class User
         return $_ === crypt($pass, $_);
     }
 
+    // salt and verifier for a new game account (the same SRP6 values the worldserver's account create makes)
+    public static function makeSRP6($user, $pass) : array
+    {
+        $salt = random_bytes(32);
+        $g = gmp_init(7);
+        $N = gmp_init('894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7', 16);
+        $x = gmp_import(sha1($salt . sha1(strtoupper($user . ':' . $pass), TRUE), TRUE), 1, GMP_LSW_FIRST);
+        $v = gmp_powm($g, $x, $N);
+        return [$salt, str_pad(gmp_export($v, 1, GMP_LSW_FIRST), 32, chr(0), STR_PAD_RIGHT)];
+    }
+
     public static function verifySRP6($user, $pass, $salt, $verifier)
     {
         $g = gmp_init(7);
