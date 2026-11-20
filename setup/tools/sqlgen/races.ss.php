@@ -36,8 +36,8 @@ CLISetup::registerSetup("sql", new class extends SetupScript
         DB::Aowow()->query('UPDATE ?_races r JOIN (SELECT BIT_OR(1 << (`classId` - 1)) AS "classMask", `raceId` FROM dbc_charbaseinfo GROUP BY `raceId`) cbi ON cbi.`raceId` = r.id SET r.`classMask` = cbi.`classMask`');
 
         // add cuFlags
-        // listed: the player races of the retail client (ids 1-30), playable here or not; NPC races are hidden
-        DB::Aowow()->query('UPDATE ?_races SET `cuFlags` = `cuFlags` | ?d WHERE `id` NOT BETWEEN 1 AND 30', CUSTOM_EXCLUDE_FOR_LISTVIEW);
+        // listed: player races (ids 1-30) that at least one class can be; NPC races and classless ones are hidden
+        DB::Aowow()->query('UPDATE ?_races SET `cuFlags` = `cuFlags` | ?d WHERE `id` NOT BETWEEN 1 AND 30 OR `classMask` = 0 OR `flags` & 0x1', CUSTOM_EXCLUDE_FOR_LISTVIEW);
 
         $this->reapplyCCFlags('races', Type::CHR_RACE);
 
