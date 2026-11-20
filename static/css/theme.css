@@ -747,10 +747,7 @@ html[data-ui="modern"] span.breadcrumb-arrow::after {
     font-weight: normal;
 }
 
-/* menus: checked entry and hover pick up the theme */
-html[data-ui="modern"] .menu a:hover,
-html[data-ui="modern"] .menu a.open { box-shadow: inset 2px 0 0 var(--th-accent); }
-html[data-ui="modern"] .menu a.separator:hover { box-shadow: none; }
+/* menus: no accent bar on hover (the open path stands out by dimming the rest, see aowow.css) */
 
 /* ── scrollbars + native controls follow the mode ─────────────────────────── */
 html[data-ui="modern"],

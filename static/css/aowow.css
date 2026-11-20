@@ -4591,9 +4591,15 @@ input.button-copy:hover {
 .menu a.separator.smallicon {
     padding-left: 24px;
 }
-/* no dimming of the other entries */
+/* like wowhead: no dimming in the menu you are in, but a menu with an open submenu dims every entry off your path */
 .menu-inner.dim-ok.dim-siblings a:not(.dim-current):not(.checked) {
     filter: none;
+}
+.menu a {
+    transition: filter 0.12s ease;
+}
+.menu:has(a.open) a:not(.open):not(.separator):not(:hover) {
+    filter: brightness(0.45);
 }
 
 /* aowow: tiny icons (15px, e.g. in side boxes and articles) get the same frame as the bigger icons */
