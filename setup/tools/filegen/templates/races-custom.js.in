@@ -16,3 +16,13 @@
         }
     }
 })();
+/* g_listed_races: retail player races not playable here: name and icon for lists and pages only */
+(function () {
+    if (typeof g_listed_races == 'undefined') return;
+    var localeId = (typeof Locale != 'undefined' && Locale.getId) ? Locale.getId() : 0;
+    for (var id in g_listed_races) {
+        var r = g_listed_races[id];
+        if (typeof g_chr_races != 'undefined') g_chr_races[id] = r.names[localeId] || r.names[0] || ('Race ' + id);
+        if (typeof g_file_races != 'undefined') g_file_races[id] = r.file;
+    }
+})();
