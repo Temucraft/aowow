@@ -1187,6 +1187,7 @@ var mn_tools = [
     [11,"Composición de banda","?raid-composition"],
     [14,"Seguimiento de misiones","?quest-tracker"],
     [16,"Companion","?companion"],
+    [17,"Temucraft Changes","?changes"],
     [3,"Comparación de objetos","?compare"],
     [5,"Perfiles","?profiler",[
         [0,"Personajes","?profiles"],

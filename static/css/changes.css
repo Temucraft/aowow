@@ -1,0 +1,54 @@
+/* Temucraft Changes (?changes) */
+.tool-changes h2 { margin-top: 22px; }
+.tool-changes h2 small, .tool-changes .chg-group-head small { color: #9d9d9d; font-weight: normal; }
+.chg-intro { font-size: 13px; }
+.chg-notes li { margin: 3px 0; }
+.chg-nav { margin: 6px 0 12px; }
+.chg-gen { color: #777; font-size: 11px; margin-top: 24px; }
+
+.chg-skills { border-collapse: collapse; }
+.chg-skills th, .chg-skills td { border: 1px solid #333; padding: 4px 8px; text-align: left; vertical-align: top; }
+.chg-skills .chg-now { color: #1eff00; }
+
+.chg-classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.chg-class { background: #141414; border: 1px solid #333; border-radius: 4px; padding: 8px 10px; line-height: 1.7; }
+.chg-class small { color: #9d9d9d; }
+.chg-class-head { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+.chg-class-head .iconmedium { flex: none; }
+
+.chg-group { background: #101010; border: 1px solid #2c2c2c; border-radius: 4px; padding: 8px 10px; margin: 10px 0; }
+.chg-group-head { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+.chg-group-head .iconmedium { flex: none; }
+.chg-rank + .chg-rank { border-top: 1px dashed #2c2c2c; margin-top: 8px; padding-top: 8px; }
+.chg-what { color: #ffd100; font-size: 11px; margin-bottom: 4px; }
+.chg-note { color: #71d5ff; margin-bottom: 6px; }
+
+.chg-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 760px) { .chg-pair { grid-template-columns: 1fr; } }
+.chg-label { color: #9d9d9d; font-size: 11px; text-transform: uppercase; margin-bottom: 2px; }
+
+.chg-card { background: #070c21; border: 1px solid #5a5f73; border-radius: 3px; padding: 6px 8px; color: #fff; height: calc(100% - 18px); box-sizing: border-box; }
+.chg-card.chg-none { color: #777; font-style: italic; background: #0c0c0c; border-style: dashed; }
+.chg-head { width: 100%; border-collapse: collapse; }
+.chg-head td { padding: 0 0 2px; }
+.chg-head .chg-r { text-align: right; color: #ccc; }
+.chg-desc { color: #ffd100; margin-top: 4px; }
+.chg-tip { color: #ccc; margin-top: 4px; font-size: 11px; }
+.chg-tip span, .chg-rk { color: #9d9d9d; }
+.chg-req { color: #ff4040; font-size: 11px; }
+.chg-foot { color: #9d9d9d; font-size: 11px; margin-top: 6px; }
+.chg-fx { color: #888; font-size: 10px; margin-top: 4px; font-family: monospace; }
+.chg-mark { background: rgba(255, 209, 0, 0.18); border-radius: 2px; padding: 0 2px; }
+.chg-card ins { text-decoration: none; background: rgba(30, 255, 0, 0.22); color: #7dff6b; }
+.chg-card del { background: rgba(255, 64, 64, 0.2); color: #ff8080; }
+
+.chg-trees { display: flex; flex-wrap: wrap; gap: 14px; }
+.chg-tree { background: #0e0e0e; border: 1px solid #2c2c2c; border-radius: 4px; padding: 6px; }
+.chg-tree-name { text-align: center; font-weight: bold; margin-bottom: 4px; }
+.chg-tree table { border-collapse: separate; border-spacing: 6px; }
+.chg-tree td { width: 40px; height: 40px; position: relative; vertical-align: middle; text-align: center; border-radius: 4px; }
+.chg-tree td .iconmedium { margin: 0 auto; }
+.chg-t-ranks { position: absolute; right: 0; bottom: 0; font-size: 10px; background: #000; color: #1eff00; padding: 0 2px; border-radius: 2px; }
+.chg-t-new, .chg-legend .chg-t-new { box-shadow: 0 0 0 2px #1eff00; }
+.chg-t-moved, .chg-legend .chg-t-moved { box-shadow: 0 0 0 2px #ffd100; }
+.chg-legend span { display: inline-block; padding: 1px 6px; margin-right: 10px; border-radius: 3px; }

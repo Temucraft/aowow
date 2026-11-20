@@ -122,6 +122,7 @@ $lang = array(
         'discordWebhook' => "Discord Webhook",
         'questTracker'  => "任务完成追踪",
         'companion'     => "Companion",
+        'changes'       => "Temucraft Changes",
         'gearPlanner'   => "装备规划",
         'chooseClass'   => "选择一个职业",
         'chooseFamily'  => "选择一个宠物家族",

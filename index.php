@@ -33,6 +33,7 @@ switch ($pageCall)
     case 'classes':
     case 'currency':
     case 'currencies':
+    case 'changes':                                         // tool: what Temucraft changed from 3.3.5, per class
     case 'companion':                                       // tool: Temucraft companion (followers, missions, expeditions)
     case 'compare':                                         // tool: item comparison
     case 'dressing-room':                                   // tool: dress up a character (also its item search)

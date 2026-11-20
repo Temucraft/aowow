@@ -17,6 +17,19 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
   tracker), each character's followers, offered and running missions, expeditions, key fragments and disguises; start
   a mission or collect finished ones from the browser. Orders go to the characters database
   (`mod_temucraft_web_order`) and mod-temucraft-mission-table carries them out (at once if online, else at login).
+- **Changes page** (Tools → Temucraft Changes, `?changes`): what Temucraft does differently from 3.3.5, like
+  Wowhead's Classic changes pages. An overview (changes for every class, who can use each weapon and armor skill,
+  one box per class), then per class a **Spellbook** page (`?changes=spellbook.druid`: new, updated and removed
+  spells, before and now side by side per rank, changed words marked) and a **Talents** page
+  (`?changes=talents.druid`: the trees with new and moved talents marked, then each talent change). The page reads
+  `setup/temucraft/changes.json`, made by `setup/tools/temucraft-changes.py` from the stock DBCs against ours (patch-5
+  plus every module's client patch, in load order) and the world database (class trainer spells, Temucraft spell
+  scripts). Server rules the files can't show go in `setup/temucraft/changes-notes.json`. The modules-ci "Addon data"
+  workflow remakes it every day; by hand:
+
+      python3 setup/tools/temucraft-changes.py --stock <stock DBFilesClient> --layer <patch-5 DBFilesClient> \
+          --modules <folder with the module repos> --db acore_world --mysql "mysql -uroot -p..." \
+          --notes setup/temucraft/changes-notes.json -o setup/temucraft/changes.json
 - **Our data**: everything comes from the server's own world database and from the DBCs and images *as the client
   sees them*. Extract the client **with the Temucraft patches** (see below), so new maps (Darkspear Islands, the
   Cataclysm / Mists dungeons, the lost lands), items, creatures, spells and races are all there.

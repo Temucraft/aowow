@@ -1,0 +1,23 @@
+{
+  "all": [
+    "Every class can learn every weapon skill and wear every kind of armor. Weapon masters teach them all, and Dual Wield.",
+    "Parachute is taught by every class trainer from level 10. Its cooldown gets shorter as you level, down to 2 min at 80.",
+    "Party-wide class auras and buffs reach your whole raid. Healing spells are not changed.",
+    "Friendly class buffs that lasted 10 or 30 minutes now last 1 hour.",
+    "Class spells can be learned automatically when you level up (turn it on from the spellbook).",
+    "Heritage lets you take another race's racial traits, plus one extra racial from a race that is not in the game.",
+    "Shadowmeld has a 1 min cooldown."
+  ],
+  "classes": {
+    "3": ["Your pet is always happy."],
+    "7": ["Totemic Recall is trained at level 10."],
+    "9": [
+      "Soul Shards stack to 99, and a soul bag may give back the Soul Shard, Infernal Stone or Demonic Figurine a spell used.",
+      "Ritual of Doom needs the caster and 2 helpers, and no one is sacrificed."
+    ],
+    "11": ["Tranquility heals the 5 raid members with the lowest health."]
+  },
+  "spells": {
+    "Tranquility": "Heals the 5 raid members with the lowest health, anywhere in the raid."
+  }
+}

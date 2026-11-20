@@ -121,6 +121,7 @@ $lang = array(
         'discordWebhook' => "Вебхук Discord",
         'questTracker'  => "Учёт заданий",
         'companion'     => "Companion",
+        'changes'       => "Temucraft Changes",
         'gearPlanner'   => "Планировщик экипировки",
         'chooseClass'   => "Выберите класс",
         'chooseFamily'  => "Выберите семейство питомцев",

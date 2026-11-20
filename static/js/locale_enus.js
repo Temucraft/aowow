@@ -1364,6 +1364,7 @@ var mn_tools = [
     [2,"Hunter Pet Calculator","?petcalc",mn_petCalc],
     [14,"Quest Completion Tracker","?quest-tracker"],
     [16,"Companion","?companion"],
+    [17,"Temucraft Changes","?changes"],
     [11,"Raid Composition","?raid-composition"],
     [1,"Maps","?maps"],
     [,"Other",,,{colBreak:true}],
