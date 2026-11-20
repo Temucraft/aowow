@@ -73,7 +73,8 @@ CLISetup::registerSetup("sql", new class extends SetupScript
                        WHERE    type NOT IN (4, 6) AND groupId <> 11
                        GROUP BY mapId) lfgIni ON lfgIni.mapId = m.id
             LEFT JOIN dbc_battlemasterlist bm ON bm.mapId = a.mapId AND bm.moreMapId < 0
-            LEFT JOIN dbc_worldmaparea wma ON wma.areaId = a.id
+            -- custom DBCs can give an area several worldmaparea rows: take the one on the same map as the area
+            LEFT JOIN dbc_worldmaparea wma ON wma.id = (SELECT w2.id FROM dbc_worldmaparea w2 WHERE w2.areaId = a.id ORDER BY w2.mapId = a.mapId DESC, w2.id LIMIT 1)
             LEFT JOIN dbc_worldmaptransforms wmt ON wmt.targetMapId <> wmt.sourceMapId AND wma.mapId  = wmt.sourceMapId AND
                       wma.left   < wmt.maxY AND wma.right  > wmt.minY AND
                       wma.top    < wmt.maxX AND wma.bottom > wmt.minX',
