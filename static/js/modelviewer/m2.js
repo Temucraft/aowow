@@ -4,7 +4,9 @@
  *   var model = await AoM2.load(baseUrl, 'creature/ghoul/ghoul', {tex: {'11': 'creature/ghoul/ghoulskinblue'}});
  *   scene.add(model.root);  model.play(animIndex);  model.update(deltaMs);
  *
- * Files come from setup/tools/modelviewer/extract.py: m/<key>.m2, m/<key>00.skin, m/<key>NNNN-NN.anim, t/<key>.png
+ * Files come from setup/tools/modelviewer/extract.py: m/<key>.m2, m/<key>00.skin, m/<key>NNNN-NN.anim, t/<key>.webp,
+ * meta/<kind>/<id >> 8>.json. A base registered with AoM2.overlay (the HD models) serves what its index.json lists
+ * and leaves everything else to the classic folder.
  * Model space is the client's (Z up); model.root turns it upright for three.js (Y up).
  */
 var AoM2 = (function () {
@@ -44,6 +46,63 @@ var AoM2 = (function () {
 
     function keyOf(path) {                                  // client path -> extracted file key
         return path.replace(/\\/g, '/').toLowerCase().replace(/\.(mdx|mdl|m2|blp)$/, '');
+    }
+
+    // ---------------------------------------------------------------- data folders, HD overlay, meta bundles
+
+    var overlays = {}, overlayJobs = {}, jsonCache = {};
+
+    function json(url) {                                    // one fetch per url, shared by everyone asking
+        if (!jsonCache[url])
+            jsonCache[url] = fetch(url).then(function (r) {
+                if (!r.ok) throw new Error(r.status + ' ' + url);
+                return r.json();
+            }, function (e) { delete jsonCache[url]; throw e; });   // network error: try again next time
+        return jsonCache[url];
+    }
+
+    // register an overlay folder (HD models) on top of a classic one; resolves to false if it has no index.json
+    function overlay(base, classic) {
+        if (!overlayJobs[base])
+            overlayJobs[base] = fetch(base + 'index.json', { cache: 'no-cache' }).then(function (r) {
+                if (!r.ok) throw new Error(r.status);
+                return r.json();
+            }).then(function (x) {
+                function set(list) { var o = {}; (list || []).forEach(function (k) { o[k] = 1; }); return o; }
+                var meta = {};
+                for (var k in x.meta || {}) meta[k] = set(x.meta[k]);
+                overlays[base] = { classic: classic, m: set(x.m), a: set(x.a), t: set(x.t), meta: meta, helmvis: !!x.helmvis };
+                return true;
+            }).catch(function () { delete overlayJobs[base]; return false; });
+        return overlayJobs[base];
+    }
+
+    function src(base, kind, key) {                         // folder holding a model (m), animation (a) or texture (t)
+        var o = overlays[base];
+        return !o || o[kind][key] ? base : o.classic;
+    }
+
+    function texUrl(base, key) {
+        return src(base, 't', key) + 't/' + key + '.webp?v=' + TEX_VERSION;
+    }
+
+    // display data: meta/<kind>/<id >> 8>.json holds 256 ids; the overlay's entry wins where it has one
+    function meta(base, kind, id) {
+        var o = overlays[base], b = id >> 8;
+        function from(folder) {
+            return json(folder + 'meta/' + kind + '/' + b + '.json').then(function (d) { return d[id]; }, function () {});
+        }
+        return (o && o.meta[kind] && o.meta[kind][b] ? from(base) : Promise.resolve()).then(function (v) {
+            return v !== undefined ? v : from(o ? o.classic : base);
+        }).then(function (v) {
+            if (v === undefined) throw new Error('nometa');
+            return v;
+        });
+    }
+
+    function helmvis(base) {
+        var o = overlays[base];
+        return json((o && !o.helmvis ? o.classic : base) + 'helmvis.json');
     }
 
     // ---------------------------------------------------------------- animation tracks
@@ -146,13 +205,13 @@ var AoM2 = (function () {
     // ---------------------------------------------------------------- materials
 
     var texCache = {};
-    var TEX_VERSION = 2;                                    // bump when textures are re-extracted (browsers keep old copies)
+    var TEX_VERSION = 3;                                    // bump when textures are re-extracted (browsers keep old copies)
 
     function loadTexture(base, key, flags) {
-        var id = key + '|' + (flags & 3);
+        var url = texUrl(base, key), id = url + '|' + (flags & 3);
         if (texCache[id])
             return texCache[id];
-        var t = new THREE.TextureLoader().load(base + 't/' + key + '.png?v=' + TEX_VERSION);
+        var t = new THREE.TextureLoader().load(url);
         t.encoding = THREE.sRGBEncoding;
         t.wrapS = (flags & 1) ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
         t.wrapT = (flags & 2) ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
@@ -545,7 +604,8 @@ var AoM2 = (function () {
             go();
             return Promise.resolve();
         }
-        var url = this.base + 'm/' + this.key + ('000' + s.id).slice(-4) + '-' + ('0' + s.sub).slice(-2) + '.anim';
+        var name = this.key + ('000' + s.id).slice(-4) + '-' + ('0' + s.sub).slice(-2);
+        var url = src(this.base, 'a', name) + 'm/' + name + '.anim';
         return fetchBuf(url).then(function (buf) { self.animBuf[i] = new Reader(buf); go(); }, function () { go(); });
     };
 
@@ -632,12 +692,12 @@ var AoM2 = (function () {
     // ---------------------------------------------------------------- load
 
     function load(base, key, opt) {
-        var m = new Model(base, key, opt);
-        return Promise.all([fetchBuf(base + 'm/' + key + '.m2'), fetchBuf(base + 'm/' + key + '00.skin')]).then(function (b) {
+        var m = new Model(base, key, opt), dir = src(base, 'm', key) + 'm/';
+        return Promise.all([fetchBuf(dir + key + '.m2'), fetchBuf(dir + key + '00.skin')]).then(function (b) {
             m.parse(b[0], b[1]);
             return m;
         });
     }
 
-    return { load: load, keyOf: keyOf, TEX_VERSION: TEX_VERSION };
+    return { load: load, keyOf: keyOf, TEX_VERSION: TEX_VERSION, texUrl: texUrl, meta: meta, helmvis: helmvis, overlay: overlay, json: json };
 })();

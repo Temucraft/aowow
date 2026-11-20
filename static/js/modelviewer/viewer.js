@@ -9,7 +9,7 @@
  *   AoStage   - renderer / camera / lights / background / render loop for any element (also used by the dressing room)
  *   AoViewer  - the window: show(), hide(), ready(), stage()
  *
- * Data: static/modelviewer/data (setup/tools/modelviewer/extract.py)
+ * Data: static/modelviewer/data, HD models overlay in static/modelviewer/data-hd (setup/tools/modelviewer/extract.py)
  * Code: static/js/modelviewer/m2.js (models), charmodel.js (characters), particles.js (particle effects), three.js
  */
 
@@ -157,15 +157,30 @@ AoStage.prototype = {
 // ==================================================================== window
 
 var AoViewer = (function () {
-    var BASE, scriptsReady = null, animNames = null;
-    var dlg, stage, current = null;
+    var BASE, scriptsReady = null, animNames = null, hdOn = false;
+    var dlg, stage, current = null, opened = 0;
 
     var RACES = [[10, 'Blood Elf'], [11, 'Draenei'], [3, 'Dwarf'], [7, 'Gnome'], [1, 'Human'],
                  [4, 'Night Elf'], [2, 'Orc'], [6, 'Tauren'], [8, 'Troll'], [5, 'Undead']];
     var PREFIX = { 1: 'Hu', 2: 'Or', 3: 'Dw', 4: 'Ni', 5: 'Sc', 6: 'Ta', 7: 'Gn', 8: 'Tr', 10: 'Be', 11: 'Dr' };
 
-    function base() {
+    function classicBase() {
         return BASE || (BASE = g_staticUrl + '/modelviewer/data/');
+    }
+    function hdBase() {
+        return g_staticUrl + '/modelviewer/data-hd/';
+    }
+    function base() {                                       // what the viewer shows: HD overlay when switched on
+        return hdOn ? hdBase() : classicBase();
+    }
+
+    // HD models: off unless the visitor switched them on (remembered); false if the overlay is not there
+    function savedHD() {
+        try { return localStorage.getItem('aowow_mv_hd') == '1'; } catch (e) { return false; }
+    }
+    function setHD(on) {
+        try { localStorage.setItem('aowow_mv_hd', on ? '1' : '0'); } catch (e) {}
+        return (on ? AoM2.overlay(hdBase(), classicBase()) : Promise.resolve(false)).then(function (ok) { return (hdOn = ok); });
     }
 
     function loadScript(src) {
@@ -186,8 +201,8 @@ var AoViewer = (function () {
                 .then(function () { return typeof AoM2 != 'undefined' ? 0 : loadScript(js + 'm2.js'); })
                 .then(function () { return typeof AoParticles != 'undefined' ? 0 : loadScript(js + 'particles.js').catch(function () {}); })
                 .then(function () { return typeof AoChar != 'undefined' ? 0 : loadScript(js + 'charmodel.js'); })
-                .then(function () { return fetch(base() + 'anims.json').then(function (r) { return r.ok ? r.json() : {}; }, function () { return {}; }); })
-                .then(function (n) { animNames = n; });
+                .then(function () { return fetch(classicBase() + 'anims.json').then(function (r) { return r.ok ? r.json() : {}; }, function () { return {}; }); })
+                .then(function (n) { animNames = n; return savedHD() ? setHD(true) : false; });
         }
         return scriptsReady;
     }
@@ -213,6 +228,7 @@ var AoViewer = (function () {
             '<div class="mv-box">' +
                 '<div class="mv-stage"><div class="mv-msg"></div>' +
                     '<div class="mv-tools">' +
+                        '<a class="mv-ico mv-hd" title="Higher detail character models">HD models</a>' +
                         '<a class="mv-ico mv-bgbtn">Background</a>' +
                         '<a class="mv-ico mv-pause">Pause</a>' +
                         '<a class="mv-ico mv-full">Full screen</a>' +
@@ -224,6 +240,7 @@ var AoViewer = (function () {
                         '<p><b>Zoom:</b> mouse wheel</p>' +
                         '<p><b>Race / Body:</b> show worn items on a character, or <i>None</i> for the item on its own</p>' +
                         '<p><b>Animation:</b> play any animation the model has</p>' +
+                        '<p><b>HD models:</b> higher detail character models, as with the optional HD pack for the game</p>' +
                         '<p><b>Background:</b> pattern, plain colours, or transparent for screenshots</p>' +
                         '<p><b>Screenshot:</b> saves the current view as a PNG</p>' +
                         '<p class="q0">Models and textures come from the game client. Esc closes the viewer.</p>' +
@@ -252,6 +269,7 @@ var AoViewer = (function () {
             stage.paused = !stage.paused;
             this.innerHTML = stage.paused ? 'Play' : 'Pause';
         };
+        hdButton($('.mv-hd'), function () { if (current) open(current); });
         $('.mv-full').onclick = function () {
             if (document.fullscreenElement) document.exitFullscreen();
             else if ($('.mv-box').requestFullscreen) $('.mv-box').requestFullscreen();
@@ -286,6 +304,17 @@ var AoViewer = (function () {
         };
     }
 
+    // the HD models switch (viewer window, dressing room): onChange reloads what is shown
+    function hdButton(btn, onChange) {
+        btn.classList.toggle('mv-on', hdOn);
+        btn.onclick = function () {
+            setHD(!btn.classList.contains('mv-on')).then(function (ok) {
+                btn.classList.toggle('mv-on', ok);
+                onChange();
+            });
+        };
+    }
+
     // what the dressing room should open with: race / body / looks, then the item (i123) or item set (s45)
     function drHash(c, opt) {
         var L = c ? c.look : savedChar(), m = c ? c.meta : null;
@@ -314,12 +343,9 @@ var AoViewer = (function () {
 
     // ---------------------------------------------------------------- what to show
 
-    function fetchJson(url) {
-        return fetch(url).then(function (r) { if (!r.ok) throw new Error('nometa'); return r.json(); });
-    }
-
     function open(opt) {
         current = opt;
+        var my = ++opened;                                  // reopened (other race, HD switch): only the newest load counts
         var $ = function (s) { return dlg.querySelector(s); };
         var raceSel = $('.mv-race'), sexSel = $('.mv-sex'), drBtn = $('.mv-dr');
         raceSel.style.display = sexSel.style.display = drBtn.style.display = 'none';
@@ -331,25 +357,25 @@ var AoViewer = (function () {
         else if (opt.type == 4 && opt.equipList)
             job = openSet(opt, raceSel, sexSel, drBtn);
         else if (opt.type == 1 && opt.displayId)
-            job = fetchJson(base() + 'meta/npc/' + opt.displayId + '.json').then(function (meta) {
+            job = AoM2.meta(base(), 'npc', opt.displayId).then(function (meta) {
                 if (meta.extra)                             // humanoid: a character with its looks and clothes
-                    return fetchJson(base() + 'meta/npcx/' + meta.extra + '.json').then(npcCharacter);
+                    return AoM2.meta(base(), 'npcx', meta.extra).then(function (x) { return npcCharacter(x); });
                 return AoM2.load(base(), meta.f, { tex: meta.tex }).then(function (m) {
                     if (meta.scale && meta.scale != 1) m.root.scale.setScalar(meta.scale);
                     return m;
                 });
             });
         else if (opt.type == 2 && opt.displayId)
-            job = fetchJson(base() + 'meta/object/' + opt.displayId + '.json').then(function (meta) {
+            job = AoM2.meta(base(), 'object', opt.displayId).then(function (meta) {
                 return AoM2.load(base(), meta.f, { tex: meta.tex });
             });
         else
             return msg('Nothing to show.');
 
         job.then(function (mdl) {
-            if (mdl && opt === current) setModel(mdl);
+            if (mdl && opt === current && my == opened) setModel(mdl);
         }).catch(function (e) {
-            if (opt !== current) return;
+            if (opt !== current || my != opened) return;
             var t = { nometa: 'This model has not been extracted yet.<br><span class="q0">Run setup/tools/modelviewer/extract.py</span>' }[e.message];
             msg(t || ('Could not load the model.<br><span class="q0">' + $WH.htmlentities(String(e.message || e)) + '</span>'));
             if (window.console) console.warn('model viewer', e);
@@ -358,17 +384,17 @@ var AoViewer = (function () {
 
     var NPC_SLOTS = ['head', 'shoulder', 'shirt', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'tabard', 'back'];
 
-    function npcCharacter(x) {
+    function npcCharacter(x, b) {
         var items = {};
         x.items.forEach(function (d, i) { if (d) items[NPC_SLOTS[i]] = { display: d }; });
-        return AoChar.load(base(), { race: x.race, sex: x.sex, skin: x.skin, face: x.face, hairStyle: x.hairStyle,
+        return AoChar.load(b || base(), { race: x.race, sex: x.sex, skin: x.skin, face: x.face, hairStyle: x.hairStyle,
                                      hairColor: x.hairColor, facial: x.facial, bake: x.bake, npc: true }, items);
     }
 
     function openItem(opt, raceSel, sexSel, drBtn) {
         return Promise.all([
-            fetchJson(base() + 'meta/item/' + opt.displayId + '.json'),
-            fetch(base() + 'meta/body/' + opt.displayId + '.json').then(function (r) { return r.ok ? r.json() : null; }, function () { return null; })
+            AoM2.meta(base(), 'item', opt.displayId),
+            AoM2.meta(base(), 'body', opt.displayId).catch(function () { return null; })
         ]).then(function (r) {
             var meta = r[0], body = r[1];
             var slot = AoChar.INV[opt.slot] || (meta.models.length ? (meta.models[0].slot == 'head' ? 'head' : meta.models[0].slot == 'shoulder' ? 'shoulder' : 'mainhand') : (meta.cape ? 'back' : 'chest'));
@@ -390,7 +416,7 @@ var AoViewer = (function () {
                     var pre = PREFIX[1] + 'M';
                     first = { slot: 'head', f: first.race[pre] || first.race[Object.keys(first.race)[0]], tex: first.tex };
                 }
-                return loadItemAlone(meta, first);
+                return loadItemAlone(meta, first, base());
             }
             var items = {};
             items[slot] = { display: opt.displayId };
@@ -420,40 +446,41 @@ var AoViewer = (function () {
         return items;
     }
 
-    // a model for opt without the window (thumbnails): ch = {race, sex} for anything worn
+    // a model for opt without the window (thumbnails, always the classic models): ch = {race, sex} for anything worn
     function build(opt, ch) {
+        var b = classicBase();
         ch = ch || { race: 1, sex: 0 };
         if (opt.type == 4)
-            return AoChar.load(base(), ch, setItems(opt.equipList));
+            return AoChar.load(b, ch, setItems(opt.equipList));
         if (opt.type == 1)
-            return fetchJson(base() + 'meta/npc/' + opt.displayId + '.json').then(function (meta) {
+            return AoM2.meta(b, 'npc', opt.displayId).then(function (meta) {
                 if (meta.extra)
-                    return fetchJson(base() + 'meta/npcx/' + meta.extra + '.json').then(npcCharacter);
-                return AoM2.load(base(), meta.f, { tex: meta.tex });
+                    return AoM2.meta(b, 'npcx', meta.extra).then(function (x) { return npcCharacter(x, b); });
+                return AoM2.load(b, meta.f, { tex: meta.tex });
             });
         if (opt.type == 2)
-            return fetchJson(base() + 'meta/object/' + opt.displayId + '.json').then(function (meta) {
-                return AoM2.load(base(), meta.f, { tex: meta.tex });
+            return AoM2.meta(b, 'object', opt.displayId).then(function (meta) {
+                return AoM2.load(b, meta.f, { tex: meta.tex });
             });
-        return fetchJson(base() + 'meta/item/' + opt.displayId + '.json').then(function (meta) {
+        return AoM2.meta(b, 'item', opt.displayId).then(function (meta) {
             var slot = AoChar.INV[opt.slot] || (meta.models.length ? (meta.models[0].slot == 'head' ? 'head' : meta.models[0].slot == 'shoulder' ? 'shoulder' : 'mainhand') : (meta.cape ? 'back' : 'chest'));
             if (meta.models.length && slot != 'back') {
                 var first = meta.models[0];
                 if (first.slot == 'head')
                     first = { slot: 'head', f: first.race[PREFIX[ch.race] + (ch.sex ? 'F' : 'M')] || first.race[Object.keys(first.race)[0]], tex: first.tex };
-                return loadItemAlone(meta, first);
+                return loadItemAlone(meta, first, b);
             }
             var items = {};
             items[slot] = { display: opt.displayId };
-            return AoChar.load(base(), ch, items);
+            return AoChar.load(b, ch, items);
         });
     }
 
     // an item on its own: shoulders as a pair side by side, weapons / shields side on
-    function loadItemAlone(meta, first) {
+    function loadItemAlone(meta, first, b) {
         var pair = meta.models.filter(function (x) { return x.slot == 'shoulder'; });
         if (pair.length == 2) {
-            return Promise.all(pair.map(function (p) { return AoM2.load(base(), p.f, { tex: p.tex }); })).then(function (ms) {
+            return Promise.all(pair.map(function (p) { return AoM2.load(b, p.f, { tex: p.tex }); })).then(function (ms) {
                 var g = new THREE.Group();
                 ms.forEach(function (mm, i) {
                     mm.root.position.x = (i ? 1 : -1) * 0.35;
@@ -467,7 +494,7 @@ var AoViewer = (function () {
                 };
             });
         }
-        return AoM2.load(base(), first.f, { tex: first.tex }).then(function (mdl) {
+        return AoM2.load(b, first.f, { tex: first.tex }).then(function (mdl) {
             if (first.slot != 'head')
                 mdl.root.rotation.z = 0;
             return mdl;
@@ -498,7 +525,7 @@ var AoViewer = (function () {
     }
 
     return {
-        show: show, hide: hide, ready: ready, base: base, animNames: function () { return animNames; },
+        show: show, hide: hide, ready: ready, base: base, hdButton: hdButton, animNames: function () { return animNames; },
         RACES: RACES, PREFIX: PREFIX, build: build, drHash: drHash, savedChar: savedChar,
         model: function () { return stage && stage.model; },
         frame: function () { if (stage) stage.frame(); }

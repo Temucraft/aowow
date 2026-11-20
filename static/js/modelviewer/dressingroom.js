@@ -94,8 +94,9 @@ var AoDressing = (function () {
         return m;
     }
 
-    function stageTools(box, stage) {
+    function stageTools(box, stage, reload) {          // reload: show the model again (HD models switched)
         var tools = el('div', 'mv-tools',
+            '<a class="mv-ico dr-hd" title="Higher detail character models">HD models</a>' +
             '<a class="mv-ico dr-bgbtn">Background</a>' +
             '<a class="mv-ico dr-pause">Pause</a>' +
             '<a class="mv-ico dr-full">Full screen</a>');
@@ -108,6 +109,7 @@ var AoDressing = (function () {
         box.appendChild(tools);
         box.appendChild(menu);
         tools.querySelector('.dr-bgbtn').onclick = function () { menu.classList.toggle('open'); };
+        AoViewer.hdButton(tools.querySelector('.dr-hd'), reload);
         tools.querySelector('.dr-pause').onclick = function () {
             stage.paused = !stage.paused;
             this.innerHTML = stage.paused ? 'Play' : 'Pause';
@@ -209,7 +211,7 @@ var AoDressing = (function () {
         return AoViewer.ready().then(function () {
             var box = self.$('.dr-stage');
             self.stage = new AoStage(box);
-            stageTools(box, self.stage);
+            stageTools(box, self.stage, function () { self.rebuild(); });
             self.stage.start();
 
             var st = self.outfit ? { race: self.outfit.race, sex: self.outfit.gender, look: self.outfit.look, tokens: [] } : parseHash(location.hash);
@@ -614,9 +616,7 @@ var AoDressing = (function () {
         };
 
         AoViewer.ready().then(function () {
-            var box = root.querySelector('.outfit-stage'), stage = new AoStage(box);
-            stageTools(box, stage);
-            stage.start();
+            var box = root.querySelector('.outfit-stage'), stage = new AoStage(box), job = 0;
             var items = {}, taken = {};
             o.items.forEach(function (it) {
                 var s = slotFor(it.slot, taken);
@@ -624,13 +624,22 @@ var AoDressing = (function () {
             });
             var look = { race: o.race, sex: o.gender };
             LOOK.forEach(function (l, i) { look[l[0]] = o.look[i]; });
-            return AoChar.load(AoViewer.base(), look, items).then(function (m) {
-                stage.setModel(m);
-                box.querySelector('.mv-msg').style.display = 'none';
-            });
-        }).catch(function (e) {
+            function show() {
+                var my = ++job;
+                return AoChar.load(AoViewer.base(), look, items).then(function (m) {
+                    if (my != job) return;
+                    stage.setModel(m, job > 1);
+                    box.querySelector('.mv-msg').style.display = 'none';
+                }).catch(fail);
+            }
+            stageTools(box, stage, show);
+            stage.start();
+            return show();
+        }).catch(fail);
+        function fail(e) {
             root.querySelector('.mv-msg').innerHTML = 'Could not show the outfit.<br><span class="q0">' + esc(e.message || e) + '</span>';
-        });
+            root.querySelector('.mv-msg').style.display = '';
+        }
     }
 
     return {

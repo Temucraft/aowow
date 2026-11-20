@@ -169,3 +169,4 @@ img.ao-thumb-none { visibility: hidden; }
 
 /* model thumbnails in listviews (same model as, item appearances) */
 td.screenshot-cell img[src*="/modelviewer/thumbs/"], td.screenshot-cell img[data-ao-thumb] { width: 150px; height: 150px; object-fit: contain; }
+.mv-ico.mv-on { background: rgba(255, 209, 0, .4); color: #fff !important; }

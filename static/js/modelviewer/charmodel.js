@@ -5,8 +5,8 @@
  *               {head: {display: 46358}, chest: {display: 1234}, mainhand: {display: 41428}, ..})
  *       -> Promise<model>   (an AoM2 model with extra methods: setLook, setItems, options)
  *
- * Data (setup/tools/modelviewer/extract.py): meta/char/<race*10+sex>.json, meta/item/<display>.json,
- * meta/body/<display>.json (armour textures), helmvis.json
+ * Data (setup/tools/modelviewer/extract.py, read through AoM2.meta): meta char (id race*10+sex), item,
+ * body (armour textures), helmvis.json
  */
 var AoChar = (function () {
 
@@ -38,23 +38,18 @@ var AoChar = (function () {
     // without a cloak, 401 bare hands, 1301 no robe ...); ears use 702
     var DEFAULT_GEO = { 4: 1, 5: 1, 6: 1, 7: 2, 8: 1, 9: 1, 10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1, 18: 1 };
 
-    var cache = {}, imgCache = {};
+    var imgCache = {};
 
-    function json(url) {
-        if (!cache[url])
-            cache[url] = fetch(url).then(function (r) { if (!r.ok) throw new Error(r.status + ' ' + url); return r.json(); });
-        return cache[url];
-    }
-
-    function img(url) {
-        if (!url || /\/(none|undefined|null)\.png$/.test(url))
+    function img(base, key) {                               // texture as an image (for the canvas), null if none
+        if (!key)
             return Promise.resolve(null);
+        var url = AoM2.texUrl(base, key);
         if (!imgCache[url])
             imgCache[url] = new Promise(function (ok) {
                 var i = new Image();
                 i.onload = function () { ok(i); };
                 i.onerror = function () { ok(null); };
-                i.src = url + '?v=' + AoM2.TEX_VERSION;
+                i.src = url;
             });
         return imgCache[url];
     }
@@ -185,7 +180,7 @@ var AoChar = (function () {
     }
 
     Char.prototype.compose = function () {
-        var self = this, m = this.meta, L = this.look, s = m.sections, npc = !!L.npc, base = this.base + 't/';
+        var self = this, m = this.meta, L = this.look, s = m.sections, npc = !!L.npc, base = this.base;
         var skin  = pick(s.skin, 0, L.skin, npc),
             face  = pick(s.face.filter(function (x) { return x.c == L.skin || true; }), L.face, L.skin, npc),
             hair  = pick(s.hair, L.hairStyle, L.hairColor, npc),
@@ -226,7 +221,7 @@ var AoChar = (function () {
             });
 
         var job = this.job = {};
-        return Promise.all(layers.map(function (l) { return img(base + l[0] + '.png'); })).then(function (imgs) {
+        return Promise.all(layers.map(function (l) { return img(base, l[0]); })).then(function (imgs) {
             if (job !== self.job) return;                   // a newer compose started
             var first = imgs[0], W = first ? first.width : 256, H = first ? first.height : 256, sc = W / 256;
             var c = self.canvas;
@@ -243,9 +238,9 @@ var AoChar = (function () {
         }).then(function () {
             return Promise.all([
                 // bald styles have no hair texture, but brows / beards still use the hair colour
-                img(base + (hairTex && hairTex.t[0] ? hairTex.t[0] : 'none') + '.png'),
-                img(base + (skin && skin.t[1] ? skin.t[1] : 'none') + '.png'),
-                self.itemData.back && self.itemData.back.item && self.itemData.back.item.cape ? img(base + self.itemData.back.item.cape + '.png') : null
+                img(base, hairTex && hairTex.t[0]),
+                img(base, skin && skin.t[1]),
+                self.itemData.back && self.itemData.back.item && self.itemData.back.item.cape ? img(base, self.itemData.back.item.cape) : null
             ]).then(function (r) {
                 if (job !== self.job) return;
                 copyTo(self.hairTex, r[0]);
@@ -268,8 +263,8 @@ var AoChar = (function () {
             var d = self.items[slot] && self.items[slot].display;
             if (!d) return null;
             return Promise.all([
-                json(base + 'meta/item/' + d + '.json').catch(function () { return null; }),
-                json(base + 'meta/body/' + d + '.json').catch(function () { return null; })
+                AoM2.meta(base, 'item', d).catch(function () { return null; }),
+                AoM2.meta(base, 'body', d).catch(function () { return null; })
             ]).then(function (r) { self.itemData[slot] = { item: r[0], body: r[1] }; });
         });
         this.itemData = {};
@@ -327,7 +322,7 @@ var AoChar = (function () {
 
     function load(base, look, items) {
         var c;
-        return Promise.all([json(base + 'meta/char/' + (look.race * 10 + look.sex) + '.json'), json(base + 'helmvis.json').catch(function () { return {}; })])
+        return Promise.all([AoM2.meta(base, 'char', look.race * 10 + look.sex), AoM2.helmvis(base).catch(function () { return {}; })])
             .then(function (r) {
                 c = new Char(base, r[0], look);
                 c.helmvis = r[1];

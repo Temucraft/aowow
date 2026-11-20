@@ -7,10 +7,12 @@ Reads the client archives (MPQ) and writes what static/js/modelviewer needs:
     static/modelviewer/data/m/<path>.m2           model (as in the client)
     static/modelviewer/data/m/<path>00.skin       mesh (LOD 0)
     static/modelviewer/data/m/<path>NNNN-NN.anim  animations kept outside the model
-    static/modelviewer/data/t/<path>.png          textures (BLP -> PNG)
-    static/modelviewer/data/meta/item/<displayId>.json
-    static/modelviewer/data/meta/npc/<displayId>.json
-    static/modelviewer/data/meta/object/<displayId>.json
+    static/modelviewer/data/t/<path>.webp         textures (BLP -> WebP)
+    static/modelviewer/data/meta/<kind>/<bucket>.json   {"<displayId>": {..}, ..} for 256 ids, bucket = id >> 8
+                                                  (kind: item npc object char body npcx)
+
+HD overlay (--hd): static/modelviewer/data-hd holds only what the HD model pack changes, plus index.json
+listing it; the viewer takes a file from there when index.json has it and from data otherwise.
 
 <path> is the client path, lower case, '/' separated, without extension.
 Which models belong to a display comes from the DBC files aowow already uses
@@ -19,12 +21,17 @@ Which models belong to a display comes from the DBC files aowow already uses
 Usage (from the aowow folder):
     python setup/tools/modelviewer/extract.py --data "C:/Games/WoW/Data"
     python setup/tools/modelviewer/extract.py --data ... --only item --ids 41428,41429
+    python setup/tools/modelviewer/extract.py --data ... --hd "<wow>/options/Character models/HD/Data"
 Options:
     --data   the client's Data folder (with common.MPQ, lichking.MPQ, ..)
     --dbc    DBFilesClient folder (default: setup/mpqdata/enGB/DBFilesClient, any case)
-    --out    output folder (default: static/modelviewer/data)
-    --only   item | npc | object | char | body | npcx (default: all)
-             char: character models + customisation, body: armour textures, npcx: humanoid npcs
+    --out    output folder (default: static/modelviewer/data, with --hd: static/modelviewer/data-hd)
+    --only   item | npc | object | char | body | npcx | files (default: all; with --hd: files, char, npcx)
+             char: character models + customisation, body: armour textures, npcx: humanoid npcs,
+             files: (--hd) every model / texture of the classic set that the HD archives replace
+    --hd     folder with the HD archives (patch-K.MPQ, enUS/patch-enUS-U.MPQ): they go above all others,
+             and a file is written only where it differs from the classic set
+    --classic  the classic output to compare with (--hd, default: static/modelviewer/data)
     --ids    limit to these display ids
     --force  rewrite files that already exist
     --limit  stop after N seconds (run again to continue - finished displays are skipped)
@@ -33,7 +40,12 @@ Options:
 Needs: Python 3.8+, pip install mpyq pillow
 """
 
-import argparse, glob, io, json, os, struct, sys, time
+import argparse, glob, io, json, os, re, shutil, struct, sys, tempfile, time
+
+try:
+    import fcntl                                        # bundle locking for --part runs (not on Windows: no --part there)
+except ImportError:
+    fcntl = None
 
 try:
     import mpyq
@@ -65,27 +77,45 @@ BASE_ORDER = ['patch-3.mpq', 'patch-2.mpq', 'patch.mpq', 'lichking.mpq', 'expans
 
 
 class Archives:
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, hd_dir=None):
         files = {os.path.basename(f).lower(): f for f in glob.glob(os.path.join(data_dir, '*')) if f.lower().endswith('.mpq')}
         custom = sorted([n for n in files if n.startswith('patch-') and n[6:7].isalnum() and n[7:8] == '.' and n not in BASE_ORDER], reverse=True)  # patch-z .. patch-a, patch-9 .. patch-4
         self.order = [files[n] for n in custom + BASE_ORDER if n in files]
         if not self.order:
             sys.exit('no MPQ archives found in ' + data_dir)
+        self.hd = []                                    # HD model pack: locale archive (merged DBCs) first, then the models
+        if hd_dir:
+            loc = [f for f in glob.glob(os.path.join(hd_dir, '*', '*.[mM][pP][qQ]')) if os.path.basename(os.path.dirname(f)).lower() in ('enus', 'engb')]
+            self.hd = sorted(loc, reverse=True) + sorted(glob.glob(os.path.join(hd_dir, '*.[mM][pP][qQ]')), reverse=True)
+            if not self.hd:
+                sys.exit('no MPQ archives found in ' + hd_dir)
+        self.order = self.hd + self.order
         self.open = {}
         self.missing = set()
+        self.src = {}                                   # path -> archive it was read from
+
+    def archive(self, f):
+        if f not in self.open:
+            try:
+                self.open[f] = FastMPQ(f, listfile=False)
+            except Exception as e:
+                print('  cannot open', f, e)
+                self.open[f] = None
+        return self.open[f]
+
+    def listfile(self, f):
+        a = self.archive(f)
+        try:
+            return a.read_file('(listfile)').decode('latin1').splitlines() if a else []
+        except Exception:
+            return []
 
     def read(self, path):
         key = path.replace('/', '\\')
         if key.lower() in self.missing:
             return None
         for f in self.order:
-            if f not in self.open:
-                try:
-                    self.open[f] = FastMPQ(f, listfile=False)
-                except Exception as e:
-                    print('  cannot open', f, e)
-                    self.open[f] = None
-            a = self.open[f]
+            a = self.archive(f)
             if not a:
                 continue
             try:
@@ -93,9 +123,13 @@ class Archives:
             except Exception:
                 data = None
             if data:
+                self.src[key.lower()] = f
                 return data
         self.missing.add(key.lower())
         return None
+
+    def from_hd(self, path):                            # was the last read of path served by an HD archive?
+        return self.src.get(path.replace('/', '\\').lower()) in self.hd
 
 
 # ---------------------------------------------------------------------- dbc
@@ -122,6 +156,48 @@ def find_dbc_dir(arg):
 
 def f32(u):
     return struct.unpack('<f', struct.pack('<I', u))[0]
+
+
+def hd_dbc_dir(arc, dbc_dir):
+    """a temp folder: the classic DBCs with the HD archives' copies on top (highest priority archive wins)"""
+    tmp = tempfile.mkdtemp(prefix='aowow-hd-dbc-')
+    names = {}
+    for n in os.listdir(dbc_dir):
+        names[n.lower()] = n
+        try:
+            os.symlink(os.path.abspath(os.path.join(dbc_dir, n)), os.path.join(tmp, n))
+        except OSError:
+            shutil.copy(os.path.join(dbc_dir, n), tmp)
+    taken = set()
+    for f in arc.hd:
+        for path in arc.listfile(f):
+            low = path.replace('/', '\\').lower()
+            if not low.startswith('dbfilesclient\\') or not low.endswith('.dbc') or low in taken:
+                continue
+            taken.add(low)
+            base = low.rsplit('\\', 1)[1]
+            data = arc.archive(f).read_file(path)
+            if base == 'characterfacialhairstyles.dbc' and base in names:    # the HD copy lacks the custom races: keep their rows
+                data = merge_dbc(data, open(os.path.join(dbc_dir, names[base]), 'rb').read(), lambda r: r[:3])
+            out = os.path.join(tmp, names.get(base, path.replace('\\', '/').rsplit('/', 1)[1]))
+            if os.path.lexists(out):
+                os.remove(out)
+            with open(out, 'wb') as fh:
+                fh.write(data)
+            print('  HD dbc:', base, 'from', os.path.basename(f))
+    return tmp
+
+
+def merge_dbc(hd, classic, key):
+    """rows of hd, plus the classic rows whose key hd does not have (DBCs without strings only)"""
+    h, c = struct.unpack('<4s4I', hd[:20]), struct.unpack('<4s4I', classic[:20])
+    if h[2:] != c[2:] or h[4] > 1:
+        return hd
+    f, rs = h[2], h[3]
+    rows = [hd[20 + i * rs:20 + (i + 1) * rs] for i in range(h[1])]
+    have = set(key(struct.unpack('<%dI' % f, r)) for r in rows)
+    rows += [r for r in (classic[20 + i * rs:20 + (i + 1) * rs] for i in range(c[1])) if key(struct.unpack('<%dI' % f, r)) not in have]
+    return struct.pack('<4s4I', b'WDBC', len(rows), f, rs, 1) + b''.join(rows) + b'\0'
 
 
 # ---------------------------------------------------------------------- output
@@ -157,21 +233,35 @@ def blp_palette(d):
     return Image.frombytes('RGBA', (w, h), bytes(out))
 
 
+# Pillow WebP settings; exact: keep the colour under clear alpha (alpha is often a mask, not see-through)
+WEBP = {'quality': 90, 'alpha_quality': 100, 'method': 6, 'exact': True}
+
+
+def webp_bytes(img):
+    buf = io.BytesIO()
+    img.save(buf, 'WEBP', **WEBP)
+    return buf.getvalue()
+
+
 class Writer:
-    def __init__(self, arc, out, force):
+    def __init__(self, arc, out, force, classic=None, carc=None):
         self.arc, self.out, self.force = arc, out, force
+        self.classic, self.carc = classic, carc         # HD overlay: classic output + classic-only archives to compare with
         self.done_models, self.done_tex = {}, {}
         self.stats = {'models': 0, 'textures': 0, 'missing': 0, 'bytes': 0}
-        self.listing = {}                               # folder -> names in it (one listing instead of a stat per file:
+        self.listing = {}                               # (root, folder) -> names in it (one listing instead of a stat per file:
                                                         # on shared / network folders each stat is slow)
+        self.bundles = {}                               # (root, kind, bucket) -> meta bundle as read / extended
+        self.pending, self.npending = {}, 0             # meta not on disk yet: (kind, bucket) -> {id: obj}
 
-    def _names(self, folder):
-        if folder not in self.listing:
+    def _names(self, folder, root=None):
+        key = (root or self.out, folder)
+        if key not in self.listing:
             try:
-                self.listing[folder] = set(os.listdir(os.path.join(self.out, folder)))
+                self.listing[key] = set(os.listdir(os.path.join(key[0], folder)))
             except OSError:
-                self.listing[folder] = set()
-        return self.listing[folder]
+                self.listing[key] = set()
+        return self.listing[key]
 
     def _write(self, rel, data):
         p = os.path.join(self.out, rel)
@@ -194,7 +284,7 @@ class Writer:
             if not os.path.exists(p):
                 raise
             os.remove(tmp)
-        self.listing[folder].add(name)
+        self._names(folder).add(name)
         self.stats['bytes'] += len(data)
         return True
 
@@ -202,14 +292,32 @@ class Writer:
         folder, name = os.path.split(rel)
         return not self.force and name in self._names(folder)
 
+    def _wanted(self, path, data, rel):
+        """HD overlay: only what the classic set lacks, or what an HD archive changes"""
+        if not self.classic:
+            return True
+        folder, name = os.path.split(rel)
+        if name not in self._names(folder, self.classic):
+            return True
+        return self.arc.from_hd(path) and self.carc.read(path) != data
+
+    def extra(self, rel, data):                         # helmvis.json, anims.json (HD: only if changed)
+        if self.classic:
+            try:
+                if open(os.path.join(self.classic, rel), 'rb').read() == data:
+                    return
+            except OSError:
+                pass
+        self._write(rel, data)
+
     def texture(self, path):
-        """BLP -> PNG; returns the key or None"""
+        """BLP -> WebP; returns the key or None"""
         if not path:
             return None
         k = key_of(path)
         if k in self.done_tex:
             return self.done_tex[k]
-        rel = 't/' + k + '.png'
+        rel = 't/' + k + '.webp'
         if self._exists(rel):
             self.done_tex[k] = k
             return k
@@ -218,11 +326,12 @@ class Writer:
             self.stats['missing'] += 1
             self.done_tex[k] = None
             return None
+        if not self._wanted(k + '.blp', data, rel):     # HD: the classic copy is the same
+            self.done_tex[k] = k
+            return k
         try:
             img = blp_palette(data) or Image.open(io.BytesIO(data)).convert('RGBA')
-            buf = io.BytesIO()
-            img.save(buf, 'PNG', optimize=False)
-            if self._write(rel, buf.getvalue()):
+            if self._write(rel, webp_bytes(img)):
                 self.stats['textures'] += 1
                 self.done_tex[k] = k
             else:
@@ -242,13 +351,17 @@ class Writer:
             self.stats['missing'] += 1
             self.done_models[k] = None
             return None, None
-        if not self._exists('m/' + k + '.m2'):
+        skin, want = None, True
+        if self.classic:                                # HD: model and skin go together (the skin indexes the model's vertices)
+            skin = self.arc.read(k + '00.skin')
+            want = self._wanted(k + '.m2', m2, 'm/' + k + '.m2') or bool(skin) and self._wanted(k + '00.skin', skin, 'm/' + k + '00.skin')
+        if want and not self._exists('m/' + k + '.m2'):
             if not self._write('m/' + k + '.m2', m2):
                 self.done_models[k] = None
                 return None, None
             self.stats['models'] += 1
-        if not self._exists('m/' + k + '00.skin'):
-            skin = self.arc.read(k + '00.skin')
+        if want and not self._exists('m/' + k + '00.skin'):
+            skin = skin or self.arc.read(k + '00.skin')
             if skin:
                 self._write('m/' + k + '00.skin', skin)
 
@@ -262,12 +375,12 @@ class Writer:
         for sid, sub, flags in info.get('seq', []):
             if flags & 0x20:
                 continue
-            rel = 'm/%s%04d-%02d.anim' % (k, sid, sub)
-            if self._exists(rel):
+            name = '%s%04d-%02d.anim' % (k, sid, sub)
+            if self._exists('m/' + name):
                 continue
-            anim = self.arc.read('%s%04d-%02d.anim' % (k, sid, sub))
-            if anim:
-                self._write(rel, anim)
+            anim = self.arc.read(name)
+            if anim and self._wanted(name, anim, 'm/' + name):
+                self._write('m/' + name, anim)
 
         # textures named in the model (type 0)
         for i, (ttype, name) in enumerate(info.get('textures', [])):
@@ -276,11 +389,82 @@ class Writer:
         self.done_models[k] = info
         return k, info
 
+    # ---- meta bundles: meta/<kind>/<id >> 8>.json = {"<id>": obj, ..}
+
+    def _bundle(self, root, kind, b):
+        key = (root, kind, b)
+        if key not in self.bundles:
+            try:
+                with open(os.path.join(root, 'meta', kind, '%d.json' % b), 'rb') as fh:
+                    self.bundles[key] = json.load(fh)
+            except FileNotFoundError:
+                self.bundles[key] = {}
+        return self.bundles[key]
+
     def has_meta(self, kind, did):
-        return self._exists('meta/%s/%d.json' % (kind, did))
+        return not self.force and str(did) in self._bundle(self.out, kind, did >> 8)
 
     def meta(self, kind, did, obj):
-        self._write('meta/%s/%d.json' % (kind, did), json.dumps(obj, separators=(',', ':')).encode())
+        obj = json.loads(json.dumps(obj))               # as it reads back (string keys), to compare
+        if self.classic and self._bundle(self.classic, kind, did >> 8).get(str(did)) == obj:
+            return                                      # HD: same as the classic entry
+        self._bundle(self.out, kind, did >> 8)[str(did)] = obj
+        self.pending.setdefault((kind, did >> 8), {})[str(did)] = obj
+        self.npending += 1
+        if self.npending >= 5000:
+            self.flush()
+
+    def flush(self):
+        """merge buffered meta into the bundles on disk. --part runs share bundles: each one re-reads a bundle
+        and writes it back while holding an exclusive lock on meta/<kind>/.lock, so no entries are lost"""
+        for kind in sorted(set(k for k, _ in self.pending)):
+            folder = os.path.join(self.out, 'meta', kind)
+            os.makedirs(folder, exist_ok=True)
+            with open(os.path.join(folder, '.lock'), 'a') as lock:
+                if fcntl:
+                    fcntl.flock(lock, fcntl.LOCK_EX)
+                for (k, b), entries in sorted(self.pending.items()):
+                    if k != kind:
+                        continue
+                    p = os.path.join(folder, '%d.json' % b)
+                    try:
+                        with open(p, 'rb') as fh:
+                            cur = json.load(fh)
+                    except FileNotFoundError:
+                        cur = {}
+                    cur.update(entries)
+                    cur = dict(sorted(cur.items(), key=lambda e: int(e[0])))
+                    tmp = '%s.%d.tmp' % (p, os.getpid())
+                    with open(tmp, 'wb') as fh:
+                        fh.write(json.dumps(cur, separators=(',', ':')).encode())
+                    os.replace(tmp, p)
+                    self.bundles[(self.out, kind, b)] = cur
+                if fcntl:
+                    fcntl.flock(lock, fcntl.LOCK_UN)
+        self.pending, self.npending = {}, 0
+
+
+def write_index(out):
+    """HD overlay: index.json lists what the folder has, so the viewer asks for nothing else"""
+    idx = {'m': [], 'a': [], 't': [], 'meta': {}, 'helmvis': os.path.exists(os.path.join(out, 'helmvis.json'))}
+    for sub, exts in (('m', {'.m2': 'm', '.anim': 'a'}), ('t', {'.webp': 't'})):
+        for d, _, files in os.walk(os.path.join(out, sub)):
+            rel = os.path.relpath(d, os.path.join(out, sub)).replace(os.sep, '/')
+            for f in files:
+                base, ext = os.path.splitext(f)
+                if ext in exts:
+                    idx[exts[ext]].append(base if rel == '.' else rel + '/' + base)
+    for kind in sorted(os.listdir(os.path.join(out, 'meta')) if os.path.isdir(os.path.join(out, 'meta')) else []):
+        b = sorted(int(f[:-5]) for f in os.listdir(os.path.join(out, 'meta', kind)) if f.endswith('.json') and f[:-5].isdigit())
+        if b:
+            idx['meta'][kind] = b
+    for k in ('m', 'a', 't'):
+        idx[k].sort()
+    p = os.path.join(out, 'index.json')
+    with open(p + '.%d.tmp' % os.getpid(), 'w') as fh:
+        json.dump(idx, fh, separators=(',', ':'))
+    os.replace(p + '.%d.tmp' % os.getpid(), p)
+    print('index.json: %d models, %d animations, %d textures, meta %s' % (len(idx['m']), len(idx['a']), len(idx['t']), idx['meta']))
 
 
 def parse_m2_info(d):
@@ -313,6 +497,37 @@ ITEM_DIRS = ['Weapon', 'Shield', 'Head', 'Shoulder', 'Quiver', 'Ammo']
 
 def mine(i, part):                                      # --part k/n: this process takes every n-th row
     return not part or i % part[1] == part[0]
+
+
+def hdfiles(w, dbc_dir, ids, deadline, part=None):
+    """HD overlay: every model / texture of the classic set that an HD archive replaces (--ids does not apply)"""
+    models, texs = set(), set()
+    for f in w.arc.hd:
+        for name in w.arc.listfile(f):
+            p = name.replace('\\', '/').lower()
+            if p.endswith('.blp'):
+                texs.add(p[:-4])
+            elif re.search(r'\.(m2|mdx)$', p):
+                models.add(key_of(p))
+            elif re.search(r'\d\d\.skin$', p):
+                models.add(p[:-7])
+            elif re.search(r'\d{4}-\d\d\.anim$', p):
+                models.add(p[:-12])
+    jobs = [('m', k) for k in sorted(models) if os.path.basename(k) + '.m2' in w._names(os.path.dirname('m/' + k), w.classic)]
+    jobs += [('t', k) for k in sorted(texs) if os.path.basename(k) + '.webp' in w._names(os.path.dirname('t/' + k), w.classic)]
+    print('  %d models, %d textures of the classic set are in the HD archives' % (sum(1 for j in jobs if j[0] == 'm'), sum(1 for j in jobs if j[0] == 't')))
+    for i, (kind, k) in enumerate(jobs):
+        if not mine(i, part):
+            continue
+        if deadline and time.time() > deadline:
+            return False
+        if kind == 'm':
+            w.model(k)
+        else:
+            w.texture(k)
+        if i % 2000 == 0 and i:
+            print('  files %d / %d  %s' % (i, len(jobs), w.stats))
+    return True
 
 
 def items(w, dbc_dir, ids, deadline, part=None):
@@ -473,7 +688,7 @@ def chars(w, dbc_dir, ids, deadline, part=None):
 
     # what helms hide: HelmetGeosetVisData (ID, HideGeoset[7]: hair, facial 1-3, ears, misc, eyes - race masks)
     rows, _ = read_dbc(os.path.join(dbc_dir, 'HelmetGeosetVisData.dbc'))
-    w._write('helmvis.json', json.dumps({r[0]: [struct.unpack('<i', struct.pack('<I', v))[0] for v in r[1:8]] for r in rows}, separators=(',', ':')).encode())
+    w.extra('helmvis.json', json.dumps({r[0]: [struct.unpack('<i', struct.pack('<I', v))[0] for v in r[1:8]] for r in rows}, separators=(',', ':')).encode())
     return True
 
 
@@ -535,12 +750,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--data', required=True)
     ap.add_argument('--dbc')
-    ap.add_argument('--out', default='static/modelviewer/data')
-    ap.add_argument('--only', choices=['item', 'npc', 'object', 'char', 'body', 'npcx'])
+    ap.add_argument('--out')
+    ap.add_argument('--only', choices=['item', 'npc', 'object', 'char', 'body', 'npcx', 'files'])
     ap.add_argument('--ids', default='')
     ap.add_argument('--force', action='store_true')
     ap.add_argument('--limit', type=int, default=0)
     ap.add_argument('--part', default='', help='k/n: run n processes, this one takes every n-th display (k = 0 .. n-1)')
+    ap.add_argument('--hd', help='folder with the HD model archives: write the HD overlay')
+    ap.add_argument('--classic', default='static/modelviewer/data', help='with --hd: the classic output to compare with')
     a = ap.parse_args()
 
     dbc_dir = find_dbc_dir(a.dbc)
@@ -549,27 +766,46 @@ def main():
     ids = set(int(x) for x in a.ids.split(',') if x.strip())
     part = tuple(int(x) for x in a.part.split('/')) if a.part else None
     deadline = time.time() + a.limit if a.limit else 0
+    out = a.out or ('static/modelviewer/data-hd' if a.hd else 'static/modelviewer/data')
+    if a.hd and os.path.realpath(out) == os.path.realpath(a.classic):
+        sys.exit('--hd needs its own --out')
+    if part and not fcntl:
+        sys.exit('--part needs file locking (not available here)')
 
-    arc = Archives(a.data)
+    arc = Archives(a.data, a.hd)
     print('archives:', ', '.join(os.path.basename(f) for f in arc.order))
-    w = Writer(arc, a.out, a.force)
+    carc = Archives(a.data) if a.hd else None
+    if a.hd:
+        dbc_dir = hd_dbc_dir(arc, dbc_dir)
+    w = Writer(arc, out, a.force, a.classic if a.hd else None, carc)
 
-    # animation names for the viewer's list (AnimationData.dbc: ID, Name, ..)
     try:
-        rows, s = read_dbc(os.path.join(dbc_dir, 'AnimationData.dbc'))
-        w._write('anims.json', json.dumps({r[0]: s(r[1]) for r in rows}, separators=(',', ':')).encode())
-    except Exception as e:
-        print('  AnimationData.dbc:', e)
+        # animation names for the viewer's list (AnimationData.dbc: ID, Name, ..)
+        try:
+            rows, s = read_dbc(os.path.join(dbc_dir, 'AnimationData.dbc'))
+            w.extra('anims.json', json.dumps({r[0]: s(r[1]) for r in rows}, separators=(',', ':')).encode())
+        except Exception as e:
+            print('  AnimationData.dbc:', e)
 
-    done = True
-    for kind, fn in (('item', items), ('npc', npcs), ('object', objects), ('char', chars), ('body', itembody), ('npcx', npcx)):
-        if a.only and a.only != kind:
-            continue
-        print('[%s]' % kind)
-        if not fn(w, dbc_dir, ids, deadline, part):
-            done = False
-            print('  time limit reached - run again to continue')
-            break
+        done = True
+        kinds = ('files', 'char', 'npcx') if a.hd else ('item', 'npc', 'object', 'char', 'body', 'npcx')
+        for kind, fn in (('files', hdfiles), ('item', items), ('npc', npcs), ('object', objects), ('char', chars), ('body', itembody), ('npcx', npcx)):
+            if (a.only or kind) != kind or (not a.only and kind not in kinds) or (kind == 'files' and not a.hd):
+                continue
+            print('[%s]' % kind)
+            if not fn(w, dbc_dir, ids, deadline, part):
+                done = False
+                print('  time limit reached - run again to continue')
+                break
+    finally:
+        w.flush()
+        if a.hd:
+            shutil.rmtree(dbc_dir, ignore_errors=True)
+            os.makedirs(out, exist_ok=True)
+            with open(os.path.join(out, '.lock'), 'a') as lock:     # --part runs: the last one lists everything
+                if fcntl:
+                    fcntl.flock(lock, fcntl.LOCK_EX)
+                write_index(out)
     print('done' if done else 'paused', w.stats)
 
 
