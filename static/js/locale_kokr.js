@@ -1365,6 +1365,8 @@ var mn_tools = [
     [14,"Quest Completion Tracker","?quest-tracker"],
     [16,"Companion","?companion"],
     [17,"Temucraft Changes","?changes"],
+    [18,"서버 상태","?realm-status"],
+    [19,"플레이어 지도","?player-map"],
     [11,"Raid Composition","?raid-composition"],
     [1,"Maps","?maps"],
     [,"Other",,,{colBreak:true}],

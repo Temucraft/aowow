@@ -39,6 +39,15 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
       python3 setup/tools/temucraft-changes.py --stock <stock DBFilesClient> --layer <patch-5 DBFilesClient> \
           --modules <folder with the module repos> --db acore_world --mysql "mysql -uroot -p..." \
           --notes setup/temucraft/changes-notes.json -o setup/temucraft/changes.json
+- **Realm status and player map** (Tools → Realm Status `?realm-status`, Tools → Player Map `?player-map`): per realm
+  up or down (a short connect to the worldserver port from `realmlist`), players online, all-time peak
+  (`aowow_realm_peak`, also fed by `uptime.maxplayers`), uptime, factions, classes, races and levels; and the online
+  characters as dots on the continent maps (zone maps for our extra open world zones), refreshed every 30 s, with
+  faction, level, realm and name filters. JSON for the launcher: `?realm-status=data` (counts only) and
+  `?player-map=data`; both are cached 30 s. Never shown: accounts, IPs, guids; positions only in the open world.
+  Players hide a character with "Hide" on the map page (linked game account, stored in `aowow_playermap_hidden`);
+  GMs with .gm on or invisible and, with `playermap_hide_staff`, all staff accounts stay off. `playermap_enable = 0`
+  turns the map off, `playermap_guilds = 0` drops guild names (`setup/updates/2026_11_20_10.sql`).
 - **Our data**: everything comes from the server's own world database and from the DBCs and images *as the client
   sees them*. Extract the client **with the Temucraft patches** (see below), so new maps (Darkspear Islands, the
   Cataclysm / Mists dungeons, the lost lands), items, creatures, spells and races are all there.

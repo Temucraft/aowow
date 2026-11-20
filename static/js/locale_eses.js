@@ -1188,6 +1188,8 @@ var mn_tools = [
     [14,"Seguimiento de misiones","?quest-tracker"],
     [16,"Companion","?companion"],
     [17,"Temucraft Changes","?changes"],
+    [18,"Estado de los reinos","?realm-status"],
+    [19,"Mapa de jugadores","?player-map"],
     [3,"Comparación de objetos","?compare"],
     [5,"Perfiles","?profiler",[
         [0,"Personajes","?profiles"],

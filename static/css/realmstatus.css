@@ -1,0 +1,57 @@
+/* Temucraft realm status (?realm-status) and player map (?player-map) */
+.rs-dim { color: #999; }
+.rs-a, .rs-a-t { color: #4a90ff; }
+.rs-h, .rs-h-t { color: #ff4a4a; }
+.tool-realm-status .rs-realm { border: 1px solid #444; border-radius: 6px; background: #141414; padding: 12px 14px; margin: 10px 0 16px; }
+.tool-realm-status .rs-head { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+.tool-realm-status .rs-dot { width: 12px; height: 12px; border-radius: 50%; background: #1eff00; box-shadow: 0 0 6px #1eff00; }
+.tool-realm-status .rs-off .rs-dot { background: #ff3030; box-shadow: 0 0 6px #ff3030; }
+.tool-realm-status .rs-state { margin-left: auto; font-size: 12px; color: #1eff00; }
+.tool-realm-status .rs-off .rs-state { color: #ff6060; }
+.tool-realm-status .rs-tiles { display: flex; gap: 10px; margin: 10px 0; }
+.tool-realm-status .rs-tile { flex: 1; background: #1c1c1c; border: 1px solid #333; border-radius: 4px; padding: 8px 10px; }
+.tool-realm-status .rs-tile span { display: block; font-size: 11px; color: #999; text-transform: uppercase; }
+.tool-realm-status .rs-tile b { font-size: 22px; color: #ffd100; }
+.tool-realm-status .rs-tile small { margin-left: 6px; color: #888; }
+.tool-realm-status .rs-faction { display: flex; height: 22px; border-radius: 4px; overflow: hidden; margin: 6px 0 12px; font-size: 12px; line-height: 22px; }
+.tool-realm-status .rs-faction span { color: #fff; padding: 0 8px; white-space: nowrap; overflow: hidden; min-width: 0; }
+.tool-realm-status .rs-faction .rs-a { background: #1d4a9c; }
+.tool-realm-status .rs-faction .rs-h { background: #8c1c1c; text-align: right; }
+.tool-realm-status .rs-cols { display: flex; gap: 20px; }
+.tool-realm-status .rs-col { flex: 1; min-width: 0; }
+.tool-realm-status .rs-col h3 { margin: 4px 0 8px; font-size: 13px; }
+.tool-realm-status .rs-bar { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 3px; }
+.tool-realm-status .rs-bar-l { width: 90px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tool-realm-status .rs-bar-t { flex: 1; height: 10px; background: #222; border-radius: 2px; }
+.tool-realm-status .rs-bar-t i { display: block; height: 100%; background: #ffd100; border-radius: 2px; }
+.tool-realm-status .rs-bar-n { width: 28px; text-align: right; color: #ccc; }
+.tool-realm-status .rs-levels { display: flex; align-items: flex-end; gap: 4px; height: 130px; }
+.tool-realm-status .rs-lv { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; font-size: 10px; }
+.tool-realm-status .rs-lv i { display: block; width: 100%; min-height: 1px; background: #ffd100; border-radius: 2px 2px 0 0; }
+.tool-realm-status .rs-lv-l { color: #999; margin-top: 3px; white-space: nowrap; }
+.tool-realm-status .rs-lv-n { color: #ccc; }
+.tool-realm-status .rs-foot { margin-top: 6px; }
+
+.tool-player-map .pm-bar { border-bottom: 1px solid #444; margin: 8px 0; }
+.tool-player-map .pm-bar a { display: inline-block; padding: 6px 12px; margin-right: 4px; border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; }
+.tool-player-map .pm-bar a.on { background: #2a2410; color: #ffd100; }
+.tool-player-map .pm-bar small { color: #999; }
+.tool-player-map .pm-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 8px 0; }
+.tool-player-map .pm-filters input[type=number] { width: 44px; }
+.tool-player-map .pm-map { position: relative; width: 100%; max-width: 1002px; aspect-ratio: 1002 / 668; background-size: 100% 100%; background-color: #0a0a0a; border: 1px solid #444; }
+.tool-player-map .pm-dot { position: absolute; width: 9px; height: 9px; margin: -5px 0 0 -5px; border-radius: 50%; border: 1px solid #000; cursor: pointer; }
+.tool-player-map .pm-dot:hover { transform: scale(1.6); z-index: 2; }
+.tool-player-map .pm-s1 { background: #3d8bff; box-shadow: 0 0 4px #3d8bff; }
+.tool-player-map .pm-s2 { background: #ff3b3b; box-shadow: 0 0 4px #ff3b3b; }
+.tool-player-map .pm-s0, .tool-player-map .pm-s3 { background: #ffd100; }
+.tool-player-map .pm-tip { display: none; position: absolute; z-index: 5; margin: 10px 0 0 10px; padding: 6px 9px; background: rgba(10, 10, 20, .95); border: 1px solid #666; border-radius: 4px; white-space: nowrap; pointer-events: none; font-size: 12px; line-height: 1.5; }
+.tool-player-map .pm-tip.pm-left { transform: translateX(-100%); margin-left: -10px; }
+.tool-player-map .pm-guild { color: #40ff40; font-size: 11px; }
+.tool-player-map .pm-note { margin: 6px 0; }
+.tool-player-map .pm-list { width: 100%; max-width: 1002px; border-collapse: collapse; margin-top: 10px; }
+.tool-player-map .pm-list td, .tool-player-map .pm-list th { padding: 3px 6px; border-bottom: 1px solid #333; text-align: left; }
+.tool-player-map .pm-own { margin-top: 14px; padding: 8px 12px; border: 1px solid #444; border-radius: 4px; max-width: 980px; }
+.tool-player-map .pm-own label { display: block; padding: 2px 0; }
+.tool-player-map .pm-msg { color: #ff6060; }
+.pm-c1 { color: #c79c6e; } .pm-c2 { color: #f58cba; } .pm-c3 { color: #abd473; } .pm-c4 { color: #fff569; } .pm-c5 { color: #ffffff; }
+.pm-c6 { color: #c41f3b; } .pm-c7 { color: #0070de; } .pm-c8 { color: #69ccf0; } .pm-c9 { color: #9482c9; } .pm-c11 { color: #ff7d0a; }

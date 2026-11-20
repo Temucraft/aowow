@@ -1234,6 +1234,8 @@ var mn_tools = [
     [14,"任务完成追踪","?quest-tracker"],
     [16,"Companion","?companion"],
     [17,"Temucraft Changes","?changes"],
+    [18,"服务器状态","?realm-status"],
+    [19,"玩家地图","?player-map"],
     [3,"物品比较","?compare"],
     [5,"Profiler","?profiler",[
         [0,"角色","?profiles"],

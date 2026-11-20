@@ -84,6 +84,7 @@ switch ($pageCall)
     case 'petcalc':                                         // tool: pet talent calculator
         if ($pageCall == 'petcalc')
             $altClass = 'talent';
+    case 'player-map':                                      // tool: online characters on the continent maps
     case 'profile':                                         // character profiler [nyi]
     case 'profiles':                                        // character profile listing [nyi]
     case 'profiler':                                        // character profiler main page
@@ -97,6 +98,7 @@ switch ($pageCall)
     case 'raid-composition':                                // tool: raid buffs and debuffs of a group
         if ($pageCall == 'raid-composition')
             $altClass = 'raidcomposition';
+    case 'realm-status':                                    // tool: realms up or down, players online, peak, uptime
     case 'screenshot':                                      // prepare uploaded screenshots
     case 'search':                                          // tool: searches
     case 'skill':
