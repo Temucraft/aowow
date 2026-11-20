@@ -176,8 +176,15 @@ class Writer:
     def _write(self, rel, data):
         p = os.path.join(self.out, rel)
         folder, name = os.path.split(rel)
+        if '..' in rel.split('/'):                      # a broken DBC path (e.g. 'x.m2/..'): would land elsewhere, skip it
+            print('  skipped', rel)
+            return False
         if not self._names(folder):
-            os.makedirs(os.path.dirname(p), exist_ok=True)
+            try:
+                os.makedirs(os.path.dirname(p), exist_ok=True)
+            except (FileExistsError, NotADirectoryError):   # the path runs through a file: skip it
+                print('  skipped', rel)
+                return False
         tmp = '%s.%d.tmp' % (p, os.getpid())            # write + rename: a run stopped mid-write leaves no cut-off file
         with open(tmp, 'wb') as fh:                     # (own name per process: --part runs may write a shared model at once)
             fh.write(data)
@@ -189,6 +196,7 @@ class Writer:
             os.remove(tmp)
         self.listing[folder].add(name)
         self.stats['bytes'] += len(data)
+        return True
 
     def _exists(self, rel):
         folder, name = os.path.split(rel)
@@ -214,9 +222,11 @@ class Writer:
             img = blp_palette(data) or Image.open(io.BytesIO(data)).convert('RGBA')
             buf = io.BytesIO()
             img.save(buf, 'PNG', optimize=False)
-            self._write(rel, buf.getvalue())
-            self.stats['textures'] += 1
-            self.done_tex[k] = k
+            if self._write(rel, buf.getvalue()):
+                self.stats['textures'] += 1
+                self.done_tex[k] = k
+            else:
+                self.done_tex[k] = None
         except Exception as e:
             print('  texture failed', k, e)
             self.done_tex[k] = None
@@ -233,7 +243,9 @@ class Writer:
             self.done_models[k] = None
             return None, None
         if not self._exists('m/' + k + '.m2'):
-            self._write('m/' + k + '.m2', m2)
+            if not self._write('m/' + k + '.m2', m2):
+                self.done_models[k] = None
+                return None, None
             self.stats['models'] += 1
         if not self._exists('m/' + k + '00.skin'):
             skin = self.arc.read(k + '00.skin')
@@ -418,8 +430,20 @@ def chars(w, dbc_dir, ids, deadline, part=None):
     sec, ss = read_dbc(os.path.join(dbc_dir, 'CharSections.dbc'))            # ID Race Sex Base Tex[3] Flags Variation Color
     hair, _ = read_dbc(os.path.join(dbc_dir, 'CharHairGeosets.dbc'))         # ID Race Sex Variation Geoset ShowScalp
     facial, _ = read_dbc(os.path.join(dbc_dir, 'CharacterFacialHairStyles.dbc'))  # Race Sex Variation Geoset[5]
+    races = dict(RACES)                                                       # + the client's own races (custom ones)
+    bodies = {}                                                               # (race, sex) -> model path of its display
+    cr, cs = read_dbc(os.path.join(dbc_dir, 'ChrRaces.dbc'))                  # ID .. Display[2](4) ClientPrefix(6) .. ClientFileString(11)
+    models, ms = read_dbc(os.path.join(dbc_dir, 'CreatureModelData.dbc'))
+    mpath = {r[0]: ms(r[2]) for r in models}
+    disp, _ = read_dbc(os.path.join(dbc_dir, 'CreatureDisplayInfo.dbc'))
+    dmodel = {r[0]: mpath.get(r[1]) for r in disp}
+    for r in cr:
+        races.setdefault(r[0], (cs(r[11]), cs(r[6])))
+        for sex in SEXES:                                                     # file string != model folder (GoblinPC, Pandaren, custom\..)
+            if dmodel.get(r[4 + sex]):
+                bodies[(r[0], sex)] = dmodel[r[4 + sex]]
     n = 0
-    for race, (folder, prefix) in RACES.items():
+    for race, (folder, prefix) in races.items():
         for sex, gname in SEXES.items():
             if (ids and race not in ids) or not mine(n, part):
                 n += 1
@@ -429,7 +453,7 @@ def chars(w, dbc_dir, ids, deadline, part=None):
                 return False
             if w.has_meta('char', race * 10 + sex):
                 continue
-            k, _ = w.model('Character\\%s\\%s\\%s%s' % (folder, gname, folder, gname))
+            k, _ = w.model(bodies.get((race, sex)) or 'Character\\%s\\%s\\%s%s' % (folder, gname, folder, gname))
             if not k:
                 print('  no model for', folder, gname)
                 continue

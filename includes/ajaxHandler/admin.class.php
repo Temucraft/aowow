@@ -566,7 +566,7 @@ class AjaxAdmin extends AjaxHandler
         $cacheDir = Cfg::get('CACHE_DIR') ?: 'cache/template/';
         if (is_dir($cacheDir))
             foreach (glob(rtrim($cacheDir, '/').'/*') as $file)
-                if (is_file($file))
+                if (is_file($file) && basename($file) != 'index.html')  // keep the placeholder
                     unlink($file);
 
         return '';

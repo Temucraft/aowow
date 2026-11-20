@@ -26,6 +26,12 @@ CLISetup::registerSetup("sql", new class extends SetupScript
             FROM        dbc_chrraces'
         );
 
+        // custom DBCs may hold names saved twice as UTF-8 ('åœ°ç²¾' for '地精'): undo that
+        foreach (DB::Aowow()->select('SELECT `id` AS ARRAY_KEY, `name_loc0`, `name_loc2`, `name_loc3`, `name_loc4`, `name_loc6`, `name_loc8` FROM ?_races') as $id => $names)
+            foreach ($names as $col => $name)
+                if ($name !== null && ($fixed = $this->undoDoubleUtf8($name)) !== $name)
+                    DB::Aowow()->query('UPDATE ?_races SET ?# = ? WHERE `id` = ?d', $col, $fixed, $id);
+
         // add classMask
         DB::Aowow()->query('UPDATE ?_races r JOIN (SELECT BIT_OR(1 << (`classId` - 1)) AS "classMask", `raceId` FROM dbc_charbaseinfo GROUP BY `raceId`) cbi ON cbi.`raceId` = r.id SET r.`classMask` = cbi.`classMask`');
 
@@ -37,6 +43,14 @@ CLISetup::registerSetup("sql", new class extends SetupScript
         $this->writeCustomRaces();
 
         return true;
+    }
+
+    private function undoDoubleUtf8(string $s) : string
+    {
+        if (!preg_match('/[\x80-\xFF]/', $s))
+            return $s;
+        $raw = mb_convert_encoding($s, 'Windows-1252', 'UTF-8');   // only when the way back is lossless and gives real UTF-8
+        return $raw !== $s && mb_check_encoding($raw, 'UTF-8') && mb_convert_encoding($raw, 'UTF-8', 'Windows-1252') === $s ? $raw : $s;
     }
 
     // The server's own races: race masks for PHP (config/races.inc.php) and names, files and sides for the javascript

@@ -1,5 +1,5 @@
 /* written by `php aowow --sql=races`: the server's own playable races */
-var g_custom_races = {};
+var g_custom_races = {"9":{"file":"goblin","side":2,"names":{"0":"Goblin","2":"Gobelin","3":"Goblin","4":"地精","6":"Goblin","8":"Гоблин"}},"12":{"file":"worgen","side":1,"names":{"0":"Worgen","2":"Worgen","3":"Worgen","4":"狼人","6":"Huargen","8":"Ворген"}},"13":{"file":"alliancepandaren","side":1,"names":{"0":"Pandaren"}},"14":{"file":"hordepandaren","side":2,"names":{"0":"Pandaren"}},"15":{"file":"nightborne","side":2,"names":{"0":"Nightborne"}},"16":{"file":"highmountaintauren","side":2,"names":{"0":"Highmountain Tauren"}},"17":{"file":"voidelf","side":1,"names":{"0":"Void Elf"}},"18":{"file":"lightforgeddraenei","side":1,"names":{"0":"Lightforged Draenei"}},"19":{"file":"zandalaritroll","side":2,"names":{"0":"Zandalari Troll"}},"20":{"file":"kultiran","side":1,"names":{"0":"Kul Tiran"}}};
 /* adds g_custom_races (id => {file, side, names{localeId => name}}) to the race lists of the site */
 (function () {
     var localeId = (typeof Locale != 'undefined' && Locale.getId) ? Locale.getId() : 0;

@@ -303,7 +303,7 @@ if (!CLI && Cfg::get('CACHE_MODE'))
         $cacheDir = (Cfg::get('CACHE_DIR') ?: 'cache/template') . '/';
         if (is_dir($cacheDir))
             foreach (glob($cacheDir . '*') as $f)
-                if (is_file($f))
+                if (is_file($f) && basename($f) != 'index.html')    // keep the placeholder
                     @unlink($f);
 
         // flush memcached
