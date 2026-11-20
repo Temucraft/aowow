@@ -13,10 +13,19 @@ foreach ($this->css as [$type, $css]):
 endforeach;
 ?>
     <link rel="stylesheet" type="text/css" href="<?=Cfg::get('STATIC_URL'); ?>/css/theme.css?<?=@filemtime('static/css/theme.css'); ?>" />
+    <link rel="stylesheet" type="text/css" href="<?=Cfg::get('STATIC_URL'); ?>/css/themes/base.css?<?=@filemtime('static/css/themes/base.css'); ?>" />
+<?php
+// aowow: the old website themes (classic, pandaria, draenor) have their own file, loaded only while in use
+[$thActive] = Cfg::theme();
+if (in_array($thActive, Cfg::THEME_FILES)):
+    echo '    <link rel="stylesheet" type="text/css" id="th-file-'.$thActive.'" href="'.Cfg::get('STATIC_URL').'/css/themes/'.$thActive.'.css?'.@filemtime('static/css/themes/'.$thActive.'.css')."\" />\n";
+endif;
+?>
     <script type="text/javascript">
         var g_serverTime = new Date('<?=date(Util::$dateFormatInternal); ?>');
         var g_staticUrl = "<?=Cfg::get('STATIC_URL'); ?>";
         var g_host = "<?=Cfg::get('HOST_URL'); ?>";
+        var g_themeDefault = "<?=implode('.', Cfg::defaultTheme()); ?>";
 <?php
 if ($this->gDataKey):
         echo "        var g_dataKey = '".$_SESSION['dataKey']."'\n";

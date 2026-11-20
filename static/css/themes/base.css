@@ -1,0 +1,289 @@
+/*
+ * Temucraft: building blocks for pages in the old website style (loaded on every page, after theme.css)
+ *
+ * Only new class names (all start with "tc-"), so existing pages look the same. The blocks read a few custom
+ * properties; every theme has sensible values (from its --th-* colours), and the old website themes in this folder
+ * (classic.css, pandaria.css, draenor.css) set their own.
+ *
+ *   .tc-layout            three columns: <nav class="tc-menu">, <main>, <aside> (one column on narrow screens)
+ *   .tc-menu              left menu: .tc-menu-head bars, each followed by a <ul> of links
+ *   .tc-box               framed box: .tc-box-head (title bar, optional <a class="tc-more">), .tc-box-body
+ *   .tc-news              news table: <table class="tc-news"> with <thead> bar, a date column (td.tc-date)
+ *   .tc-quicklinks        list of links with round icons: <li><a><i class="tc-icon">A</i>Account</a></li>
+ *   .tc-button            big button (class "tc-button-alt" for the second colour)
+ *   .tc-status            realm status card: .tc-status-name, .tc-dot.up / .tc-dot.down, <dl> of values
+ *   .tc-steps             numbered steps in a row: <ol class="tc-steps"><li><b>Title</b> text</li></ol>
+ *   .tc-divider           an ornament line between parts of a page
+ *   .tc-title             a heading in the theme's title font
+ *
+ * Fonts: Cinzel and Marcellus (SIL Open Font License, static/fonts/*-OFL.txt).
+ */
+
+@font-face {
+    font-family: "TC Cinzel";
+    src: url(../../fonts/Cinzel.ttf) format("truetype");
+    font-weight: 400 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "TC Marcellus";
+    src: url(../../fonts/Marcellus-Regular.ttf) format("truetype");
+    font-weight: 400;
+    font-display: swap;
+}
+
+:root {
+    --tc-title-font:  Georgia, "Times New Roman", serif;
+    --tc-frame:       var(--th-border-2, #3c4148);
+    --tc-frame-2:     var(--th-border, #30343a);
+    --tc-bar:         var(--th-nav, #1a1c20);
+    --tc-bar-text:    var(--th-accent, #ffd100);
+    --tc-paper:       var(--th-surface, #1d1f22);
+    --tc-paper-2:     var(--th-surface-2, #24272b);
+    --tc-text:        var(--th-text, #cccccc);
+    --tc-strong:      var(--th-text-strong, #ffffff);
+    --tc-muted:       var(--th-muted, #8b929b);
+    --tc-link:        var(--th-link, #ffd100);
+    --tc-link-hover:  var(--th-link-hover, #ffffff);
+    --tc-gold:        var(--th-accent, #ffd100);
+    --tc-button:      var(--th-accent, #ffd100);
+    --tc-button-text: var(--th-accent-ink, #000000);
+    --tc-button-alt:  var(--th-surface-3, #2c3035);
+    --tc-radius:      4px;
+    --tc-shadow:      var(--th-shadow, 0 2px 10px rgba(0, 0, 0, .5));
+    --tc-corner:      none;                 /* url(corner.svg) on themes with gold corners */
+}
+
+/* ── layout ───────────────────────────────────────────────────────────────── */
+
+.tc-layout {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr) 240px;
+    gap: 14px;
+    align-items: start;
+}
+.tc-layout > * { min-width: 0; }
+@media (max-width: 1000px) {
+    .tc-layout { grid-template-columns: 1fr; }
+}
+
+.tc-title {
+    font-family: var(--tc-title-font);
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: var(--tc-gold);
+}
+
+/* ── left menu ────────────────────────────────────────────────────────────── */
+
+.tc-menu {
+    padding: 4px;
+    background: var(--tc-paper-2);
+    border: 1px solid var(--tc-frame);
+    border-radius: var(--tc-radius);
+}
+.tc-menu-head {
+    margin: 6px 0 4px;
+    padding: 4px 10px;
+    font: 700 15px/1.2 var(--tc-title-font);
+    letter-spacing: .04em;
+    color: var(--tc-bar-text);
+    background: var(--tc-bar);
+    border: 1px solid var(--tc-frame);
+    border-radius: var(--tc-radius);
+    text-shadow: 0 1px 2px #000;
+}
+.tc-menu-head:first-child { margin-top: 0; }
+.tc-menu ul { list-style: none; margin: 0 0 6px; padding: 0 6px; }
+.tc-menu li { padding: 1px 0 1px 10px; position: relative; font-size: 11px; font-weight: bold; }
+.tc-menu li::before { content: '\00B7'; position: absolute; left: 1px; color: var(--tc-muted); }
+.tc-menu a { color: var(--tc-gold); text-decoration: none; }
+.tc-menu a:hover { color: var(--tc-strong); }
+.tc-menu li li { font-weight: normal; }
+
+/* ── framed box ───────────────────────────────────────────────────────────── */
+
+.tc-box {
+    position: relative;
+    margin: 0 0 14px;
+    color: var(--tc-text);
+    background: var(--tc-paper);
+    border: 1px solid var(--tc-frame);
+    border-radius: var(--tc-radius);
+    box-shadow: var(--tc-shadow);
+}
+.tc-box::before,
+.tc-box::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    width: 26px;
+    height: 26px;
+    background: var(--tc-corner) no-repeat;
+    background-size: contain;
+    pointer-events: none;
+    z-index: 1;
+}
+.tc-box::before { left: -5px; }
+.tc-box::after { right: -5px; transform: scaleX(-1); }
+.tc-box-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 26px;
+    padding: 3px 12px;
+    font: 700 15px/1.2 var(--tc-title-font);
+    letter-spacing: .03em;
+    color: var(--tc-bar-text);
+    background: var(--tc-bar);
+    border-bottom: 1px solid var(--tc-frame);
+    border-radius: var(--tc-radius) var(--tc-radius) 0 0;
+    text-shadow: 0 1px 2px #000;
+}
+.tc-box-head h2, .tc-box-head h3 { margin: 0; padding: 0; border: 0; font: inherit; color: inherit; }
+.tc-box-head .tc-more {
+    margin-left: auto;
+    font: bold 10px/1 Arial, sans-serif;
+    text-transform: uppercase;
+    color: var(--tc-bar-text);
+    text-decoration: none;
+    opacity: .85;
+}
+.tc-box-head .tc-more:hover { opacity: 1; color: var(--tc-strong); }
+.tc-box-body { padding: 10px 12px; }
+
+/* ── news table ───────────────────────────────────────────────────────────── */
+
+table.tc-news { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.tc-news th {
+    padding: 4px 8px;
+    text-align: left;
+    font: 700 13px/1.3 var(--tc-title-font);
+    color: var(--tc-bar-text);
+    background: var(--tc-bar);
+}
+table.tc-news th.tc-date, table.tc-news td.tc-date { text-align: center; width: 70px; white-space: nowrap; }
+table.tc-news td { padding: 5px 8px; border-bottom: 1px solid var(--tc-frame-2); }
+table.tc-news tbody tr:nth-child(even) td { background: rgba(127, 127, 127, .08); }
+table.tc-news td a { font-weight: bold; color: var(--tc-link); }
+table.tc-news td a:hover { color: var(--tc-link-hover); }
+table.tc-news td.tc-date { font-weight: bold; color: var(--tc-link); }
+table.tc-news .tc-by { margin-left: 6px; font-size: 11px; color: var(--tc-muted); }
+
+/* ── quick links with round icons ─────────────────────────────────────────── */
+
+ul.tc-quicklinks { list-style: none; margin: 0; padding: 0; }
+ul.tc-quicklinks li { border-bottom: 1px solid var(--tc-frame-2); }
+ul.tc-quicklinks li:last-child { border-bottom: 0; }
+ul.tc-quicklinks a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 4px 2px;
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--tc-link);
+}
+ul.tc-quicklinks a:hover { color: var(--tc-link-hover); }
+.tc-icon {
+    flex: 0 0 auto;
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    font: 700 11px/1 var(--tc-title-font);
+    font-style: normal;
+    color: #fff;
+    text-shadow: 0 1px 1px #000;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 45%), var(--tc-icon, #2a5a9a);
+    box-shadow: 0 0 0 2px #c9a24a, 0 0 0 3px #3a2808, 0 2px 3px rgba(0, 0, 0, .6);
+}
+.tc-icon img { width: 100%; height: 100%; border-radius: 50%; }
+
+/* ── buttons ──────────────────────────────────────────────────────────────── */
+
+.tc-button,
+a.tc-button {
+    display: inline-block;
+    padding: 6px 18px;
+    font: 700 13px/1.3 var(--tc-title-font);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    color: var(--tc-button-text) !important;
+    background: var(--tc-button);
+    border: 1px solid rgba(0, 0, 0, .5);
+    border-radius: var(--tc-radius);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 2px 4px rgba(0, 0, 0, .5);
+    cursor: pointer;
+}
+.tc-button:hover { filter: brightness(1.12); }
+.tc-button:active { filter: brightness(.92); }
+.tc-button-alt, a.tc-button-alt { background: var(--tc-button-alt); color: var(--tc-strong) !important; }
+
+/* ── realm status card ────────────────────────────────────────────────────── */
+
+.tc-status {
+    padding: 10px 12px;
+    color: var(--tc-text);
+    background: var(--tc-paper-2);
+    border: 1px solid var(--tc-frame);
+    border-left: 3px solid var(--tc-gold);
+    border-radius: var(--tc-radius);
+}
+.tc-status-name { display: flex; align-items: center; gap: 8px; font: 700 15px/1.3 var(--tc-title-font); color: var(--tc-strong); }
+.tc-dot { width: 9px; height: 9px; border-radius: 50%; background: #777; box-shadow: 0 0 0 2px rgba(0, 0, 0, .35); }
+.tc-dot.up { background: #4fd04a; box-shadow: 0 0 6px #4fd04a; }
+.tc-dot.down { background: #e5484d; box-shadow: 0 0 6px #e5484d; }
+.tc-status dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 8px 0 0; font-size: 12px; }
+.tc-status dt { color: var(--tc-muted); }
+.tc-status dd { margin: 0; font-weight: bold; color: var(--tc-strong); }
+
+/* ── numbered steps ───────────────────────────────────────────────────────── */
+
+ol.tc-steps {
+    counter-reset: tc-step;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+}
+ol.tc-steps li {
+    counter-increment: tc-step;
+    position: relative;
+    padding: 30px 12px 12px;
+    font-size: 12px;
+    color: var(--tc-text);
+    background: var(--tc-paper-2);
+    border: 1px solid var(--tc-frame);
+    border-radius: var(--tc-radius);
+}
+ol.tc-steps li::before {
+    content: counter(tc-step);
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    font: 700 15px/1 var(--tc-title-font);
+    color: var(--tc-button-text);
+    background: var(--tc-button);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #c9a24a, 0 2px 4px rgba(0, 0, 0, .6);
+}
+ol.tc-steps b { display: block; margin-bottom: 3px; font: 700 14px/1.3 var(--tc-title-font); color: var(--tc-strong); }
+
+/* ── divider ──────────────────────────────────────────────────────────────── */
+
+.tc-divider {
+    height: 16px;
+    margin: 12px 0;
+    border: 0;
+    background: url(../../images/themes/divider.svg) center / 240px 16px no-repeat;
+}

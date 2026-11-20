@@ -440,6 +440,32 @@ class Cfg
         return true;
     }
 
+    // aowow: the site's themes (see static/css/theme.css and static/js/theme.js); the last three have their own file
+    // static/css/themes/<id>.css, loaded after theme.css only when they are in use
+    public const THEMES      = ['vanilla', 'tbc', 'wotlk', 'cata', 'mop', 'wod', 'legion', 'bfa', 'shadowlands', 'dragonflight', 'tww', 'midnight', 'diablo', 'starcraft', 'hearthstone', 'overwatch', 'aowow', 'classic', 'pandaria', 'draenor'];
+    public const THEME_FILES = ['classic', 'pandaria', 'draenor'];
+
+    /**
+     * aowow: the look for this visitor as [theme, mode]: the cookie "aowow_theme" ("<theme>.<mode>") when it is valid,
+     * else the site default SITE_THEME (same form: "wotlk", "classic.light"), else wotlk and dark.
+     */
+    public static function theme() : array
+    {
+        [$name, $mode] = array_pad(explode('.', (string)($_COOKIE['aowow_theme'] ?? '')), 2, '');
+        if (!in_array($name, self::THEMES))
+            return self::defaultTheme();
+
+        return [$name, $mode == 'light' ? 'light' : 'dark'];
+    }
+
+    // aowow: the site default look as [theme, mode] (SITE_THEME; read straight from the store so a database without the
+    // option yet still works)
+    public static function defaultTheme() : array
+    {
+        [$name, $mode] = array_pad(explode('.', (string)(self::$store['site_theme'][self::IDX_VALUE] ?? '')), 2, '');
+        return [in_array($name, self::THEMES) ? $name : 'wotlk', $mode == 'light' ? 'light' : 'dark'];
+    }
+
     private static function useSSL() : bool
     {
         return (($_SERVER['HTTPS'] ?? 'off') != 'off') || (self::$store['force_ssl'][self::IDX_VALUE] ?? 0);

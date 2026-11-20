@@ -8,7 +8,8 @@
 var Theme = new function () {
     var self = this;
 
-    // [id, short label, colour, group, full name (menu), expansion icon (static/images/icons/expansions/)]   group: 'wow' | 'game' (menu column)
+    // [id, short label, colour, group, full name (menu), expansion icon (static/images/icons/expansions/), mode picked with it]
+    // group: 'wow' | 'web' | 'game' (menu column)
     this.list = [
         ['aowow',        'Classic AoWoW', '#d33a2c', 'wow',  'Classic AoWoW',          null        ],
         ['vanilla',      'Vanilla',       '#d2a64b', 'wow',  'Vanilla (Classic)',      null        ],
@@ -26,9 +27,19 @@ var Theme = new function () {
         ['diablo',       'Diablo',        '#c8301e', 'game', 'Diablo',                 null        ],
         ['starcraft',    'StarCraft',     '#1fc6e0', 'game', 'StarCraft',              null        ],
         ['hearthstone',  'Hearthstone',   '#f0a12a', 'game', 'Hearthstone',            null        ],
-        ['overwatch',    'Overwatch',     '#f99e1a', 'game', 'Overwatch',              null        ]
+        ['overwatch',    'Overwatch',     '#f99e1a', 'game', 'Overwatch',              null        ],
+        // the old game websites; each has its own file static/css/themes/<id>.css (see this.files)
+        ['classic',      'Classic Web',   '#f4c400', 'web',  'Classic web (2006)',     null, 'light'],
+        ['pandaria',     'Pandaria Web',  '#ffb100', 'web',  'Pandaria web (2013)',    null, 'dark' ],
+        ['draenor',      'Draenor Web',   '#ff8a2a', 'web',  'Draenor web (2015)',     null, 'dark' ]
     ];
-    this.def = 'wotlk';
+    this.files = ['classic', 'pandaria', 'draenor'];
+
+    // the site default (SITE_THEME, printed by the server as "<theme>.<mode>")
+    var defParts = (typeof g_themeDefault == 'string' ? g_themeDefault : '').split('.');
+    this.def     = byId(defParts[0]) && defParts[0] != 'aowow' ? defParts[0] : 'wotlk';
+    this.defMode = defParts[1] == 'light' ? 'light' : 'dark';
+    this.defFull = byId(defParts[0]) ? defParts[0] : 'wotlk';    // may be 'aowow' (the old layout)
 
     var COOKIE = 'aowow_theme';
 
@@ -41,7 +52,7 @@ var Theme = new function () {
 
     this.get = function () {
         var h = document.documentElement;
-        return { theme: h.getAttribute('data-ui') == 'classic' ? 'aowow' : (h.getAttribute('data-theme') || self.def), mode: h.getAttribute('data-mode') || 'dark' };
+        return { theme: h.getAttribute('data-ui') == 'classic' ? 'aowow' : (h.getAttribute('data-theme') || self.def), mode: h.getAttribute('data-mode') || self.defMode };
     };
 
     function store(theme, mode) {
@@ -50,7 +61,20 @@ var Theme = new function () {
         try { window.localStorage.setItem(COOKIE, v); } catch (e) {}
     }
 
+    // the theme's own stylesheet (old website themes), added once when first needed
+    function ensureFile(id) {
+        if (self.files.indexOf(id) < 0 || document.getElementById('th-file-' + id) || typeof g_staticUrl == 'undefined')
+            return;
+        var l = document.createElement('link');
+        l.rel  = 'stylesheet';
+        l.type = 'text/css';
+        l.id   = 'th-file-' + id;
+        l.href = g_staticUrl + '/css/themes/' + id + '.css';
+        document.head.appendChild(l);
+    }
+
     function apply(theme, mode) {
+        ensureFile(theme);
         var h = document.documentElement;
         h.setAttribute('data-ui', theme == 'aowow' ? 'classic' : 'modern');
         h.setAttribute('data-theme', theme == 'aowow' ? self.def : theme);
@@ -82,21 +106,22 @@ var Theme = new function () {
         var v = null;
         try { v = window.localStorage.getItem(COOKIE); } catch (e) {}
         var p = (v || '').split('.');
-        if (p[0] == 'classic')
-            p[0] = 'vanilla';
-        apply(byId(p[0]) ? p[0] : self.def, p[1] == 'light' ? 'light' : 'dark');
+        if (byId(p[0]))
+            apply(p[0], p[1] == 'light' ? 'light' : 'dark');
+        else
+            apply(self.defFull, self.defMode);
     };
 
     // one column per group; hovering an entry previews it, leaving the menu goes back to the saved theme
     function themeMenu() {
         var cur = self.get(), menu = [];
-        var groups = [['wow', 'World of Warcraft'], ['game', 'Other games']];
+        var groups = [['wow', 'World of Warcraft'], ['web', 'Old websites'], ['game', 'Other games']];
         groups.forEach(function (g, gi) {
             menu.push([, g[1], null, null, gi ? { colBreak: true } : {}]);
             self.list.forEach(function (t) {
                 if (t[3] != g[0])
                     return;
-                var item = [t[0], t[4] || t[1], function () { previewing = null; self.set(t[0]); }, null, { className: 'th-pick th-pick-' + t[0] }];
+                var item = [t[0], t[4] || t[1], function () { previewing = null; self.set(t[0], t[6] || null); }, null, { className: 'th-pick th-pick-' + t[0] }];
                 if (t[0] == cur.theme)
                     item.checked = true;
                 menu.push(item);
@@ -115,6 +140,7 @@ var Theme = new function () {
             previewing = self.get();
         if (previewing.theme == 'aowow')
             return;
+        ensureFile(id);
         document.documentElement.setAttribute('data-theme', id);
     }
 

@@ -3,6 +3,9 @@
  *
  *   <html data-ui="modern|classic" data-theme="vanilla|tbc|wotlk|cata|mop|wod|legion|bfa|shadowlands|dragonflight|tww|midnight|diablo|starcraft|hearthstone|overwatch" data-mode="dark|light">
  *
+ * The old website themes (classic, pandaria, draenor) live in static/css/themes/<id>.css, loaded after this file only
+ * while in use; static/css/themes/base.css adds the "tc-" building blocks for pages in that style.
+ *
  * data-ui="classic" (theme "Classic AoWoW") leaves the original look untouched: everything below is scoped to
  * html[data-ui="modern"]. Palettes only set custom properties; the layout rules read them.
  */

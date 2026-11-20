@@ -1,0 +1,281 @@
+/*
+ * Temucraft theme "pandaria": the game websites of 2013
+ *
+ *   <html data-ui="modern" data-theme="pandaria" data-mode="dark|light">   (loaded after aowow.css and theme.css)
+ *
+ * A misty jade sky over the page, a dark top bar with blue links, a white search box, an orange and brown wooden menu
+ * whose active tab glows, warm dark wood panels, orange gold links and a green sign in button. Light mode puts the
+ * content on cream paper under a pale sky.
+ * Everything is drawn here or in static/images/themes/*.svg (mist, wood); titles use Marcellus (SIL OFL).
+ */
+
+html[data-ui="modern"][data-theme="pandaria"] {
+    --th-accent:      #ffb100;
+    --th-accent-2:    #ffd36a;
+    --th-accent-ink:  #2b1507;
+    --th-glow:        rgba(255, 177, 0, .2);
+    --th-bg:          #0a0705;
+    --th-strip:       #050302;
+    --th-header:      #1a0f08;
+    --th-nav:         #4a2208;
+    --th-surface:     #241209;
+    --th-surface-2:   #2b1507;
+    --th-surface-3:   #3a2010;
+    --th-border:      #4a2a14;
+    --th-border-2:    #71401f;
+    --th-text:        #e6d9bc;
+    --th-text-strong: #f5ebd1;
+    --th-muted:       #c09a67;
+    --th-link:        #ffb100;
+    --th-link-hover:  #ffffff;
+    --th-input:       #1a0f08;
+    --th-shadow:      0 8px 24px rgba(0, 0, 0, .7);
+    --th-font:        Arial, Helvetica, sans-serif;
+
+    --p-wood:         linear-gradient(180deg, #6a3410 0, #4e220a 50%, #3a1806 100%);
+    --p-glow:         linear-gradient(180deg, #f39a3a 0, #d0681a 45%, #8a3a08 100%);
+    --p-green:        linear-gradient(180deg, #a6d86a 0, #6aa63a 45%, #3e7418 100%);
+
+    --tc-title-font:  "TC Marcellus", "Palatino Linotype", Georgia, serif;
+    --tc-frame:       #71401f;
+    --tc-frame-2:     #3a2010;
+    --tc-bar:         var(--p-wood);
+    --tc-bar-text:    #ffd36a;
+    --tc-paper:       linear-gradient(rgba(36, 18, 9, .86), rgba(36, 18, 9, .86)), url(../../images/themes/wood.svg) 0 0 / 512px 256px, #241209;
+    --tc-paper-2:     #2b1507;
+    --tc-gold:        #ffb100;
+    --tc-button:      var(--p-green);
+    --tc-button-text: #f4ffe0;
+    --tc-button-alt:  var(--p-glow);
+    --tc-radius:      4px;
+}
+
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] {
+    --th-surface:     #f5ebd1;
+    --th-surface-2:   #efe3d2;
+    --th-surface-3:   #e6d4b8;
+    --th-border:      #d2b48a;
+    --th-border-2:    #a07a4a;
+    --th-text:        #2b1507;
+    --th-text-strong: #1a0c04;
+    --th-muted:       #855b47;
+    --th-link:        #9a5b00;
+    --th-link-hover:  #c03a00;
+    --th-input:       #fffaf0;
+    --th-shadow:      0 6px 18px rgba(40, 60, 50, .35);
+
+    --tc-paper:       #f5ebd1 url(../../images/themes/parchment.svg);
+    --tc-paper-2:     #efe3d2;
+    --tc-frame-2:     #e0c8a4;
+    --tc-gold:        #9a5b00;
+    --tc-text:        #2b1507;
+    --tc-strong:      #1a0c04;
+    --tc-muted:       #855b47;
+    --tc-link:        #9a5b00;
+    --tc-link-hover:  #c03a00;
+}
+
+/* ── page: jade sky with drifting fog, fading into the dark ───────────────── */
+
+html[data-ui="modern"][data-theme="pandaria"] body {
+    background:
+        url(../../images/themes/mist.svg) 0 30px / 1024px 512px repeat-x,
+        url(../../images/themes/mist.svg) 300px 260px / 1400px 700px repeat-x,
+        radial-gradient(ellipse 60% 300px at 50% 0, rgba(255, 250, 220, .35), rgba(255, 250, 220, 0)),
+        linear-gradient(180deg, #9cc4ba 0, #5f918a 200px, #2e544d 460px, #13241f 760px, #0a0705 1100px);
+    background-color: #0a0705;
+}
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] body {
+    background:
+        url(../../images/themes/mist.svg) 0 30px / 1024px 512px repeat-x,
+        url(../../images/themes/mist.svg) 300px 260px / 1400px 700px repeat-x,
+        linear-gradient(180deg, #e2f2ec 0, #b8d8ce 300px, #8fb6aa 800px, #6e968c 1400px);
+    background-color: #6e968c;
+}
+
+/* ── header: dark top bar buttons with blue links, a white search box ─────── */
+
+html[data-ui="modern"][data-theme="pandaria"] #th-search-slot .topbar-search input {
+    color: #333333;
+    background: #ffffff;
+    border: 1px solid #1a0f08;
+    border-radius: 2px;
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, .25), 0 0 0 3px rgba(0, 0, 0, .25);
+}
+html[data-ui="modern"][data-theme="pandaria"] #th-search-slot .topbar-search input::placeholder { color: #888888; }
+
+html[data-ui="modern"][data-theme="pandaria"] #th-links-slot .toplinks a,
+html[data-ui="modern"][data-theme="pandaria"] .th-btn {
+    color: #00b4ff !important;
+    background: linear-gradient(180deg, #2c2c2e, #151517);
+    border: 1px solid #000000;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 2px 6px rgba(0, 0, 0, .4);
+}
+html[data-ui="modern"][data-theme="pandaria"] #th-links-slot .toplinks a:hover,
+html[data-ui="modern"][data-theme="pandaria"] .th-btn:hover,
+html[data-ui="modern"][data-theme="pandaria"] .th-btn.open { color: #ffffff !important; border-color: #0081b4; }
+html[data-ui="modern"][data-theme="pandaria"] #th-links-slot .toplinks a[href="?account=signin"] {
+    color: #f4ffe0 !important;
+    background: var(--p-green);
+    border-color: #2e5a10;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+}
+html[data-ui="modern"][data-theme="pandaria"] .toplinks,
+html[data-ui="modern"][data-theme="pandaria"] #page-access-label { color: #1a2a26 !important; }
+
+/* ── menu: wooden tabs, the active one glows orange ───────────────────────── */
+
+html[data-ui="modern"][data-theme="pandaria"] .toptabs {
+    background: var(--p-wood);
+    border: 1px solid #1a0f08;
+    border-bottom: 2px solid #c06a1c;
+    border-radius: 4px 4px 0 0;
+    box-shadow: inset 0 1px 0 rgba(255, 200, 120, .25), 0 4px 12px rgba(0, 0, 0, .45);
+}
+html[data-ui="modern"][data-theme="pandaria"] .toptabs dt { border-right: 1px solid rgba(0, 0, 0, .55); box-shadow: 1px 0 0 rgba(255, 190, 110, .12); }
+html[data-ui="modern"][data-theme="pandaria"] .toptabs a {
+    padding: 0 22px;
+    line-height: 44px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: #ffb100 !important;
+    text-shadow: 0 1px 2px #000;
+}
+html[data-ui="modern"][data-theme="pandaria"] .toptabs a:hover,
+html[data-ui="modern"][data-theme="pandaria"] .toptabs a.open { color: #ffd36a !important; background: rgba(255, 177, 0, .12) !important; }
+html[data-ui="modern"][data-theme="pandaria"] .toptabs a.active {
+    color: #ffffff !important;
+    background: var(--p-glow) !important;
+    box-shadow: inset 0 0 0 1px #ffb85a, inset 0 0 12px rgba(255, 220, 140, .5);
+}
+html[data-ui="modern"][data-theme="pandaria"] .toptabs a.active::after { display: none; }
+
+html[data-ui="modern"][data-theme="pandaria"] .topbar {
+    background: linear-gradient(180deg, #2b1507, #1a0f08);
+    border: 1px solid #1a0f08;
+    border-top: 0;
+}
+html[data-ui="modern"][data-theme="pandaria"] span.menu-buttons a { color: #ffb100; }
+html[data-ui="modern"][data-theme="pandaria"] span.menu-buttons a:hover,
+html[data-ui="modern"][data-theme="pandaria"] span.menu-buttons a.open { color: #ffffff; background-color: #4a2a14; }
+
+/* ── content: warm dark wood ──────────────────────────────────────────────── */
+
+html[data-ui="modern"][data-theme="pandaria"] .breadcrumb,
+html[data-ui="modern"][data-theme="pandaria"] .breadcrumb a { color: #ffb100; text-shadow: 0 1px 2px rgba(0, 0, 0, .7); }
+html[data-ui="modern"][data-theme="pandaria"] .breadcrumb > span:last-child,
+html[data-ui="modern"][data-theme="pandaria"] .breadcrumb > span:last-child a { color: #ffffff; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .breadcrumb,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .breadcrumb a { color: #7e3406; text-shadow: none; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .breadcrumb > span:last-child,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .breadcrumb > span:last-child a { color: #1a0c04; }
+
+html[data-ui="modern"][data-theme="pandaria"] .main-contents {
+    padding: 18px 22px;
+    background:
+        linear-gradient(180deg, rgba(43, 21, 7, .9), rgba(26, 13, 6, .95)),
+        url(../../images/themes/wood.svg) 0 0 / 512px 256px,
+        #241209;
+    border: 1px solid #1a0f08;
+    border-top: 3px solid #71401f;
+    border-radius: 0 0 4px 4px;
+    box-shadow: inset 0 1px 0 rgba(255, 190, 110, .12), inset 0 0 40px rgba(0, 0, 0, .5), 0 10px 28px rgba(0, 0, 0, .7);
+}
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .main-contents {
+    background: url(../../images/themes/parchment.svg) 0 0 / 384px, #f5ebd1;
+    border-color: #a07a4a;
+    border-top-color: #71401f;
+    box-shadow: inset 0 0 40px rgba(160, 110, 60, .25), 0 10px 28px rgba(30, 50, 40, .35);
+}
+
+html[data-ui="modern"][data-theme="pandaria"] .text h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: -.01em;
+    color: #f5ebd1;
+    text-shadow: 0 1px 3px #000;
+    border-bottom-color: #4a2a14;
+    background: linear-gradient(#ffb100, #ffb100) left bottom / 64px 2px no-repeat;
+}
+html[data-ui="modern"][data-theme="pandaria"] .text h2,
+html[data-ui="modern"][data-theme="pandaria"] .text h3 {
+    font-family: "TC Marcellus", "Palatino Linotype", Georgia, serif;
+    font-weight: normal;
+    color: #e5cc80;
+    border-bottom-color: #4a2a14;
+}
+html[data-ui="modern"][data-theme="pandaria"] .text h2 { font-size: 20px; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .text h1 { color: #2b1507; text-shadow: none; border-bottom-color: #d2b48a; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .text h2,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .text h3 { color: #71401f; border-bottom-color: #d2b48a; }
+
+html[data-ui="modern"][data-theme="pandaria"] .infobox {
+    background: #2b1507;
+    border: 1px solid #71401f;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .5);
+    overflow: hidden;
+}
+html[data-ui="modern"][data-theme="pandaria"] .infobox th {
+    padding: 6px 10px;
+    font-family: "TC Marcellus", Georgia, serif;
+    font-weight: normal;
+    color: #ffd36a !important;
+    background: var(--p-wood);
+    border-bottom: 1px solid #1a0f08;
+    text-shadow: 0 1px 2px #000;
+}
+html[data-ui="modern"][data-theme="pandaria"] .infobox th a { color: #ffd36a !important; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .infobox { background: #efe3d2; border-color: #a07a4a; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .infobox li div,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .infobox td { color: #2b1507; }
+html[data-ui="modern"][data-theme="pandaria"] .infobox li::before { background: #ffb100; transform: rotate(45deg); }
+
+html[data-ui="modern"][data-theme="pandaria"] .listview { border: 1px solid #4a2a14; }
+html[data-ui="modern"][data-theme="pandaria"] .listview thead a,
+html[data-ui="modern"][data-theme="pandaria"] .listview th a.static,
+html[data-ui="modern"][data-theme="pandaria"] .listview th a.static:hover { color: #f5ebd1 !important; background: linear-gradient(180deg, #4a2a14, #372511); }
+html[data-ui="modern"][data-theme="pandaria"] .listview th a:hover { background: linear-gradient(180deg, #6a3a1a, #4a2a14); }
+html[data-ui="modern"][data-theme="pandaria"] .listview thead div { border-color: #71401f #1a0f08 #1a0f08 #71401f; }
+html[data-ui="modern"][data-theme="pandaria"] .listview-mode-default,
+html[data-ui="modern"][data-theme="pandaria"] .listview-mode-div,
+html[data-ui="modern"][data-theme="pandaria"] .listview-mode-tiled { background-color: #241209; }
+html[data-ui="modern"][data-theme="pandaria"] .listview-mode-default td { border-color: #3a2010; }
+html[data-ui="modern"][data-theme="pandaria"] .listview-mode-default tr:hover td { background-color: #3a2010; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview { border-color: #d2b48a; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview thead a,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview th a.static { color: #f5ebd1 !important; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview-mode-default,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview-mode-div,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview-mode-tiled { background-color: #fbf5e4; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview-mode-default td { border-color: #e6d4b8; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .listview-mode-default tr:hover td { background-color: #efe3d2; }
+
+html[data-ui="modern"][data-theme="pandaria"] .tabs a { background-color: #2b1507; border-color: #4a2a14; }
+html[data-ui="modern"][data-theme="pandaria"] .tabs a.selected,
+html[data-ui="modern"][data-theme="pandaria"] .tabs a.selected:hover { background: var(--p-glow); box-shadow: none; }
+html[data-ui="modern"][data-theme="pandaria"] .tabs li a.selected div { color: #ffffff; text-shadow: 0 1px 2px rgba(0, 0, 0, .6); }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .tabs a { background-color: #e6d4b8; border-color: #d2b48a; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .tabs a.selected,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .tabs a.selected:hover { background: var(--p-glow); border-color: #8a3a08; }
+
+html[data-ui="modern"][data-theme="pandaria"] a.button-red {
+    font-weight: bold;
+    color: #2b1507 !important;
+    background: linear-gradient(180deg, #ffd36a, #ffb100 45%, #cd7a00);
+    border: 1px solid #7e3406;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 1px 3px rgba(0, 0, 0, .5);
+}
+html[data-ui="modern"][data-theme="pandaria"] a:hover.button-red { background: linear-gradient(180deg, #ffe08a, #ffc030 45%, #e08a00); color: #1a0c04 !important; border-color: #7e3406; }
+
+html[data-ui="modern"][data-theme="pandaria"] .footer,
+html[data-ui="modern"][data-theme="pandaria"] .footer a { color: #c09a67; }
+html[data-ui="modern"][data-theme="pandaria"] .footer a:hover { color: #ffb100; }
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .footer,
+html[data-ui="modern"][data-theme="pandaria"][data-mode="light"] .footer a { color: #1a3a32; }

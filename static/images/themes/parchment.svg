@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384" viewBox="0 0 384 384">
+  <!-- Temucraft themes: old paper, drawn (soft blotches + fine fibres), tiles without seams -->
+  <filter id="b" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="4" seed="11" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 .45  0 0 0 0 .3  0 0 0 0 .12  0 0 0 1.6 -.7"/>
+  </filter>
+  <filter id="f" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".6 .08" numOctaves="2" seed="5" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 .4  0 0 0 0 .28  0 0 0 0 .1  0 0 0 .7 -.3"/>
+  </filter>
+  <rect width="384" height="384" fill="#ead9ad"/>
+  <rect width="384" height="384" filter="url(#b)" opacity=".55"/>
+  <rect width="384" height="384" filter="url(#f)" opacity=".35"/>
+</svg>

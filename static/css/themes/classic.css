@@ -1,0 +1,292 @@
+/*
+ * Temucraft theme "classic": the community websites of 2006
+ *
+ *   <html data-ui="modern" data-theme="classic" data-mode="light|dark">   (loaded after aowow.css and theme.css)
+ *
+ * Dark stone around the page, an iron header, a blue steel menu bar with gold lettering, gold framed panels and red
+ * buttons with a gold rim. Light mode (picked with the theme) puts the content on parchment with blue underlined
+ * links; dark mode keeps it on a night blue panel with gold links.
+ * Everything is drawn here or in static/images/themes/*.svg (stone, parchment, corners); titles use Cinzel (SIL OFL).
+ */
+
+html[data-ui="modern"][data-theme="classic"] {
+    --th-accent:      #f4c400;
+    --th-accent-2:    #ffe27a;
+    --th-accent-ink:  #1a1000;
+    --th-glow:        rgba(244, 196, 0, .2);
+    --th-bg:          #08090c;
+    --th-strip:       #050608;
+    --th-header:      #1c1f25;
+    --th-nav:         #2a4466;
+    --th-surface:     #0b0f17;
+    --th-surface-2:   #101724;
+    --th-surface-3:   #182234;
+    --th-border:      #4e3e22;
+    --th-border-2:    #8a6e3a;
+    --th-text:        #e6d6a9;
+    --th-text-strong: #fff6d8;
+    --th-muted:       #a8987a;
+    --th-link:        #f4c400;
+    --th-link-hover:  #ffffff;
+    --th-input:       #050a14;
+    --th-shadow:      0 6px 18px rgba(0, 0, 0, .7);
+    --th-font:        Verdana, Arial, Helvetica, sans-serif;
+
+    --c-steel:        linear-gradient(180deg, #5a80a8 0, #34557c 45%, #1e3352 55%, #172840 100%);
+    --c-steel-dark:   linear-gradient(180deg, #24406a 0, #12223a 100%);
+    --c-iron:         linear-gradient(180deg, #3a3f48 0, #23272e 50%, #16181d 100%);
+    --c-red:          linear-gradient(180deg, #e04a2a 0, #b0200c 45%, #7a1004 100%);
+    --c-gold-text:    #f6e7b0;
+
+    --tc-title-font:  "TC Cinzel", Georgia, "Times New Roman", serif;
+    --tc-frame:       #8a6e3a;
+    --tc-frame-2:     #3a3020;
+    --tc-bar:         var(--c-steel);
+    --tc-bar-text:    var(--c-gold-text);
+    --tc-paper:       #0b0f17;
+    --tc-paper-2:     #101724;
+    --tc-gold:        #f4c400;
+    --tc-button:      var(--c-red);
+    --tc-button-text: #fceac6;
+    --tc-button-alt:  var(--c-steel);
+    --tc-radius:      2px;
+    --tc-corner:      url(../../images/themes/corner.svg);
+}
+
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] {
+    --th-surface:     #e9d9ad;
+    --th-surface-2:   #e0cc98;
+    --th-surface-3:   #d4bc82;
+    --th-border:      #b0905e;
+    --th-border-2:    #835a20;
+    --th-text:        #2a1c0c;
+    --th-text-strong: #000000;
+    --th-muted:       #6a5434;
+    --th-link:        #1e4378;
+    --th-link-hover:  #c60000;
+    --th-input:       #f7efd7;
+    --th-shadow:      0 6px 18px rgba(0, 0, 0, .7);
+
+    --tc-paper:       #ead9ad url(../../images/themes/parchment.svg);
+    --tc-paper-2:     #e0cc98;
+    --tc-frame-2:     #c4a878;
+    --tc-gold:        #6a3c08;
+    --tc-text:        #2a1c0c;
+    --tc-strong:      #000000;
+    --tc-muted:       #6a5434;
+    --tc-link:        #1e4378;
+    --tc-link-hover:  #c60000;
+}
+
+/* ── page: dark stone with a cold light from above ─────────────────────────── */
+
+html[data-ui="modern"][data-theme="classic"] body {
+    background:
+        radial-gradient(ellipse 70% 420px at 50% 0, rgba(80, 120, 180, .22), rgba(80, 120, 180, 0)),
+        linear-gradient(90deg, rgba(0, 0, 0, .6), rgba(0, 0, 0, .2) 18%, rgba(0, 0, 0, .2) 82%, rgba(0, 0, 0, .6)),
+        url(../../images/themes/stone.svg) 0 0 / 256px 256px,
+        #101216;
+    color: var(--th-text);
+}
+
+/* ── header: an iron bar with gold edges ──────────────────────────────────── */
+
+html[data-ui="modern"][data-theme="classic"] .header {
+    margin-top: 6px;
+    padding: 8px 14px;
+    background: var(--c-iron);
+    border: 1px solid #000;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), inset 0 -2px 0 #8a6e3a, 0 3px 8px rgba(0, 0, 0, .7);
+    border-radius: 2px 2px 0 0;
+}
+
+html[data-ui="modern"][data-theme="classic"] #th-search-slot .topbar-search input {
+    color: #e6d6a9;
+    background: #040d1a;
+    border: 1px solid #8a6e3a;
+    border-radius: 2px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, .8);
+}
+
+html[data-ui="modern"][data-theme="classic"] #th-links-slot .toplinks a,
+html[data-ui="modern"][data-theme="classic"] .th-btn {
+    color: var(--c-gold-text) !important;
+    background: var(--c-steel-dark);
+    border: 1px solid #8a6e3a;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15);
+    text-shadow: 0 1px 1px #000;
+}
+html[data-ui="modern"][data-theme="classic"] #th-links-slot .toplinks a:hover,
+html[data-ui="modern"][data-theme="classic"] .th-btn:hover,
+html[data-ui="modern"][data-theme="classic"] .th-btn.open { color: #ffffff !important; border-color: #f4c400; }
+html[data-ui="modern"][data-theme="classic"] #th-links-slot .toplinks a[href="?account=signin"] {
+    color: #fceac6 !important;
+    background: var(--c-red);
+    border-color: #e0b800;
+}
+html[data-ui="modern"][data-theme="classic"] #th-links-slot #toplinks-rep a { color: #f4c400 !important; }
+html[data-ui="modern"][data-theme="classic"] .toplinks,
+html[data-ui="modern"][data-theme="classic"] #page-access-label { color: #a8987a !important; }
+
+/* ── menu bar: blue steel with gold lettering ─────────────────────────────── */
+
+html[data-ui="modern"][data-theme="classic"] .toptabs {
+    background: var(--c-steel);
+    border: 1px solid #000;
+    border-bottom: 0;
+    border-radius: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 0 1px rgba(138, 110, 58, .7);
+}
+html[data-ui="modern"][data-theme="classic"] .toptabs a {
+    font-family: "TC Cinzel", Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    line-height: 38px;
+    color: var(--c-gold-text) !important;
+    text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, .8);
+}
+html[data-ui="modern"][data-theme="classic"] .toptabs a:hover,
+html[data-ui="modern"][data-theme="classic"] .toptabs a.open {
+    color: #ffe27a !important;
+    background: rgba(255, 255, 255, .1) !important;
+}
+html[data-ui="modern"][data-theme="classic"] .toptabs a.active { color: #ffffff !important; }
+html[data-ui="modern"][data-theme="classic"] .toptabs a.active::after { background: #f4c400; box-shadow: 0 0 6px #f4c400; }
+
+html[data-ui="modern"][data-theme="classic"] .topbar {
+    background: linear-gradient(180deg, #0c1626, #070d18);
+    border: 1px solid #000;
+    border-top: 1px solid #8a6e3a;
+    border-radius: 0 0 2px 2px;
+}
+html[data-ui="modern"][data-theme="classic"] span.menu-buttons a { color: #f4c400; font-weight: bold; }
+html[data-ui="modern"][data-theme="classic"] span.menu-buttons a:hover,
+html[data-ui="modern"][data-theme="classic"] span.menu-buttons a.open { color: #ffffff; background-color: rgba(90, 128, 168, .35); }
+
+/* ── content: a framed panel (night blue, or parchment in light mode) ─────── */
+
+html[data-ui="modern"][data-theme="classic"] .main-precontents { color: var(--c-gold-text); }
+html[data-ui="modern"][data-theme="classic"] .breadcrumb,
+html[data-ui="modern"][data-theme="classic"] .breadcrumb a { color: #f4c400; }
+html[data-ui="modern"][data-theme="classic"] .breadcrumb a:hover { color: #ffffff; }
+html[data-ui="modern"][data-theme="classic"] .breadcrumb > span:last-child,
+html[data-ui="modern"][data-theme="classic"] .breadcrumb > span:last-child a { color: #fff6d8; }
+
+html[data-ui="modern"][data-theme="classic"] .main-contents {
+    padding: 18px 22px;
+    border: 7px solid transparent;
+    border-radius: 3px;
+    background:
+        url(../../images/themes/corner.svg) left top / 30px no-repeat border-box,
+        url(../../images/themes/corner-tr.svg) right top / 30px no-repeat border-box,
+        url(../../images/themes/corner-bl.svg) left bottom / 30px no-repeat border-box,
+        url(../../images/themes/corner-br.svg) right bottom / 30px no-repeat border-box,
+        linear-gradient(180deg, #0e1420, #0a0e16) padding-box,
+        linear-gradient(180deg, #4a505a, #2a2e36 40%, #1a1d22) border-box;
+    box-shadow: inset 0 0 0 1px #8a6e3a, inset 0 0 30px rgba(0, 0, 0, .6), 0 0 0 1px #000, 0 8px 22px rgba(0, 0, 0, .8);
+}
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .main-contents {
+    background:
+        url(../../images/themes/corner.svg) left top / 30px no-repeat border-box,
+        url(../../images/themes/corner-tr.svg) right top / 30px no-repeat border-box,
+        url(../../images/themes/corner-bl.svg) left bottom / 30px no-repeat border-box,
+        url(../../images/themes/corner-br.svg) right bottom / 30px no-repeat border-box,
+        url(../../images/themes/parchment.svg) 0 0 / 384px padding-box,
+        linear-gradient(180deg, #4a505a, #2a2e36 40%, #1a1d22) border-box;
+    box-shadow: inset 0 0 0 1px #835a20, inset 0 0 50px rgba(110, 70, 20, .45), 0 0 0 1px #000, 0 8px 22px rgba(0, 0, 0, .8);
+}
+
+/* headings in Cinzel */
+html[data-ui="modern"][data-theme="classic"] .text h1,
+html[data-ui="modern"][data-theme="classic"] .text h2,
+html[data-ui="modern"][data-theme="classic"] .text h3 {
+    font-family: "TC Cinzel", Georgia, serif;
+    letter-spacing: .02em;
+}
+html[data-ui="modern"][data-theme="classic"] .text h1 { font-size: 24px; font-weight: 700; color: #f4c400; text-shadow: 0 1px 2px #000; }
+html[data-ui="modern"][data-theme="classic"] .text h2 { font-size: 18px; color: #f6e7b0; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .text h1 { color: #4a2a08; text-shadow: 0 1px 0 rgba(255, 255, 255, .45); }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .text h2,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .text h3 { color: #5a3410; }
+
+/* parchment links: blue and underlined, red under the mouse */
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .main-contents a { text-decoration: underline; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .main-contents .listview a,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .main-contents .tabs a,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .main-contents a.button-red { text-decoration: none; }
+
+/* side box: a steel title bar like the old "Quick Links" */
+html[data-ui="modern"][data-theme="classic"] .infobox {
+    background: #0a0e16;
+    border: 2px solid #8a6e3a;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px #000, 0 3px 8px rgba(0, 0, 0, .6);
+}
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .infobox { background: #e3cf9c url(../../images/themes/parchment.svg); }
+html[data-ui="modern"][data-theme="classic"] .infobox th {
+    padding: 5px 10px;
+    font-family: "TC Cinzel", Georgia, serif;
+    color: var(--c-gold-text) !important;
+    background: var(--c-steel);
+    border-bottom: 1px solid #8a6e3a;
+    text-shadow: 0 1px 2px #000;
+}
+html[data-ui="modern"][data-theme="classic"] .infobox th a { color: var(--c-gold-text) !important; }
+html[data-ui="modern"][data-theme="classic"] .infobox li::before { border-radius: 50%; background: #c9a24a; box-shadow: 0 0 0 1px #3a2808; }
+
+/* lists: a dark blue header bar with "News Title / Date" lettering */
+html[data-ui="modern"][data-theme="classic"] .listview { border: 1px solid #8a6e3a; border-radius: 2px; }
+html[data-ui="modern"][data-theme="classic"] .listview thead a,
+html[data-ui="modern"][data-theme="classic"] .listview th a.static,
+html[data-ui="modern"][data-theme="classic"] .listview th a.static:hover {
+    font-family: "TC Cinzel", Georgia, serif;
+    font-size: 13px;
+    color: var(--c-gold-text) !important;
+    background: var(--c-steel-dark);
+    text-shadow: 0 1px 1px #000;
+}
+html[data-ui="modern"][data-theme="classic"] .listview th a:hover { background: var(--c-steel); }
+html[data-ui="modern"][data-theme="classic"] .listview thead div { border-color: #3a5a84 #0a1424 #0a1424 #3a5a84; }
+html[data-ui="modern"][data-theme="classic"] .listview-mode-default td { border-color: #1e2636; }
+html[data-ui="modern"][data-theme="classic"] .listview-mode-default tr:nth-child(even) td { background-color: rgba(255, 255, 255, .025); }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-default,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-div,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-tiled { background-color: #efe2bf; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-default td { border-color: #d2bc8c; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-default tr:nth-child(even) td { background-color: #e6d6a9; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-default tr:hover td,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-mode-default tr.mouseover td { background-color: #f7edd0; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-band-top,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .listview-band-bottom { background-color: #e0cc98; }
+
+/* tabs */
+html[data-ui="modern"][data-theme="classic"] .tabs a { background-color: #101826; border-color: #8a6e3a; border-radius: 3px 3px 0 0; }
+html[data-ui="modern"][data-theme="classic"] .tabs a.selected,
+html[data-ui="modern"][data-theme="classic"] .tabs a.selected:hover { background: var(--c-steel-dark); box-shadow: inset 0 2px 0 #f4c400; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .tabs a { background-color: #d8c290; }
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .tabs a.selected,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .tabs a.selected:hover { background: #ecdcb2; box-shadow: inset 0 2px 0 #b0200c; }
+html[data-ui="modern"][data-theme="classic"] .tabbed-contents { border-color: #8a6e3a; }
+
+/* the red buttons with a gold rim */
+html[data-ui="modern"][data-theme="classic"] a.button-red {
+    font-weight: bold;
+    color: #fceac6 !important;
+    background: var(--c-red);
+    border: 1px solid #e0b800;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 1px 3px rgba(0, 0, 0, .6);
+    text-shadow: 0 1px 1px #000;
+}
+html[data-ui="modern"][data-theme="classic"] a:hover.button-red { color: #ffffff !important; background: var(--c-red); filter: brightness(1.15); border-color: #ffe27a; }
+
+/* footer on the stone */
+html[data-ui="modern"][data-theme="classic"] .footer,
+html[data-ui="modern"][data-theme="classic"] .footer a { color: #a8987a; }
+html[data-ui="modern"][data-theme="classic"] .footer a:hover { color: #f4c400; }
+
+/* parchment: side box text was white */
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .infobox li div,
+html[data-ui="modern"][data-theme="classic"][data-mode="light"] .infobox td { color: #2a1c0c; }

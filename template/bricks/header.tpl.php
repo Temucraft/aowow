@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <?php
-// aowow: theme from the picker (cookie "aowow_theme" = "<theme>.<mode>"), printed here so the page never flashes the wrong look
-$thList = ['vanilla', 'tbc', 'wotlk', 'cata', 'mop', 'wod', 'legion', 'bfa', 'shadowlands', 'dragonflight', 'tww', 'midnight', 'diablo', 'starcraft', 'hearthstone', 'overwatch', 'aowow'];
-[$thName, $thMode] = array_pad(explode('.', (string)($_COOKIE['aowow_theme'] ?? '')), 2, '');
-$thName = $thName == 'classic' ? 'vanilla' : $thName;
-$thName = in_array($thName, $thList) ? $thName : 'wotlk';
-$thMode = $thMode == 'light' ? 'light' : 'dark';
+// aowow: theme from the picker (cookie "aowow_theme" = "<theme>.<mode>", else the site default SITE_THEME), printed here
+// so the page never flashes the wrong look
+[$thName, $thMode] = Cfg::theme();
 ?>
 <html data-ui="<?=$thName == 'aowow' ? 'classic' : 'modern'; ?>" data-theme="<?=$thName == 'aowow' ? 'wotlk' : $thName; ?>" data-mode="<?=$thMode; ?>">
 <head>
