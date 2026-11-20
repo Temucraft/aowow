@@ -38,7 +38,7 @@ CLISetup::registerSetup("build", new class extends SetupScript
          0 => ['Icons/',                  null, false, ['.*\.(blp|png)$',                           true,   0], self::ICON_DIRS,                                                 ],
          1 => ['Spellbook/',              null, false, ['UI-Glyph-Rune-?\d+.(blp|png)$',            false,  0], [['static/images/wow/Interface/Spellbook/',     'png', 0,  0, 0]]],
          2 => ['PaperDoll/',              null, false, ['UI-(Backpack|PaperDoll)-.*\.(blp|png)$',   true,   0], self::ICON_DIRS,                                                 ],
-         3 => ['GLUES/CHARACTERCREATE/',  null, false, ['UI-CharacterCreate-Races\.(blp|png)',      true,  64], self::ICON_DIRS,                                                 ],
+         3 => ['GLUES/CHARACTERCREATE/',  null, false, ['UI-CharacterCreate-Races\.png',           true,  64], self::ICON_DIRS,                                                 ],
          4 => ['GLUES/CHARACTERCREATE/',  null, false, ['UI-CharacterCreate-CLASSES\.(blp|png)',    true,  64], self::ICON_DIRS,                                                 ],
          5 => ['GLUES/CHARACTERCREATE/',  null, false, ['UI-CharacterCreate-Factions\.(blp|png)',   true,  64], self::ICON_DIRS,                                                 ],
       // 6 => ['Minimap/'               , null, false, ['OBJECTICONS.(BLP|png)',                    true,  32], [['static/images/wow/icons/tiny/',              'gif', 0, 16, 2]]],
@@ -74,10 +74,11 @@ CLISetup::registerSetup("build", new class extends SetupScript
             'ui-paperdoll-slot-wrists'        => 'inventoryslot_wrists'
         ),
         3 => array(                                     // uses nameINT from ChrRaces.dbc
-            ['race_human_male',    'race_dwarf_male',     'race_gnome_male',   'race_nightelf_male',   'race_draenei_male'   ],
-            ['race_tauren_male',   'race_scourge_male',   'race_troll_male',   'race_orc_male',        'race_bloodelf_male'  ],
-            ['race_human_female',  'race_dwarf_female',   'race_gnome_female', 'race_nightelf_female', 'race_draenei_female' ],
-            ['race_tauren_female', 'race_scourge_female', 'race_troll_female', 'race_orc_female',      'race_bloodelf_female']
+            // columns 5-9: Temucraft races (RACE_ICON_TCOORDS in GlueXML/CharacterCreate.lua)
+            ['race_human_male',    'race_dwarf_male',     'race_gnome_male',   'race_nightelf_male',   'race_draenei_male',   'race_worgen_male',   'race_alliancepandaren_male',   'race_voidelf_male',    'race_lightforgeddraenei_male',   'race_kultiran_male'      ],
+            ['race_tauren_male',   'race_scourge_male',   'race_troll_male',   'race_orc_male',        'race_bloodelf_male',  'race_goblin_male',   'race_hordepandaren_male',      'race_nightborne_male', 'race_highmountaintauren_male',   'race_zandalaritroll_male'  ],
+            ['race_human_female',  'race_dwarf_female',   'race_gnome_female', 'race_nightelf_female', 'race_draenei_female', 'race_worgen_female', 'race_alliancepandaren_female', 'race_voidelf_female',  'race_lightforgeddraenei_female', 'race_kultiran_female'    ],
+            ['race_tauren_female', 'race_scourge_female', 'race_troll_female', 'race_orc_female',      'race_bloodelf_female','race_goblin_female', 'race_hordepandaren_female',    'race_nightborne_female','race_highmountaintauren_female','race_zandalaritroll_female']
         ),
         4 => array(                                     // uses nameINT from ChrClasses.dbc
             ['class_warrior', 'class_mage',       'class_rogue',  'class_druid'  ],

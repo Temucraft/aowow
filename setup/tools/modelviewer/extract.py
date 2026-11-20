@@ -67,7 +67,7 @@ BASE_ORDER = ['patch-3.mpq', 'patch-2.mpq', 'patch.mpq', 'lichking.mpq', 'expans
 class Archives:
     def __init__(self, data_dir):
         files = {os.path.basename(f).lower(): f for f in glob.glob(os.path.join(data_dir, '*')) if f.lower().endswith('.mpq')}
-        custom = sorted([n for n in files if n.startswith('patch-') and n[6:7].isalpha() and n not in BASE_ORDER], reverse=True)
+        custom = sorted([n for n in files if n.startswith('patch-') and n[6:7].isalnum() and n[7:8] == '.' and n not in BASE_ORDER], reverse=True)  # patch-z .. patch-a, patch-9 .. patch-4
         self.order = [files[n] for n in custom + BASE_ORDER if n in files]
         if not self.order:
             sys.exit('no MPQ archives found in ' + data_dir)

@@ -111,6 +111,14 @@ CLISetup::registerSetup("sql", new class extends SetupScript
                         $fileSets[] = [$soundFileIdx, $s['soundFile'.$i], $s['path'], SOUND_TYPE_OGG];
                         $s['soundFile'.$i] = $soundFileIdx;
                     }
+                    // ogg (custom content ported from later clients) .. already web friendly
+                    else if (stristr($s['soundFile'.$i], '.ogg'))
+                    {
+                        $soundIndex[$nicePath] = ++$soundFileIdx;
+
+                        $fileSets[] = [$soundFileIdx, $s['soundFile'.$i], $s['path'], SOUND_TYPE_OGG];
+                        $s['soundFile'.$i] = $soundFileIdx;
+                    }
                     // mp3 .. keep as is
                     else if (stristr($s['soundFile'.$i], '.mp3'))
                     {

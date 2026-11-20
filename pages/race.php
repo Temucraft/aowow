@@ -74,8 +74,11 @@ class RacePage extends GenericPage
         if ($_ = $this->subject->getField('factionId'))
         {
             $fac = new FactionList(array(['f.id', $_]));
-            $this->extendGlobalData($fac->getJSGlobals());
-            $infobox[] = Util::ucFirst(Lang::game('faction')).Lang::main('colon').'[faction='.$fac->id.']';
+            if (!$fac->error)                           // custom races can point to a faction the client's Faction.dbc lacks
+            {
+                $this->extendGlobalData($fac->getJSGlobals());
+                $infobox[] = Util::ucFirst(Lang::game('faction')).Lang::main('colon').'[faction='.$fac->id.']';
+            }
         }
 
         // leader
