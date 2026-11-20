@@ -610,8 +610,10 @@ abstract class Util
 
     public static $guideratingString        = "        $(document).ready(function() {\n        $('#guiderating').append(GetStars(%.10F, %s, %u, %u));\n    });";
 
-    public static $expansionString          = array(        // 3 & 4 unused .. obviously
-        null,           'bc',           'wotlk',            'cata',                'mop'
+    public static $expansionString          = array(        // css class part: icon-<x>-right; 3 and up are Temucraft badges
+        null,           'bc',           'wotlk',            'cata',                'mop',
+        5  => 'wod',    6  => 'legion', 7  => 'bfa',        8  => 'sl',            9  => 'df',      10 => 'tww',
+        20 => 'temu',   21 => 'lost',   22 => 'forever'
     );
 
     public static $tcEncoding               = '0zMcmVokRsaqbdrfwihuGINALpTjnyxtgevElBCDFHJKOPQSUWXYZ123456789';

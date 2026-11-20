@@ -576,6 +576,7 @@ CREATE TABLE `aowow_creature` (
   `mechanicImmuneMask` int unsigned NOT NULL DEFAULT 0,
   `flagsExtra` int unsigned NOT NULL DEFAULT 0,
   `scriptName` varchar(50) NOT NULL DEFAULT '',
+  `expansion` tinyint unsigned NOT NULL DEFAULT 0 COMMENT 'Temucraft: setup/temucraft/expansions.json',
   PRIMARY KEY (`id`),
   KEY `idx_name` (`name_loc0`),
   KEY `difficultyEntry1` (`difficultyEntry1`),
@@ -591,7 +592,8 @@ CREATE TABLE `aowow_creature` (
   KEY `idx_spell5` (`spell5`),
   KEY `idx_spell6` (`spell6`),
   KEY `idx_spell7` (`spell7`),
-  KEY `idx_spell8` (`spell8`)
+  KEY `idx_spell8` (`spell8`),
+  KEY `idx_expansion` (`expansion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1632,6 +1634,7 @@ CREATE TABLE `aowow_items` (
   `sheatheSoundId` smallint unsigned NOT NULL DEFAULT 0,
   `unsheatheSoundId` smallint unsigned NOT NULL DEFAULT 0,
   `flagsCustom` int unsigned NOT NULL DEFAULT 0,
+  `expansion` tinyint unsigned NOT NULL DEFAULT 0 COMMENT 'Temucraft: setup/temucraft/expansions.json',
   PRIMARY KEY (`id`),
   KEY `idx_name` (`name_loc0`),
   KEY `items_index` (`class`),
@@ -1643,7 +1646,8 @@ CREATE TABLE `aowow_items` (
   KEY `idx_spellId2` (`spellId2`),
   KEY `idx_spellId3` (`spellId3`),
   KEY `idx_spellId4` (`spellId4`),
-  KEY `idx_spellId5` (`spellId5`)
+  KEY `idx_spellId5` (`spellId5`),
+  KEY `idx_expansion` (`expansion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1891,12 +1895,14 @@ CREATE TABLE `aowow_objects` (
   `triggeredSpell` mediumint unsigned NOT NULL DEFAULT 0,
   `miscInfo` varchar(128) NOT NULL,
   `ScriptOrAI` varchar(64) NOT NULL,
+  `expansion` tinyint unsigned NOT NULL DEFAULT 0 COMMENT 'Temucraft: setup/temucraft/expansions.json',
   PRIMARY KEY (`id`),
   KEY `idx_name` (`name_loc0`),
   KEY `idx_onUseSpell` (`onUseSpell`),
   KEY `idx_onSuccessSpell` (`onSuccessSpell`),
   KEY `idx_auraSpell` (`auraSpell`),
-  KEY `idx_triggeredSpell` (`triggeredSpell`)
+  KEY `idx_triggeredSpell` (`triggeredSpell`),
+  KEY `idx_expansion` (`expansion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2501,6 +2507,7 @@ CREATE TABLE `aowow_quests` (
   `objectiveText4_loc6` text DEFAULT NULL,
   `objectiveText4_loc7` text DEFAULT NULL,
   `objectiveText4_loc8` text DEFAULT NULL,
+  `expansion` tinyint unsigned NOT NULL DEFAULT 0 COMMENT 'Temucraft: setup/temucraft/expansions.json',
   PRIMARY KEY (`id`),
   KEY `nextQuestIdChain` (`nextQuestIdChain`),
   KEY `idx_nextQuestId` (`nextQuestId`),
@@ -2543,7 +2550,8 @@ CREATE TABLE `aowow_quests` (
   KEY `idx_name5` (`name_loc5`(64)),
   KEY `idx_name6` (`name_loc6`(64)),
   KEY `idx_name7` (`name_loc7`(64)),
-  KEY `idx_name8` (`name_loc8`(64))
+  KEY `idx_name8` (`name_loc8`(64)),
+  KEY `idx_expansion` (`expansion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3169,6 +3177,7 @@ CREATE TABLE `aowow_spell` (
   `schoolMask` tinyint unsigned NOT NULL,
   `spellDescriptionVariableId` smallint NOT NULL,
   `trainingCost` int unsigned NOT NULL,
+  `expansion` tinyint unsigned NOT NULL DEFAULT 0 COMMENT 'Temucraft: setup/temucraft/expansions.json',
   PRIMARY KEY (`id`),
   KEY `category` (`typeCat`),
   KEY `spell` (`id`) USING BTREE,
@@ -3192,7 +3201,8 @@ CREATE TABLE `aowow_spell` (
   KEY `idx_misc2` (`effect2MiscValue`),
   KEY `idx_misc3` (`effect3MiscValue`),
   KEY `idx_family` (`spellFamilyId`),
-  KEY `idx_spellcategory` (`category`)
+  KEY `idx_spellcategory` (`category`),
+  KEY `idx_expansion` (`expansion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

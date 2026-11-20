@@ -112,6 +112,10 @@ CLISetup::registerUtility(new class extends UtilityScript
                     if (method_exists($scriptRef, 'applyCustomData'))
                         $success = $scriptRef->applyCustomData();
 
+                    // Temucraft: a rebuilt items/creature/objects/quests/spell/zones table gets its expansion tags again
+                    if ($cmd != 'expansions' && isset($this->generators['expansions']))
+                        $this->generators['expansions']->applyTo($cmd);
+
                     $success = true;
                 }
             }

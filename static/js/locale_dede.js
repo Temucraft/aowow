@@ -3829,6 +3829,9 @@ var LANG = {
     tooltip_genericrating: '<span class="q2">Anlegen: Erhöht Eure $1 um <!--rtg$2-->$3&nbsp;<small>(<!--rtg%$2-->0&nbsp;@&nbsp;L<!--lvl-->0)</small>.</span><br />',
 
     fidropdowns: {
+        temuexpansion:  [   [0, "Standard 3.3.5"], [3, "Cataclysm"], [4, "Mists of Pandaria"], [5, "Warlords of Draenor"], [6, "Legion"],
+                            [7, "Battle for Azeroth"], [8, "Shadowlands"], [9, "Dragonflight"], [10, "The War Within"],
+                            [20, "Temucraft"], [21, "Lost Lands"], [22, "Forever"]   ],
         yn:             [   [1, "Ja"],                              [2, "Nein"]                             ],
         num:            [   [1, ">"],                               [2, ">="],                              [3, "="],                               [4, "<="],                              [5, "<"],                              [6, "!="]],
         side:           [   [1, "Ja"],                              [2, "Allianz"],                         [3, "Horde"],                           [4, "Beide"],                           [5, "Nein"]                                     ],
@@ -4328,6 +4331,7 @@ var LANG = {
     },
 
     fiitems: {
+        expansion:          "Erweiterung",
         sepgeneral:              "Allgemein",
         availabletoplayers:      "Für Spieler verfügbar",
         avgbuyout:               "Durchschnittlicher Sofortkaufpreis",
@@ -4443,6 +4447,7 @@ var LANG = {
     },
 
     finpcs: {
+        expansion:          "Erweiterung",
         sepgeneral:          "Allgemein",
         canrepair:           "Kann reparieren",
         faction:             "Fraktion",
@@ -4491,6 +4496,7 @@ var LANG = {
     },
 
     fiobjects: {
+        expansion:          "Erweiterung",
         sepgeneral:            "Allgemein",
         foundin:               "Befindet sich in...",
         requiredskilllevel:    "Benötigte Fertigkeitsstufe (Kräuter/Vorkommen/Schließkisten)",
@@ -4511,6 +4517,7 @@ var LANG = {
     },
 
     fiquests: {
+        expansion:          "Erweiterung",
         sepgeneral:              "Allgemein",
         relatedevent:            "Zugehöriges Weltereignis",
         daily:                   "Täglich",
@@ -4557,6 +4564,7 @@ var LANG = {
     },
 
     fispells: {
+        expansion:          "Erweiterung",
         sepgeneral:                 "Allgemein",
         prcntbasemanarequired:      "% des Grundmanas benötigt",
         casttime:                   "Zauberzeit",

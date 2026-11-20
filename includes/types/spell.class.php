@@ -2123,6 +2123,8 @@ class SpellList extends BaseType
             }
         }
 
+        $this->addExpansion($data);
+
         return $data;
     }
 
@@ -2287,6 +2289,7 @@ class SpellListFilter extends Filter
     const MAX_SPELL_AURA   = 316;
 
     protected $enums = array(
+        117 => [0, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22], // expansion (Temucraft)
         9 => array(                                         // sources index
             1  => true,                                     // Any
             2  => false,                                    // None
@@ -2334,6 +2337,7 @@ class SpellListFilter extends Filter
     );
 
     protected $genericFilter = array(
+        117 => [parent::CR_ENUM, 's.expansion', true, true], // expansion [enum] (Temucraft: setup/temucraft/expansions.json)
          1  => [parent::CR_CALLBACK,  'cbCost',                                                                                   ], // costAbs [op] [int]
          2  => [parent::CR_NUMERIC,   'powerCostPercent', NUM_CAST_INT                                                            ], // prcntbasemanarequired
          3  => [parent::CR_BOOLEAN,   'spellFocusObject'                                                                          ], // requiresnearbyobject
@@ -2436,7 +2440,7 @@ class SpellListFilter extends Filter
     );
 
     protected $inputFields = array(
-        'cr'    => [parent::V_RANGE,    [1, 116],                                        true ], // criteria ids
+        'cr'    => [parent::V_RANGE,    [1, 117],                                        true ], // criteria ids
         'crs'   => [parent::V_LIST,     [parent::ENUM_NONE, parent::ENUM_ANY, [0, 99999]], true ], // criteria operators
         'crv'   => [parent::V_REGEX,    parent::PATTERN_CRV,                             true ], // criteria values - only printable chars, no delimiters
         'na'    => [parent::V_REGEX,    parent::PATTERN_NAME,                            false], // name / text - only printable chars, no delimiter

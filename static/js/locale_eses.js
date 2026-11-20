@@ -3829,6 +3829,9 @@ var LANG = {
     tooltip_genericrating: '<span class="q2">Equipar: Aumenta tu $1 en <!--rtg$2-->$3&nbsp;<small>(<!--rtg%$2-->0&nbsp;@&nbsp;L<!--lvl-->0)</small>.</span><br />',
 
     fidropdowns:{
+        temuexpansion:  [   [0, "Estándar 3.3.5"], [3, "Cataclysm"], [4, "Mists of Pandaria"], [5, "Warlords of Draenor"], [6, "Legion"],
+                            [7, "Battle for Azeroth"], [8, "Shadowlands"], [9, "Dragonflight"], [10, "The War Within"],
+                            [20, "Temucraft"], [21, "Lost Lands"], [22, "Forever"]   ],
         yn:             [   [1, "Sí"],                              [2, "No"]                               ],
         num:            [   [1, ">"],                               [2, ">="],                              [3, "="],                               [4, "<="],                              [5, "<"],                              [6, "!="]],
         side:           [   [1, "Sí"],                              [2, "Alianza"],                         [3, "Horda"],                           [4, "Ambos"],                           [5, "No"]                                       ],
@@ -4299,6 +4302,7 @@ var LANG = {
     },
 
     fiitems: {
+        expansion:          "Expansión",
         sepgeneral:              "General",
         availabletoplayers:      "Disponible para los jugadores",
         avgbuyout:               "Precio promedio de compra en subasta",
@@ -4414,6 +4418,7 @@ var LANG = {
     },
 
     finpcs: {
+        expansion:          "Expansión",
         sepgeneral:          "General",
         canrepair:           "Puede reparar",
         faction:             "Facción",
@@ -4462,6 +4467,7 @@ var LANG = {
     },
 
     fiobjects: {
+        expansion:          "Expansión",
         sepgeneral:            "General",
         foundin:               "Encontrado en...",
         requiredskilllevel:    "Requiere habilidad (hierbas/menas/armarios de pie)",
@@ -4482,6 +4488,7 @@ var LANG = {
     },
 
     fiquests: {
+        expansion:          "Expansión",
         sepgeneral:              "General",
         relatedevent:            "Evento del mundo relacionado",
         daily:                   "Diaria",
@@ -4528,6 +4535,7 @@ var LANG = {
     },
 
     fispells: {
+        expansion:          "Expansión",
         sepgeneral:                 "General",
         prcntbasemanarequired:      "% de maná base requerida",
         casttime:                   "Tiempo de lanzamiento",

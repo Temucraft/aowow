@@ -306,6 +306,14 @@ abstract class BaseType
         $this->error = false;
     }
 
+    // Temucraft: listview rows get the expansion (setup/temucraft/expansions.json) when it is set
+    protected function addExpansion(array &$data) : void
+    {
+        foreach ($data as $id => &$row)
+            if (is_array($row) && is_int($id) && ($e = (int)($this->templates[$id]['expansion'] ?? 0)))
+                $row['expansion'] = $e;
+    }
+
     public function &iterate()
     {
         $this->itrStack[] = $this->id;

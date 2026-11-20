@@ -136,6 +136,7 @@ $lang = array(
 
         // formating
         'colon'         => '：',
+        'addedIn'       => "加入於",
         'dateFmtShort'  => "Y/m/d",
         'dateFmtLong'   => "Y/m/d \a\\t g:i A",
         'timeAgo'       => '%s之前',
@@ -367,7 +368,7 @@ $lang = array(
         'phases'        => "阶段",
         'mode'          => "模式",
         'modes'         => [-1 => "任何", "普通 / 普通 10人", "英雄 / 普通 25人", "英雄 10人", "英雄 25人"],
-        'expansions'    => ["经典旧世", "燃烧的远征", "巫妖王之怒"],
+        'expansions'    => ["经典旧世", "燃烧的远征", "巫妖王之怒", 3 => "Cataclysm", 4 => "Mists of Pandaria", 5 => "Warlords of Draenor", 6 => "Legion", 7 => "Battle for Azeroth", 8 => "Shadowlands", 9 => "Dragonflight", 10 => "The War Within", 20 => "Temucraft", 21 => "Lost Lands", 22 => "Forever"],
         'stats'         => ["力量", "敏捷", "耐力", "智力", "精神"],
         'timeAbbrev'    => array(
             '',

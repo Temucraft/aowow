@@ -195,6 +195,10 @@ class SpellPage extends GenericPage
 
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
+        // Temucraft: where it comes from (setup/temucraft/expansions.json)
+        if ($_ = $this->expansionInfo((int)$this->subject->getField('expansion')))
+            $infobox[] = $_;
+
         // level
         if (!in_array($_cat, [-5, -6]))                     // not mount or vanity pet
         {

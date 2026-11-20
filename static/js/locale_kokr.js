@@ -4015,6 +4015,9 @@ var LANG = {
     tooltip_genericrating: '<span class="q2">Equip: Increases your $1 by <!--rtg$2-->$3&nbsp;<small>(<!--rtg%$2-->0&nbsp;@&nbsp;L<!--lvl-->0)</small>.</span><br />',
 
     fidropdowns: {
+        temuexpansion:  [   [0, "기본 3.3.5"], [3, "Cataclysm"], [4, "Mists of Pandaria"], [5, "Warlords of Draenor"], [6, "Legion"],
+                            [7, "Battle for Azeroth"], [8, "Shadowlands"], [9, "Dragonflight"], [10, "The War Within"],
+                            [20, "Temucraft"], [21, "Lost Lands"], [22, "Forever"]   ],
         yn:             [   [1, "Yes"],                             [2, "No"]                               ],
         num:            [   [1, ">"],                               [2, ">="],                              [3, "="],                               [4, "<="],                              [5, "<"],                              [6, "!="]],
         side:           [   [1, "Yes"],                             [2, "Alliance"],                        [3, "Horde"],                           [4, "Both"],                            [5, "No"]                                       ],
@@ -4509,6 +4512,7 @@ var LANG = {
     },
 
     fiitems: {
+        expansion:          "확장팩",
         sepgeneral:              "General",
         availabletoplayers:      "Available to players",
         avgbuyout:               "Average buyout price",
@@ -4624,6 +4628,7 @@ var LANG = {
     },
 
     finpcs: {
+        expansion:          "확장팩",
         sepgeneral:          "General",
         canrepair:           "Can repair",
         faction:             "Faction",
@@ -4672,6 +4677,7 @@ var LANG = {
     },
 
     fiobjects: {
+        expansion:          "확장팩",
         sepgeneral:            "General",
         foundin:               "Found in...",
         requiredskilllevel:    "Required skill level (herbs/veins/footlockers)",
@@ -4692,6 +4698,7 @@ var LANG = {
     },
 
     fiquests: {
+        expansion:          "확장팩",
         sepgeneral:              "General",
         relatedevent:            "Related world event",
         daily:                   "Daily",
@@ -4738,6 +4745,7 @@ var LANG = {
     },
 
     fispells: {
+        expansion:          "확장팩",
         sepgeneral:                 "General",
         prcntbasemanarequired:      "% of base mana required",
         casttime:                   "Cast time",

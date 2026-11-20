@@ -17,6 +17,15 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
   tracker), each character's followers, offered and running missions, expeditions, key fragments and disguises; start
   a mission or collect finished ones from the browser. Orders go to the characters database
   (`mod_temucraft_web_order`) and mod-temucraft-mission-table carries them out (at once if online, else at login).
+- **Expansion tags**: items, NPCs, objects, quests, spells and zones show where they come from: a small badge in the
+  lists (CATA, MOP, TEMU for our own content, LOST for the Lost Lands, FOREVER for the Forever maps), "Added in" in
+  the infobox and an "Expansion" filter. `setup/tools/temucraft-expansions.py` reads the module SQL and tags every new
+  row by the rules in `setup/temucraft/expansion-sources.json` (module and file patterns, id ranges, maps; add new
+  modules there); the result is `setup/temucraft/expansions.json`, which `php aowow --sql` applies (alone:
+  `--sql=expansions`). The modules-ci "Addon data" workflow remakes it every day; by hand:
+
+      python3 setup/tools/temucraft-expansions.py --modules <folder with the module repos> \
+          --stock-db <world database without the modules> --mysql "mysql -uroot -p..." -o setup/temucraft/expansions.json
 - **Changes page** (Tools → Temucraft Changes, `?changes`): what Temucraft does differently from 3.3.5, like
   Wowhead's Classic changes pages. An overview (changes for every class, who can use each weapon and armor skill,
   one box per class), then per class a **Spellbook** page (`?changes=spellbook.druid`: new, updated and removed

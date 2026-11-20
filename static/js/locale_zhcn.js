@@ -3877,6 +3877,9 @@ var LANG = {
     tooltip_genericrating: '<span class="q2">装备：将您的$1提升<!--rtg$2-->$3&nbsp;<small>(<!--rtg%$2-->0&nbsp;@&nbsp;L<!--lvl-->0)</small>.</span><br />',
 
     fidropdowns: {
+        temuexpansion:  [   [0, "原版 3.3.5"], [3, "Cataclysm"], [4, "Mists of Pandaria"], [5, "Warlords of Draenor"], [6, "Legion"],
+                            [7, "Battle for Azeroth"], [8, "Shadowlands"], [9, "Dragonflight"], [10, "The War Within"],
+                            [20, "Temucraft"], [21, "Lost Lands"], [22, "Forever"]   ],
         yn:             [   [1, "是"], [2, "无"]  ],
         num:            [   [1, ">"], [2, ">="], [3, "="], [4, "<="], [5, "<"], [6, "!="]   ],
         side:           [   [1, "是"], [2, "联盟"], [3, "部落"], [4, "双方"], [5, "无"]      ],
@@ -4324,6 +4327,7 @@ var LANG = {
     },
 
     fiitems: {
+        expansion:          "资料片",
         sepgeneral:              "一般",
         availabletoplayers:      "向玩家开放",
         avgbuyout:               "平均购买价",
@@ -4439,6 +4443,7 @@ var LANG = {
     },
 
     finpcs: {
+        expansion:          "资料片",
         sepgeneral:          "一般",
         canrepair:           "可维修",
         faction:             "阵营",
@@ -4487,6 +4492,7 @@ var LANG = {
     },
 
     fiobjects: {
+        expansion:          "资料片",
         sepgeneral:            "一般",
         foundin:               "发现于…",
         requiredskilllevel:    "需要等级能力（草药、矿脉、提箱）",
@@ -4507,6 +4513,7 @@ var LANG = {
     },
 
     fiquests: {
+        expansion:          "资料片",
         sepgeneral:              "一般",
         relatedevent:            "相关世界事件",
         daily:                   "日常",
@@ -4553,6 +4560,7 @@ var LANG = {
     },
 
     fispells: {
+        expansion:          "资料片",
         sepgeneral:                 "一般",
         prcntbasemanarequired:      "需 % 法力值",
         casttime:                   "施法时间",

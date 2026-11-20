@@ -136,6 +136,7 @@ $lang = array(
 
         // formating
         'colon'         => ': ',
+        'addedIn'       => "Added in",
         'dateFmtShort'  => "Y/m/d",
         'dateFmtLong'   => "Y/m/d \a\\t g:i A",
         'timeAgo'       => "%s ago",
@@ -369,7 +370,7 @@ $lang = array(
         'phases'        => "Phases",
         'mode'          => "Mode",
         'modes'         => [-1 => "Any", "Normal / Normal 10", "Heroic / Normal 25", "Heroic 10", "Heroic 25"],
-        'expansions'    => ["Classic", "The Burning Crusade", "Wrath of the Lich King"],
+        'expansions'    => ["Classic", "The Burning Crusade", "Wrath of the Lich King", 3 => "Cataclysm", 4 => "Mists of Pandaria", 5 => "Warlords of Draenor", 6 => "Legion", 7 => "Battle for Azeroth", 8 => "Shadowlands", 9 => "Dragonflight", 10 => "The War Within", 20 => "Temucraft", 21 => "Lost Lands", 22 => "Forever"],
         'stats'         => ["Strength", "Agility", "Stamina", "Intellect", "Spirit"],
         'timeAbbrev'    => array(                           // <time>S_ABBR
             '',

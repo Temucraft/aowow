@@ -1,0 +1,93 @@
+{
+  "_readme": [
+    "Rules for setup/tools/temucraft-expansions.py: which expansion each module's new rows come from.",
+    "Expansion values: 0-2 are what AoWoW already knows, 3-10 the later expansions, 20 and up our own content.",
+    "Each rule matches a module folder and, if given, a SQL file name (fnmatch patterns, first matching rule wins).",
+    "expansion: the value for the rows the rule matches; null means the module's rows are left alone (stock reworks).",
+    "id_ranges: [[first, last, expansion], ...] wins over expansion for ids in a range (for files with two expansions).",
+    "from_loot: true tags an item with the expansion of the rule whose loot drops it (Cataclysm or Mists loot).",
+    "maps: map ids that belong to the rule; spawn_maps: true also takes every map its creature/gameobject spawns use",
+    "that is not a stock 3.3.5 map. spell_refs: true tags the spells its creatures cast (creature_template_spell,",
+    "smart_scripts) when they are newer than 3.3.5 and no rule defines them. override_stock: true tags rows even when the id exists in the stock world database.",
+    "Add a new module by adding a rule above the catch-all ones at the end."
+  ],
+  "expansions": {
+    "0": "Classic",
+    "1": "The Burning Crusade",
+    "2": "Wrath of the Lich King",
+    "3": "Cataclysm",
+    "4": "Mists of Pandaria",
+    "5": "Warlords of Draenor",
+    "6": "Legion",
+    "7": "Battle for Azeroth",
+    "8": "Shadowlands",
+    "9": "Dragonflight",
+    "10": "The War Within",
+    "20": "Temucraft",
+    "21": "Lost Lands",
+    "22": "Forever"
+  },
+  "stock": {
+    "_readme": "Ids AoWoW already knows from stock 3.3.5a: never tagged. Creatures, objects, items and quests are checked against --stock-db or --stock-ids; spells up to spell_max are in the stock Spell.dbc.",
+    "spell_max": 80864,
+    "maps": [0, 1, 13, 25, 30, 33, 34, 35, 36, 37, 42, 43, 44, 47, 48, 70, 90, 109, 129, 169, 189, 209, 229, 230, 249,
+             269, 289, 309, 329, 349, 369, 389, 409, 429, 449, 450, 451, 469, 489, 509, 529, 530, 531, 532, 533, 534, 540,
+             542, 543, 544, 545, 546, 547, 548, 550, 552, 553, 554, 555, 556, 557, 558, 559, 560, 562, 564, 565, 566, 568,
+             571, 572, 573, 574, 575, 576, 578, 580, 582, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596,
+             597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 612, 613, 614, 615, 616, 617, 618, 619,
+             620, 621, 622, 623, 624, 628, 631, 632, 641, 642, 647, 649, 650, 658, 668, 672, 673, 712, 713, 718, 723, 724]
+  },
+  "rules": [
+    {
+      "label": "Cataclysm instances",
+      "module": "mod-temucraft-world", "file": "temucraft_world_cata.sql", "expansion": 3,
+      "maps": [644, 646, 657, 720, 721, 726, 730, 754, 755, 939, 1211], "spawn_maps": true, "spell_refs": true
+    },
+    {
+      "label": "Mists of Pandaria instances",
+      "module": "mod-temucraft-world", "file": "temucraft_world_mists.sql", "expansion": 4,
+      "maps": [870, 960, 980, 998, 1008, 1048, 1099, 1134, 1136, 1210, 1246], "spawn_maps": true, "spell_refs": true
+    },
+    {
+      "label": "Items of the Cataclysm and Mists instances",
+      "module": "mod-temucraft-world", "file": "temucraft_world_items.sql", "from_loot": true,
+      "expansion": 3, "id_ranges": [[80000, 199999, 4]]
+    },
+    {
+      "label": "Forever maps",
+      "module": "mod-temucraft-world", "file": "temucraft_world_instance_template.sql", "expansion": 22,
+      "maps": [2720, 2784, 2789, 2791, 2804, 2806, 2807, 2817, 2832, 2853, 2875, 2902, 2921, 2998, 2999, 3002, 3065, 3109]
+    },
+    {
+      "label": "Later expansion maps on the server (Legion shaman hall)",
+      "module": "mod-temucraft-world", "file": "temucraft_world_map_dbc.sql", "expansion": 6,
+      "maps": [1469]
+    },
+    {
+      "label": "Temucraft world data",
+      "module": "mod-temucraft-world", "expansion": 20
+    },
+    {
+      "label": "Lost Lands",
+      "module": "mod-temucraft-lostlands", "expansion": 21,
+      "maps": [26, 27, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817],
+      "spawn_maps": true
+    },
+    {
+      "label": "Stock reworks (individual progression)",
+      "module": "mod-individual-progression", "expansion": null
+    },
+    {
+      "label": "Playerbots",
+      "module": "mod-playerbots", "expansion": null
+    },
+    {
+      "label": "Temucraft modules",
+      "module": "mod-temucraft*", "expansion": 20
+    },
+    {
+      "label": "Other custom modules",
+      "module": "mod-*", "expansion": 20
+    }
+  ]
+}

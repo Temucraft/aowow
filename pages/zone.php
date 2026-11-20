@@ -45,6 +45,10 @@ class ZonePage extends GenericPage
 
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
+        // Temucraft: where it comes from (setup/temucraft/expansions.json)
+        if ($_ = $this->expansionInfo((int)$this->subject->getField('expansion'), true))
+            $infobox[] = $_;
+
         // City
         if ($this->subject->getField('flags') & 0x8 && !$parentArea)
             $infobox[] = Lang::zone('city');
@@ -501,7 +505,7 @@ class ZonePage extends GenericPage
             $this->map = false;
 
         $this->infobox    = $infobox ? '[ul][li]'.implode('[/li][li]', $infobox).'[/li][/ul]' : null;
-        $this->expansion  = Util::$expansionString[$this->subject->getField('expansion')];
+        $this->expansion  = Util::$expansionString[$this->subject->getField('expansion')] ?? null;
         $this->redButtons = array(
             BUTTON_WOWHEAD => true,
             BUTTON_LINKS   => ['type' => $this->type, 'typeId' => $this->typeId]

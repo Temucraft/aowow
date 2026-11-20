@@ -3830,6 +3830,9 @@ var LANG = {
     tooltip_genericrating: '<span class="q2">Equipé: Augmente votre $1 de <!--rtg$2-->$3&nbsp;<small>(<!--rtg%$2-->0&nbsp;@&nbsp;L<!--lvl-->0)</small>.</span><br />',
 
     fidropdowns: {
+        temuexpansion:  [   [0, "Standard 3.3.5"], [3, "Cataclysm"], [4, "Mists of Pandaria"], [5, "Warlords of Draenor"], [6, "Legion"],
+                            [7, "Battle for Azeroth"], [8, "Shadowlands"], [9, "Dragonflight"], [10, "The War Within"],
+                            [20, "Temucraft"], [21, "Lost Lands"], [22, "Forever"]   ],
         yn:             [   [1, "Oui"],                             [2, "Non"]                              ],
         num:            [   [1, ">"],                               [2, ">="],                              [3, "="],                               [4, "<="],                              [5, "<"],                              [6, "!="]],
         side:           [   [1, "Oui"],                             [2, "Alliance"],                        [3, "Horde"],                           [4, "Les deux"],                        [5, "Non"]                                      ],
@@ -4299,6 +4302,7 @@ var LANG = {
     },
 
     fiitems: {
+        expansion:          "Extension",
         sepgeneral:              "Général",
         availabletoplayers:      "Disponible pour les joueurs",
         avgbuyout:               "Prix d'achat immédiat moyen",
@@ -4414,6 +4418,7 @@ var LANG = {
     },
 
     finpcs: {
+        expansion:          "Extension",
         sepgeneral:          "Général",
         canrepair:           "Peut réparer",
         faction:             "Faction",
@@ -4462,6 +4467,7 @@ var LANG = {
     },
 
     fiobjects: {
+        expansion:          "Extension",
         sepgeneral:            "Général",
         foundin:               "Se trouve dans...",
         requiredskilllevel:    "Niveau de compétence requis (herbes/filons/cantines)",
@@ -4482,6 +4488,7 @@ var LANG = {
     },
 
     fiquests: {
+        expansion:          "Extension",
         sepgeneral:              "Général",
         relatedevent:            "Évènement mondial relié",
         daily:                   "Journalière",
@@ -4528,6 +4535,7 @@ var LANG = {
     },
 
     fispells: {
+        expansion:          "Extension",
         sepgeneral:                 "Général",
         prcntbasemanarequired:      "% du mana de base requis",
         casttime:                   "Incantation",

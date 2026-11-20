@@ -128,11 +128,17 @@ class NpcPage extends GenericPage
 
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
+        // Temucraft: where it comes from (setup/temucraft/expansions.json)
+        if ($_ = $this->expansionInfo((int)$this->subject->getField('expansion')))
+            $infobox[] = $_;
+
         // Expansion
         $_expVal   = (int)$this->subject->getField('exp');
         $_expIcons = [1 => 'bc', 2 => 'wotlk'];
         if ($_expVal && isset($_expIcons[$_expVal]))
             $this->expansion = $_expIcons[$_expVal];
+        if (($_ = (int)$this->subject->getField('expansion')) && isset(Util::$expansionString[$_]))
+            $this->expansion = Util::$expansionString[$_];  // Temucraft: where the NPC comes from wins over its stat expansion
 
         // Event (ignore events, where the object only gets removed)
         if ($_ = DB::World()->selectCol('SELECT DISTINCT ge.`eventEntry` FROM game_event ge, game_event_creature gec, creature c WHERE ge.`eventEntry` = gec.`eventEntry` AND c.`guid` = gec.`guid` AND c.`id` = ?d', $this->typeId))

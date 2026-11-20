@@ -407,6 +407,7 @@ abstract class SetupScript
     // FileGen + SQLGen
     protected $dbcSourceFiles     = [];                     // relies on these dbc files. Read into db if related table is missing
     protected $worldDependency    = [];                     // query when this table changed (--sync command)
+    protected $inputFiles         = [];                     // other files the result depends on (part of the --sql change check)
 
     protected $info               = [];                     // arr: 0 => self, n => genSteps        cmd => [[arr<str>:optionalArgs], int:argFlags, str:description]
     protected $setupAfter         = [[], []];               // [[sqlgen], [filegen]]                used to sort scripts that rely on each other being executed in the right order (script names are not nessecarily the same as their table names)
@@ -428,6 +429,11 @@ abstract class SetupScript
     public function getSelfDependencies() : array
     {
         return $this->setupAfter;
+    }
+
+    public function getInputFiles() : array
+    {
+        return $this->inputFiles;
     }
 
     public function getRemoteDependencies() : array

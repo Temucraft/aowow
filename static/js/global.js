@@ -1567,9 +1567,54 @@ function g_GetExpansionClassName(expansion) {
             return "icon-bc-right";
         case 2:
             return "icon-wotlk-right";
+        // Temucraft: our own text badges (static/css/aowow.css), see setup/temucraft/expansion-sources.json
+        case 3:
+            return "icon-cata-right";
+        case 4:
+            return "icon-mop-right";
+        case 5:
+            return "icon-wod-right";
+        case 6:
+            return "icon-legion-right";
+        case 7:
+            return "icon-bfa-right";
+        case 8:
+            return "icon-sl-right";
+        case 9:
+            return "icon-df-right";
+        case 10:
+            return "icon-tww-right";
+        case 20:
+            return "icon-temu-right";
+        case 21:
+            return "icon-lost-right";
+        case 22:
+            return "icon-forever-right";
     }
 
     return null;
+}
+
+// Temucraft: a badge to put after a name in a list (items, NPCs, objects, quests, spells); stock 3.3.5 (0) gets none
+function g_AddExpansionBadge(parent, expansion) {
+    var c = g_GetExpansionClassName(expansion | 0);
+    if (!c || expansion < 3) {
+        return;
+    }
+
+    var sp = $WH.ce('span');
+    sp.className = c + ' expansion-badge';
+    var names = LANG.fidropdowns && LANG.fidropdowns.temuexpansion;
+    if (names) {
+        for (var i = 0; i < names.length; ++i) {
+            if (names[i][0] == expansion) {
+                sp.title = names[i][1];
+            }
+        }
+    }
+
+    $WH.ae(parent, $WH.ct(' '));
+    $WH.ae(parent, sp);
 }
 
 function g_pickerWheel(evt) {
@@ -10203,6 +10248,11 @@ Listview.funcBox = {
         else if (line.expansion == 2) {
             str += ' wotlk wrath';
         }
+        else if (line.expansion) {                          // Temucraft: so the list search finds them
+            str += ({3: ' cata cataclysm', 4: ' mop mists pandaria', 5: ' wod draenor', 6: ' legion', 7: ' bfa',
+                     8: ' shadowlands', 9: ' dragonflight', 10: ' war within', 20: ' temucraft custom',
+                     21: ' lost lands', 22: ' forever'})[line.expansion] || '';
+        }
 
         return str;
     }
@@ -10625,6 +10675,7 @@ Listview.templates = {
 
                     var wrapper = $WH.ce('div');
                     $WH.ae(wrapper, a);
+                    g_AddExpansionBadge(wrapper, item.expansion);
 
                     if (item.reqclass) {
                         var d = $WH.ce('div');
@@ -11465,6 +11516,7 @@ Listview.templates = {
                         a.rel = 'map';
 
                     $WH.ae(wrapper, a);
+                    g_AddExpansionBadge(wrapper, npc.expansion);
 
                     if (npc.tag != null) {
                         var d = $WH.ce('div');
@@ -11706,6 +11758,7 @@ Listview.templates = {
                         a.rel = 'map';
 
                     $WH.ae(wrapper, a);
+                    g_AddExpansionBadge(wrapper, object.expansion);
 
                     if (object.method != null) {
                         td.style.position = 'relative';
@@ -11791,6 +11844,7 @@ Listview.templates = {
                     a.href = this.getItemLink(quest);
                     $WH.ae(a, $WH.ct(quest.name));
                     $WH.ae(wrapper, a);
+                    g_AddExpansionBadge(wrapper, quest.expansion);
 
                     if (quest.reqclass) {
                         var d = $WH.ce('div');
@@ -12652,6 +12706,7 @@ Listview.templates = {
                     $WH.ae(a, $WH.ct(spell.name.substring(1)));
 
                     $WH.ae(wrapper, a);
+                    g_AddExpansionBadge(wrapper, spell.expansion);
 
                     if (spell.rank) {
                         var d = $WH.ce('div');

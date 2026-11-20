@@ -86,6 +86,8 @@ class GameObjectList extends BaseType
 
         }
 
+        $this->addExpansion($data);
+
         return $data;
     }
 
@@ -145,12 +147,14 @@ class GameObjectListFilter extends Filter
 {
     public    $extraOpts     = [];
     protected $enums         = array(
+        19 => [0, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22], // expansion (Temucraft)
          1 => parent::ENUM_ZONE,
         16 => parent::ENUM_EVENT,
         50 => [1, 2, 3, 4, 663, 883]
     );
 
     protected $genericFilter = array(
+        19 => [parent::CR_ENUM, 'o.expansion', true, true], // expansion [enum] (Temucraft: setup/temucraft/expansions.json)
          1 => [parent::CR_ENUM,     's.areaId',        false,                true], // foundin
          2 => [parent::CR_CALLBACK, 'cbQuestRelation', 'startsQuests',       0x1 ], // startsquest [side]
          3 => [parent::CR_CALLBACK, 'cbQuestRelation', 'endsQuests',         0x2 ], // endsquest [side]
@@ -166,7 +170,7 @@ class GameObjectListFilter extends Filter
     );
 
     protected $inputFields = array(
-        'cr'  => [parent::V_LIST,  [[1, 5], 7, 11, 13, 15, 16, 18, 50],              true ], // criteria ids
+        'cr'  => [parent::V_LIST,  [[1, 5], 7, 11, 13, 15, 16, 18, 50, 19],              true ], // criteria ids
         'crs' => [parent::V_LIST,  [parent::ENUM_NONE, parent::ENUM_ANY, [0, 5000]], true ], // criteria operators
         'crv' => [parent::V_REGEX, parent::PATTERN_INT,                              true ], // criteria values - only numeric input values expected
         'na'  => [parent::V_REGEX, parent::PATTERN_NAME,                             false], // name - only printable chars, no delimiter

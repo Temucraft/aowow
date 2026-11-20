@@ -147,6 +147,10 @@ class ItemPage extends genericPage
 
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
+        // Temucraft: where it comes from (setup/temucraft/expansions.json)
+        if ($_ = $this->expansionInfo((int)$this->subject->getField('expansion')))
+            $infobox[] = $_;
+
         // itemlevel
         if ($_ilvl && in_array($_class, [ITEM_CLASS_ARMOR, ITEM_CLASS_WEAPON, ITEM_CLASS_AMMUNITION, ITEM_CLASS_GEM]))
             $infobox[] = Lang::game('level').Lang::main('colon').$_ilvl;

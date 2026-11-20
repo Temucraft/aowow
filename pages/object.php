@@ -63,6 +63,10 @@ class ObjectPage extends GenericPage
 
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
+        // Temucraft: where it comes from (setup/temucraft/expansions.json)
+        if ($_ = $this->expansionInfo((int)$this->subject->getField('expansion')))
+            $infobox[] = $_;
+
         // Event (ignore events, where the object only gets removed)
         if ($_ = DB::World()->selectCol('SELECT DISTINCT ge.eventEntry FROM game_event ge, game_event_gameobject geg, gameobject g WHERE ge.eventEntry = geg.eventEntry AND g.guid = geg.guid AND g.id = ?d', $this->typeId))
         {

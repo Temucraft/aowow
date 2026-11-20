@@ -244,6 +244,8 @@ class CreatureList extends BaseType
         }
 
         ksort($data);
+        $this->addExpansion($data);
+
         return $data;
     }
 
@@ -282,6 +284,7 @@ class CreatureListFilter extends Filter
 {
     public    $extraOpts     = null;
     protected $enums         = array(
+        45 => [0, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22], // expansion (Temucraft)
          3 => parent::ENUM_FACTION,                         // faction
          6 => parent::ENUM_ZONE,                            // foundin
         42 => parent::ENUM_FACTION,                         // increasesrepwith
@@ -290,6 +293,7 @@ class CreatureListFilter extends Filter
     );
 
     protected $genericFilter = array(
+        45 => [parent::CR_ENUM, 'ct.expansion', true, true], // expansion [enum] (Temucraft: setup/temucraft/expansions.json)
          1 => [parent::CR_CALLBACK, 'cbHealthMana',      'healthMax',               'healthMin'], // health [num]
          2 => [parent::CR_CALLBACK, 'cbHealthMana',      'manaMin',                 'manaMax'  ], // mana [num]
          3 => [parent::CR_CALLBACK, 'cbFaction',         null,                      null       ], // faction [enum]
@@ -329,7 +333,7 @@ class CreatureListFilter extends Filter
     );
 
     protected $inputFields = array(
-        'cr'    => [parent::V_LIST,     [[1, 3],[5, 12], 15, 16, [18, 25], [27, 29], [31, 35], 37, 38, [40, 44]], true ], // criteria ids
+        'cr'    => [parent::V_LIST,     [[1, 3],[5, 12], 15, 16, [18, 25], [27, 29], [31, 35], 37, 38, [40, 44], 45], true ], // criteria ids
         'crs'   => [parent::V_LIST,     [parent::ENUM_NONE, parent::ENUM_ANY, [0, 9999]],                         true ], // criteria operators
         'crv'   => [parent::V_REGEX,    parent::PATTERN_CRV,                                                      true ], // criteria values - only printable chars, no delimiter
         'na'    => [parent::V_REGEX,    parent::PATTERN_NAME,                                                     false], // name / subname - only printable chars, no delimiter

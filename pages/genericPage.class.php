@@ -648,6 +648,20 @@ class GenericPage
         }
     }
 
+    // Temucraft: "Added in: <expansion>" for the infobox, with its badge (expansion 0 is stock 3.3.5 unless $always)
+    protected function expansionInfo(int $exp, bool $always = false) : ?string
+    {
+        if (!$exp && !$always)
+            return null;
+
+        $name = Lang::exist('game', 'expansions', (string)$exp);
+        if (!is_string($name) || $name === '')
+            return null;
+
+        $css = Util::$expansionString[$exp] ?? null;
+        return Lang::main('addedIn').Lang::main('colon').($css ? '[span class=icon-'.$css.'-right]'.$name.'[/span]' : $name);
+    }
+
     protected function getCategoryFromUrl(string $urlParam) : void
     {
         $arr    = explode('.', $urlParam);

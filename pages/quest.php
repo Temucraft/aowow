@@ -89,6 +89,10 @@ class QuestPage extends GenericPage
 
         $infobox = Lang::getInfoBoxForFlags($this->subject->getField('cuFlags'));
 
+        // Temucraft: where it comes from (setup/temucraft/expansions.json)
+        if ($_ = $this->expansionInfo((int)$this->subject->getField('expansion')))
+            $infobox[] = $_;
+
         // event (todo: assign eventData)
         if ($_ = $this->subject->getField('eventId'))
         {

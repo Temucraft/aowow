@@ -135,6 +135,7 @@ $lang = array(
 
         // formating
         'colon'         => ": ",
+        'addedIn'       => "Добавлено в",
         'dateFmtShort'  => "Y-m-d",
         'dateFmtLong'   => "Y-m-d в g:i A",
         'timeAgo'       => '%s назад',
@@ -367,7 +368,7 @@ $lang = array(
         'phases'        => "Фазы",
         'mode'          => "Режим",
         'modes'         => [-1 => "Все", "Обычный / 10-норм.", "Героический / 25-норм.", "10-героич", "25-героич"],
-        'expansions'    => array("World of Warcraft", "The Burning Crusade", "Wrath of the Lich King"),
+        'expansions'    => array("World of Warcraft", "The Burning Crusade", "Wrath of the Lich King", 3 => "Cataclysm", 4 => "Mists of Pandaria", 5 => "Warlords of Draenor", 6 => "Legion", 7 => "Battle for Azeroth", 8 => "Shadowlands", 9 => "Dragonflight", 10 => "The War Within", 20 => "Temucraft", 21 => "Lost Lands", 22 => "Forever"),
         'stats'         => array("к силе", "к ловкости", "к выносливости", "к интеллекту", "к духу"),
         'timeAbbrev'    => array(
             '',

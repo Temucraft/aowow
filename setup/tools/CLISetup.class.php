@@ -565,7 +565,7 @@ class CLISetup
     {
         $parts = [$cmd, implode(',', array_map(fn($l) => $l->value, self::$locales)), (string)Cfg::get('LOCALES')];
 
-        $files = [(new ReflectionObject($ss))->getFileName(), 'setup/tools/setupScript.class.php', 'setup/tools/dbc.class.php', 'setup/tools/CLISetup.class.php'];
+        $files = [(new ReflectionObject($ss))->getFileName(), 'setup/tools/setupScript.class.php', 'setup/tools/dbc.class.php', 'setup/tools/CLISetup.class.php', ...$ss->getInputFiles()];
         foreach ($files as $f)
             $parts[] = basename($f).'@'.@filemtime($f).'/'.@filesize($f);
 
@@ -873,6 +873,8 @@ class CLISetup
 
     // write many rows with few statements: one INSERT / REPLACE per batch instead of one per row (far fewer round trips)
     //   $verb: 'INSERT', 'INSERT IGNORE' or 'REPLACE'; $cols: column names or null for all columns in table order
+    private static array $tableCols = [];
+
     public static function insertRows(string $verb, string $table, ?array $cols, array $rows) : void
     {
         if (!$rows)
@@ -880,6 +882,15 @@ class CLISetup
 
         $rows  = array_map('array_values', array_values($rows));
         $size  = max(1, strlen(serialize($rows[0])));
+
+        // rows without column names that are shorter than the table (a column was added at the end, like the
+        // Temucraft expansion column): name the columns they fill, the rest keep their default
+        if (!$cols && preg_match('/^\?_\w+$/', $table))
+        {
+            $tblCols = self::$tableCols[$table] ??= (DB::Aowow()->selectCol('SHOW COLUMNS FROM '.$table) ?: []);
+            if (count($tblCols) > count($rows[0]))
+                $cols = array_slice($tblCols, 0, count($rows[0]));
+        }
         $chunk = max(1, min(500, intdiv(4 << 20, $size)));     // ~4 MB per statement, well below max_allowed_packet
 
         foreach (array_chunk($rows, $chunk) as $part)

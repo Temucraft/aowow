@@ -359,6 +359,8 @@ class QuestList extends BaseType
             }
         }
 
+        $this->addExpansion($data);
+
         return $data;
     }
 
@@ -494,6 +496,7 @@ class QuestListFilter extends Filter
 {
     public    $extraOpts     = [];
     protected $enums         = array(
+        46 => [0, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22], // expansion (Temucraft)
         37 => parent::ENUM_CLASSS,                          // classspecific
         38 => parent::ENUM_RACE,                            // racespecific
          9 => parent::ENUM_FACTION,                         // objectiveearnrepwith
@@ -504,6 +507,7 @@ class QuestListFilter extends Filter
     );
 
     protected $genericFilter = array(
+        46 => [parent::CR_ENUM, 'q.expansion', true, true], // expansion [enum] (Temucraft: setup/temucraft/expansions.json)
          1 => [parent::CR_CALLBACK,  'cbReputation',     '>',                  null], // increasesrepwith
          2 => [parent::CR_NUMERIC,   'rewardXP',         NUM_CAST_INT              ], // experiencegained
          3 => [parent::CR_NUMERIC,   'rewardOrReqMoney', NUM_CAST_INT              ], // moneyrewarded
@@ -539,7 +543,7 @@ class QuestListFilter extends Filter
     );
 
     protected $inputFields = array(
-        'cr'    => [parent::V_RANGE, [1, 45],                                                             true ], // criteria ids
+        'cr'    => [parent::V_RANGE, [1, 46],                                                             true ], // criteria ids
         'crs'   => [parent::V_LIST,  [parent::ENUM_NONE, parent::ENUM_ANY, [0, 99999]],                   true ], // criteria operators
         'crv'   => [parent::V_REGEX, parent::PATTERN_INT,                                                 true ], // criteria values - only numerals
         'na'    => [parent::V_REGEX, parent::PATTERN_NAME,                                                false], // name / text - only printable chars, no delimiter

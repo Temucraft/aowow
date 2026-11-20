@@ -17,6 +17,7 @@ var fi_filters = {
         { id: 81,  name: 'fitsgemslot',         type: 'gem' },
         { id: 132, name: 'glyphtype',           type: 'glyphtype' },
         { id: 80,  name: 'hassockets',          type: 'gem' },
+        { id: 178, name: 'expansion',           type: 'temuexpansion-any', noweights: 1 },
         { id: 151, name: 'id',                  type: 'num', before: 'name', noweights: 1 },
         { id: 100, name: 'nsockets',            type: 'num', noweights: 1 },
         { id: 124, name: 'randomenchants',      type: 'str' },
@@ -215,6 +216,7 @@ var fi_filters = {
         { id: 8,   name: 'endsquest',           type: 'side' },
         { id: 34,  name: 'usemodel',            type: 'str-small' },
         { id: 35,  name: 'useskin',             type: 'str' },
+        { id: 45, name: 'expansion',           type: 'temuexpansion-any' },
         { id: 37,  name: 'id',                  type: 'num', before: 'name' },
 
         { id: 14,  name: 'seploot' },
@@ -253,6 +255,7 @@ var fi_filters = {
     objects: [
         { id: 8,   name: 'sepgeneral' },
         { id: 1,   name: 'foundin',             type: 'zone' },
+        { id: 19, name: 'expansion',           type: 'temuexpansion-any' },
         { id: 15,  name: 'id',                  type: 'num', before: 'name' },
         { id: 16,  name: 'relatedevent',        type: 'event-any+none' },
         { id: 7,   name: 'requiredskilllevel',  type: 'num' },
@@ -278,6 +281,7 @@ var fi_filters = {
         { id: 27,  name: 'daily',                   type: 'yn' },
         { id: 28,  name: 'weekly',                  type: 'yn' },
         { id: 29,  name: 'repeatable',              type: 'yn' },
+        { id: 46, name: 'expansion',           type: 'temuexpansion-any' },
         { id: 30,  name: 'id',                      type: 'num', before: 'name' },
         { id: 44,  name: 'countsforloremaster_stc', type: 'yn' },
         { id: 9,   name: 'objectiveearnrepwith',    type: 'faction-any+none' },
@@ -318,6 +322,7 @@ var fi_filters = {
 
     spells: [
         { id: 9999, name: 'sepgeneral'                                                     },
+        { id: 117,  name: 'expansion',              type: 'temuexpansion-any'                    },
         { id: 2,    name: 'prcntbasemanarequired',  type: 'num'                            },
         { id: 116,  name: 'onGlobalCooldown',       type: 'yn'                             },
         { id: 28,   name: 'casttime',               type: 'num'                            },

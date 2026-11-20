@@ -3830,6 +3830,9 @@ var LANG = {
     tooltip_genericrating: "<span class=\"q2\">На персонаже: Увеличивает $1 на <!--rtg$2-->$3&nbsp;<small>(<!--rtg%$2-->0&nbsp;@&nbsp;L<!--lvl-->0)</small>.</span><br />",
 
     fidropdowns: {
+        temuexpansion:  [   [0, "Стандарт 3.3.5"], [3, "Cataclysm"], [4, "Mists of Pandaria"], [5, "Warlords of Draenor"], [6, "Legion"],
+                            [7, "Battle for Azeroth"], [8, "Shadowlands"], [9, "Dragonflight"], [10, "The War Within"],
+                            [20, "Temucraft"], [21, "Lost Lands"], [22, "Forever"]   ],
         yn:             [   [1, "Да"],                              [2, "Нет"]                              ],
         num:            [   [1, ">"],                               [2, ">="],                              [3, "="],                               [4, "<="],                              [5, "<"],                              [6, "!="]],
         side:           [   [1, "Да"],                              [2, "Альянс"],                          [3, "Орда"],                            [4, "Обе"],                             [5, "Нет"]                                      ],
@@ -4299,6 +4302,7 @@ var LANG = {
     },
 
     fiitems: {
+        expansion:          "Дополнение",
         sepgeneral:              "Общее",
         availabletoplayers:      "Доступно игрокам",
         avgbuyout:               "Стоимость на аукционе",
@@ -4414,6 +4418,7 @@ var LANG = {
     },
 
     finpcs: {
+        expansion:          "Дополнение",
         sepgeneral:          "Общее",
         canrepair:           "Может ремонтировать",
         faction:             "Фракция",
@@ -4462,6 +4467,7 @@ var LANG = {
     },
 
     fiobjects: {
+        expansion:          "Дополнение",
         sepgeneral:            "Общее",
         foundin:               "Доступно в...",
         requiredskilllevel:    "Тебуется уровень профессии (травничество/горное дело/вскрытие замков)",
@@ -4482,6 +4488,7 @@ var LANG = {
     },
 
     fiquests: {
+        expansion:          "Дополнение",
         sepgeneral:              "Общее",
         relatedevent:            "Связанное игровое событие",
         daily:                   "Ежедневно",
@@ -4528,6 +4535,7 @@ var LANG = {
     },
 
     fispells: {
+        expansion:          "Дополнение",
         sepgeneral:                 "Общее",
         prcntbasemanarequired:      "Требуется % маны",
         casttime:                   "Применение",

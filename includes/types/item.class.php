@@ -465,6 +465,8 @@ class ItemList extends BaseType
             modelviewer {type:X, displayid:Y, slot:z} .. not sure, when to set
         */
 
+        $this->addExpansion($data);
+
         return $data;
     }
 
@@ -1774,6 +1776,7 @@ class ItemListFilter extends Filter
     public    $extraOpts     = [];                          // score for statWeights
     public    $wtCnd         = [];
     protected $enums         = array(
+        178 => [0, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22], // expansion (Temucraft)
          16 => parent::ENUM_ZONE,                           // drops in zone
          17 => parent::ENUM_FACTION,                        // requiresrepwith
          99 => parent::ENUM_PROFESSION,                     // requiresprof
@@ -1842,6 +1845,7 @@ class ItemListFilter extends Filter
     );
 
     protected $genericFilter = array(
+        178 => [parent::CR_ENUM, 'i.expansion', true, true], // expansion [enum] (Temucraft: setup/temucraft/expansions.json)
           2 => [parent::CR_CALLBACK,  'cbFieldHasVal',          'bonding',               1                 ], // bindonpickup [yn]
           3 => [parent::CR_CALLBACK,  'cbFieldHasVal',          'bonding',               2                 ], // bindonequip [yn]
           4 => [parent::CR_CALLBACK,  'cbFieldHasVal',          'bonding',               3                 ], // bindonuse [yn]
@@ -2005,7 +2009,7 @@ class ItemListFilter extends Filter
         'wtv'   => [parent::V_RANGE,    [1, 999],                                        true ], // weight values
         'jc'    => [parent::V_LIST,     [1],                                             false], // use jewelcrafter gems for weight calculation
         'gm'    => [parent::V_LIST,     [2, 3, 4],                                       false], // gem rarity for weight calculation
-        'cr'    => [parent::V_RANGE,    [1, 177],                                        true ], // criteria ids
+        'cr'    => [parent::V_RANGE,    [1, 178],                                        true ], // criteria ids
         'crs'   => [parent::V_LIST,     [parent::ENUM_NONE, parent::ENUM_ANY, [0, 99999]], true ], // criteria operators
         'crv'   => [parent::V_REGEX,    parent::PATTERN_CRV,                             true ], // criteria values - only printable chars, no delimiters
         'upg'   => [parent::V_REGEX,    '/[^\d:]/ui',                                    false], // upgrade item ids
