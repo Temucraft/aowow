@@ -127,6 +127,7 @@ $lang = array(
         'playerMap'     => "플레이어 지도",
         'missions'      => "Missions",
         'launcherNews'  => "소식",
+        'issues'        => "버그와 제안",
         'gearPlanner'   => "Gear Planner",
         'chooseClass'   => "Choose a class",
         'chooseFamily'  => "Choose a pet family",

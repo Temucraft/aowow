@@ -127,6 +127,7 @@ $lang = array(
         'playerMap'     => "玩家地圖",
         'missions'      => "任務",
         'launcherNews'  => "新聞",
+        'issues'        => "問題與建議",
         'gearPlanner'   => "裝備規劃",
         'chooseClass'   => "选择一个职业",
         'chooseFamily'  => "选择一个宠物家族",

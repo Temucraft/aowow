@@ -1369,6 +1369,7 @@ var mn_tools = [
     [19,"Player Map","?player-map"],
     [20,"Missions","?missions"],
     [21,"News","?news"],
+    [22,"Issues","?issues"],
     [11,"Raid Composition","?raid-composition"],
     [1,"Maps","?maps"],
     [,"Other",,,{colBreak:true}],

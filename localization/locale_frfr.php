@@ -126,6 +126,7 @@ $lang = array(
         'playerMap'     => "Carte des joueurs",
         'missions'      => "Missions",
         'launcherNews'  => "Actualités",
+        'issues'        => "Bugs et idées",
         'gearPlanner'   => "Planificateur d'équipement",
         'chooseClass'   => "Choisissez une classe",
         'chooseFamily'  => "Choisissez un familier",

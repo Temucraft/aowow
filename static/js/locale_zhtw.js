@@ -1238,6 +1238,7 @@ var mn_tools = [
     [19,"玩家地圖","?player-map"],
     [20,"任務","?missions"],
     [21,"新聞","?news"],
+    [22,"問題與建議","?issues"],
     [3,"物品比较","?compare"],
     [5,"Profiler","?profiler",[
         [0,"角色","?profiles"],

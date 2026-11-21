@@ -1,0 +1,24 @@
+/* Temucraft issues and feature requests (?issues) */
+.tool-issues .is-dim { color: #999; }
+.tool-issues .is-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+.tool-issues .is-form { border: 1px solid #444; border-radius: 6px; background: #141414; padding: 10px 12px; margin: 10px 0 18px; }
+.tool-issues .is-form h3 { margin: 0 0 6px; }
+.tool-issues .is-form input[type=text] { flex: 1; min-width: 240px; }
+.tool-issues textarea { width: 100%; box-sizing: border-box; }
+.tool-issues .is-msg { font-size: 12px; }
+.tool-issues .is-err { color: #ff6060; }
+.tool-issues .is-ok { color: #1eff00; }
+.tool-issues .is-filters input[type=text] { width: 200px; }
+.tool-issues .is-issue { border: 1px solid #333; border-radius: 4px; background: #1c1c1c; margin: 6px 0; }
+.tool-issues .is-open { border-color: #555; }
+.tool-issues .is-head { padding: 7px 10px; cursor: pointer; }
+.tool-issues .is-head:hover { background: #242424; }
+.tool-issues .is-arrow { color: #999; font-size: 11px; }
+.tool-issues .is-badge { display: inline-block; border: 1px solid; border-radius: 3px; padding: 0 5px; font-size: 11px; line-height: 16px; }
+.tool-issues .is-title { color: #ffd100; margin-left: 4px; }
+.tool-issues .is-meta { color: #888; font-size: 11px; margin-left: 8px; }
+.tool-issues .is-body { white-space: pre-wrap; word-wrap: break-word; padding: 6px 12px 8px; line-height: 1.5; }
+.tool-issues .is-reply { border-top: 1px solid #333; margin: 0 10px; padding-top: 6px; background: #181818; }
+.tool-issues .is-reply .is-meta { margin-left: 2px; }
+.tool-issues .is-staff { border-top: 1px dashed #555; margin: 6px 10px 10px; padding-top: 8px; }
+.tool-issues .is-del { color: #ff6060; font-size: 12px; }

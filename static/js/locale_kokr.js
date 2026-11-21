@@ -1369,6 +1369,7 @@ var mn_tools = [
     [19,"플레이어 지도","?player-map"],
     [20,"Missions","?missions"],
     [21,"소식","?news"],
+    [22,"버그와 제안","?issues"],
     [11,"Raid Composition","?raid-composition"],
     [1,"Maps","?maps"],
     [,"Other",,,{colBreak:true}],

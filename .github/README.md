@@ -29,6 +29,10 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
   `news_cache` seconds and shows the last good copy when the host is down (`setup/updates/2026_11_21_11.sql`).
   Changelog tags ([New], [Changed], [Fixed], [Removed], [Planned], [Not live yet]) have the launcher's colours.
   `?news=data` gives the same as JSON.
+- **Issues and feature requests** (Tools → Issues, `?issues`): signed in site users post a bug or a feature request
+  (title, kind, text); everyone can read them. Site admins and moderators set the status (open, planned, fixed, won't
+  fix), reply, and can delete spam. Posts need the session's key (no posting from other sites) and are limited per user
+  (`issues_post_*` in `aowow_config`). Tables `aowow_issues` and `aowow_issue_replies` (`setup/updates/2026_11_21_12.sql`).
 - **Expansion tags**: items, NPCs, objects, quests, spells and zones show where they come from: a small badge in the
   lists (CATA, MOP, TEMU for our own content, LOST for the Lost Lands, FOREVER for the Forever maps), "Added in" in
   the infobox and an "Expansion" filter. `setup/tools/temucraft-expansions.py` reads the module SQL and tags every new

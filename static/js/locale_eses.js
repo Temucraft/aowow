@@ -1192,6 +1192,7 @@ var mn_tools = [
     [19,"Mapa de jugadores","?player-map"],
     [20,"Misiones","?missions"],
     [21,"Noticias","?news"],
+    [22,"Errores e ideas","?issues"],
     [3,"Comparación de objetos","?compare"],
     [5,"Perfiles","?profiler",[
         [0,"Personajes","?profiles"],
