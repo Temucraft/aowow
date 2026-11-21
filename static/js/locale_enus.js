@@ -1367,6 +1367,7 @@ var mn_tools = [
     [17,"Temucraft Changes","?changes"],
     [18,"Realm Status","?realm-status"],
     [19,"Player Map","?player-map"],
+    [20,"Missions","?missions"],
     [11,"Raid Composition","?raid-composition"],
     [1,"Maps","?maps"],
     [,"Other",,,{colBreak:true}],

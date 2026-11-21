@@ -16,7 +16,13 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
 - **Companion page** (Tools → Companion, `?companion`): with the game account linked (same link as the quest
   tracker), each character's followers, offered and running missions, expeditions, key fragments and disguises; start
   a mission or collect finished ones from the browser. Orders go to the characters database
-  (`mod_temucraft_web_order`) and mod-temucraft-mission-table carries them out (at once if online, else at login).
+  (`mod_temucraft_web_order`) and mod-temucraft-followers carries them out (at once if online, else at login).
+  While you pick followers it shows the success chance the server will roll, with where each point comes from.
+- **Mission guide** (Tools → Missions, `?missions`, no account needed): every follower you can find and how, every
+  mission (threats, where, enemies, rewards, cooldown), the threats and who counters them, all traits, and a success
+  chance calculator. `static/js/missionchance.js` is a port of the module's formula (checked against its Python
+  twin); names and the trait table are in `includes/missions.class.php`. Keep both the same as
+  mod-temucraft-followers. The chance settings are `missions_*` in `aowow_config` (`setup/updates/2026_11_21_10.sql`).
 - **Expansion tags**: items, NPCs, objects, quests, spells and zones show where they come from: a small badge in the
   lists (CATA, MOP, TEMU for our own content, LOST for the Lost Lands, FOREVER for the Forever maps), "Added in" in
   the infobox and an "Expansion" filter. `setup/tools/temucraft-expansions.py` reads the module SQL and tags every new

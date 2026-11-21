@@ -125,6 +125,7 @@ $lang = array(
         'changes'       => "Temucraft Changes",
         'realmStatus'   => "Realm Status",
         'playerMap'     => "Player Map",
+        'missions'      => "Missions",
         'gearPlanner'   => "Gear Planner",
         'chooseClass'   => "Choose a class",
         'chooseFamily'  => "Choose a pet family",

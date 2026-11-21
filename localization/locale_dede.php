@@ -124,6 +124,7 @@ $lang = array(
         'changes'       => "Temucraft Changes",
         'realmStatus'   => "Realmstatus",
         'playerMap'     => "Spielerkarte",
+        'missions'      => "Missionen",
         'gearPlanner'   => "Ausrüstungsplaner",
         'chooseClass'   => "Wählt eine Klasse",
         'chooseFamily'  => "Wählt eine Tierart",

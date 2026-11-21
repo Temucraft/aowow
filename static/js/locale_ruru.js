@@ -1190,6 +1190,7 @@ var mn_tools = [
     [17,"Temucraft Changes","?changes"],
     [18,"Состояние миров","?realm-status"],
     [19,"Карта игроков","?player-map"],
+    [20,"Задания","?missions"],
     [3,"Сравнение предметов","?compare"],
     [5,"Профили персонажей","?profiler",[
         [0,"Просмотр","?profiles"],

@@ -3,15 +3,20 @@
  *
  * Your characters' followers, missions, expeditions and disguises, and missions to start or collect from the web.
  * Needs the game account linked to the site account (the same link as the quest tracker).
- * ?companion=data gives {now, chars: [{realm, guid, name, class, level, online, followers, offers, running,
- *   expeditions, wallet, disguises, orders}]}; ?companion=start / claim (POST) queue orders the server carries out.
+ * ?companion=data gives {now, names, settings, items, chars: [{realm, guid, name, class, level, online, followers,
+ *   offers, running, expeditions, wallet, disguises, orders}]}; ?companion=start / claim (POST) queue orders the
+ *   server carries out. The success chance shown while picking followers comes from missionchance.js (the same
+ *   formula as the server). Mission guide for everyone: ?missions.
  */
 var AoCompanion = (function () {
     var el, cfg, data = null, idx = 0, tab = 'missions', picked = {}, offer = null, timer = null;
     var ROLES = [[1, 'Tank'], [2, 'Healer'], [4, 'Damage']];
     var STATE = ['', 'on a mission', 'out as a companion'];
     var QUALITY = ['#9d9d9d', '#ffffff', '#1eff00', '#0070dd', '#a335ee', '#ff8000'];
-    var TYPES = ['', ' (patrol)', ' (treasure)', ' (rare)'];
+    function N() { return data.names; }
+    function threatNames(ids) { return ids.map(function (i) { return N().threats[i] || '?'; }); }
+    function traitNames(ids) { return ids.map(function (i) { return N().traits[i] ? N().traits[i][0] : '?'; }); }
+    function typeText(t) { return t ? ' (' + (N().types[t] || '').toLowerCase() + ')' : ''; }
 
     function esc(t) {
         return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
@@ -55,9 +60,12 @@ var AoCompanion = (function () {
         var h = '<div class="cp-cols"><div class="cp-col"><h3>Available missions</h3>';
         if (!c.offers.length) h += '<p class="cp-dim">No missions offered right now (visit a mission table in game to refresh the list).</p>';
         c.offers.forEach(function (o) {
-            h += '<a href="javascript:;" class="cp-row' + (offer == o.slot ? ' on' : '') + '" data-offer="' + o.slot + '"><b>' + esc(o.name) + TYPES[o.type] + '</b>' +
+            var where = [o.location, N().envs[o.env], o.enemy ? N().enemies[o.enemy] + ' enemies' : ''].filter(Boolean).join(' · ');
+            h += '<a href="javascript:;" class="cp-row' + (offer == o.slot ? ' on' : '') + '" data-offer="' + o.slot + '"><b>' + esc(o.name) + typeText(o.type) + '</b>' +
                 '<span>Level ' + o.level + (o.ilvl ? ', item level ' + o.ilvl : '') + ' · ' + o.slots + ' follower(s) · ' + time(o.duration) + ' · ' + gold(o.cost) + '</span>' +
-                '<span class="cp-dim">Threats: ' + (esc(o.threats.join(', ')) || 'none') + '</span></a>';
+                (where ? '<span class="cp-dim">' + esc(where) + '</span>' : '') +
+                '<span class="cp-dim">Threats: ' + (esc(threatNames(o.threats).join(', ')) || 'none') + '</span>' +
+                (o.requiredTrait ? '<span class="cp-dim">Needs a ' + esc(traitNames([o.requiredTrait])[0]) + '</span>' : '') + '</a>';
         });
         h += '</div><div class="cp-col">';
         var o = c.offers.filter(function (x) { return x.slot == offer; })[0];
@@ -67,12 +75,19 @@ var AoCompanion = (function () {
             h += '<h3>' + esc(o.name) + '</h3><p>Send ' + o.slots + ' follower(s). Followers who counter its threats raise the success chance.</p>';
             c.followers.forEach(function (f) {
                 if (f.state != 0 || !(f.mask & 1)) return;
-                var hit = f.counters.filter(function (x) { return o.threats.indexOf(x) != -1; });
+                var hit = threatNames(f.abilities.filter(function (x) { return o.threats.indexOf(x) != -1; }));
                 h += '<label class="cp-pick"><input type="checkbox" data-f="' + f.id + '"' + (picked[f.id] ? ' checked' : '') + (!picked[f.id] && n >= o.slots ? ' disabled' : '') + '> ' +
                     '<b style="color:' + QUALITY[f.quality] + '">' + esc(f.name) + '</b> level ' + f.level + ', ilvl ' + f.ilvl +
                     (hit.length ? ' <span class="cp-good">counters ' + esc(hit.join(', ')) + '</span>' : '') + '</label>';
             });
-            h += '<p><button class="cp-start"' + (n == o.slots ? '' : ' disabled') + '>Start mission</button> <span class="cp-msg"></span></p>';
+            var units = Object.keys(picked).map(function (id) {
+                var f = follower(c, id);
+                return { id: f.id, level: f.level, ilvl: f.ilvl, race: f.race, abilities: f.abilities, traits: f.traits };
+            });
+            var needs = o.requiredTrait && !units.some(function (u) { return u.traits.indexOf(o.requiredTrait) != -1; });
+            h += AoMissionChance.explain(AoMissionChance.compute(N().traits, o, units, data.settings), N(), function (id) { var f = follower(c, id); return f ? f.name : '?'; });
+            if (needs) h += '<p class="cp-msg">One of them must be a ' + esc(traitNames([o.requiredTrait])[0]) + '.</p>';
+            h += '<p><button class="cp-start"' + (n == o.slots && !needs ? '' : ' disabled') + '>Start mission</button> <span class="cp-msg"></span></p>';
         }
         h += '</div></div>';
         return h;
@@ -97,7 +112,7 @@ var AoCompanion = (function () {
         var h = '<h3>Followers</h3><table class="cp-table"><tr><th>Name</th><th>Roles</th><th>Level</th><th>Item level</th><th>Counters</th><th>Traits</th><th></th></tr>';
         c.followers.forEach(function (f) {
             h += '<tr><td style="color:' + QUALITY[f.quality] + '">' + esc(f.name) + '</td><td>' + roles(f.roles) + '</td><td>' + f.level + '</td><td>' + f.ilvl +
-                '</td><td>' + esc(f.counters.join(', ')) + '</td><td>' + esc(f.traits.join(', ')) + '</td><td class="cp-dim">' + STATE[f.state] + '</td></tr>';
+                '</td><td>' + esc(threatNames(f.abilities).join(', ')) + '</td><td>' + esc(traitNames(f.traits).join(', ')) + '</td><td class="cp-dim">' + STATE[f.state] + '</td></tr>';
         });
         if (!c.followers.length) h += '<tr><td colspan="7" class="cp-dim">No followers yet: talk to a mission table in game.</td></tr>';
         return h + '</table>';

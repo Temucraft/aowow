@@ -125,6 +125,7 @@ $lang = array(
         'changes'       => "Temucraft Changes",
         'realmStatus'   => "伺服器狀態",
         'playerMap'     => "玩家地圖",
+        'missions'      => "任務",
         'gearPlanner'   => "裝備規劃",
         'chooseClass'   => "选择一个职业",
         'chooseFamily'  => "选择一个宠物家族",

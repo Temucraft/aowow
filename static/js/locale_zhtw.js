@@ -1236,6 +1236,7 @@ var mn_tools = [
     [17,"Temucraft Changes","?changes"],
     [18,"伺服器狀態","?realm-status"],
     [19,"玩家地圖","?player-map"],
+    [20,"任務","?missions"],
     [3,"物品比较","?compare"],
     [5,"Profiler","?profiler",[
         [0,"角色","?profiles"],

@@ -3,6 +3,7 @@
 if (!defined('AOWOW_REVISION'))
     die('illegal access');
 
+require_once 'includes/missions.class.php';
 
 // tabId 1: Tools g_initHeader()
 // Temucraft companion: your characters' followers, missions, expeditions and disguises on the web, and missions to
@@ -17,17 +18,16 @@ class CompanionPage extends GenericPage
     protected $path     = [1, 16];
     protected $mode     = CACHE_TYPE_NONE;
     protected $scripts  = array(
+        [SC_JS_FILE,  'js/missionchance.js'],
         [SC_JS_FILE,  'js/companion.js'],
         [SC_CSS_FILE, 'css/tools.css'],
-        [SC_CSS_FILE, 'css/companion.css']
+        [SC_CSS_FILE, 'css/companion.css'],
+        [SC_CSS_FILE, 'css/missions.css']
     );
 
     protected $toolId   = 'companion';
     protected $toolInit = 'AoCompanion.init';
     protected $config   = [];
-
-    private const THREATS = ['', 'Hazardous Ground', 'Lethal Lackeys', 'Area Assault', 'Hexes', 'Crushing Blow', 'Hordes', 'Arcane Barrage', 'Race Against Time', 'Berserk Fury'];
-    private const TRAITS  = ['', 'Swift Feet', 'Gold Nose', 'Keen Mind', 'Lucky', 'Watchful'];
 
     public function __construct($pageCall, $pageParam)
     {
@@ -52,6 +52,7 @@ class CompanionPage extends GenericPage
         $this->name   = Lang::main('companion');
         $this->config = array(
             'host'     => Cfg::get('HOST_URL'),
+            'staticUrl'=> Cfg::get('STATIC_URL'),
             'loggedIn' => (bool)User::$id,
             'canLink'  => QuestCompletion::canLink(),
             'linked'   => (bool)QuestCompletion::account()
@@ -78,18 +79,16 @@ class CompanionPage extends GenericPage
             return ['error' => 'Link your game account first.', 'chars' => []];
 
         $world = DB::isConnectable(DB_WORLD) ? DB::World() : null;
-        $followerTpl = $missionTpl = $disguises = [];
-        if ($world && self::hasTable($world, 'mod_temucraft_follower_template'))
-            $followerTpl = $world->select('SELECT `id` AS ARRAY_KEY, `name`, `roles`, `abilities`, `traits` FROM mod_temucraft_follower_template') ?: [];
-        if ($world && self::hasTable($world, 'mod_temucraft_mission_template'))
-            $missionTpl = $world->select('SELECT `id` AS ARRAY_KEY, `name`, `type`, `level`, `item_level`, `duration`, `slots`, `threats`, `cost` FROM mod_temucraft_mission_template') ?: [];
+        $followerTpl = TemucraftMissions::followerTemplates();
+        $missionTpl  = TemucraftMissions::missionTemplates();
+        $disguises   = [];
         if ($world && self::hasTable($world, 'mod_temucraft_disguise'))
             $disguises = $world->select('SELECT `id` AS ARRAY_KEY, `name`, `required_level` FROM mod_temucraft_disguise') ?: [];
         $mapNames = DB::Aowow()->selectCol('SELECT `mapId` AS ARRAY_KEY, MIN(`name_loc0`) FROM ?_zones WHERE `mapId` > 1 AND `parentArea` = 0 GROUP BY `mapId`') ?: [];
 
-        $names = fn(string $csv, array $list) => array_values(array_filter(array_map(fn($i) => $list[(int)$i] ?? '', explode(',', $csv))));
         $now   = time();
-        $out   = ['now' => $now, 'chars' => []];
+        $out   = ['now' => $now, 'names' => TemucraftMissions::names(), 'settings' => TemucraftMissions::settings(), 'chars' => []];
+        $itemIds = [];
         foreach (QuestCompletion::characters() as [$realm, $guid, $name, $race, $class, $level, $realmName])
         {
             $db   = DB::Characters($realm);
@@ -102,9 +101,9 @@ class CompanionPage extends GenericPage
                 {
                     $t = $followerTpl[$f['template_id']] ?? null;
                     $char['followers'][] = array(
-                        'id' => (int)$f['id'], 'name' => $t['name'] ?? '?', 'roles' => (int)($t['roles'] ?? 4), 'level' => (int)$f['level'],
+                        'id' => (int)$f['id'], 'name' => $t['name'] ?? '?', 'roles' => $t['roles'] ?? 4, 'level' => (int)$f['level'],
                         'ilvl' => (int)$f['item_level'], 'quality' => (int)$f['quality'], 'state' => (int)$f['state'], 'mask' => (int)$f['activity_mask'],
-                        'counters' => $t ? $names($t['abilities'], self::THREATS) : [], 'traits' => $t ? $names($t['traits'], self::TRAITS) : []
+                        'race' => $t['race'] ?? 0, 'abilities' => $t['abilities'] ?? [], 'traits' => $t['traits'] ?? []
                     );
                 }
 
@@ -115,9 +114,10 @@ class CompanionPage extends GenericPage
                     if (!$t)
                         continue;
                     if (!$m['start_time'])
-                        $char['offers'][] = array('slot' => (int)$m['slot'], 'name' => $t['name'], 'type' => (int)$t['type'], 'level' => (int)$t['level'],
-                            'ilvl' => (int)$t['item_level'], 'duration' => (int)$t['duration'], 'slots' => (int)$t['slots'], 'cost' => (int)$t['cost'],
-                            'threats' => $names($t['threats'], self::THREATS));
+                    {
+                        $char['offers'][] = ['slot' => (int)$m['slot']] + $t;
+                        array_push($itemIds, $t['item'], $t['bonus']);
+                    }
                     else
                         $char['running'][] = array('slot' => (int)$m['slot'], 'name' => $t['name'], 'chance' => (int)$m['chance'],
                             'left' => max(0, (int)$m['end_time'] - $now), 'followers' => array_map('intval', array_filter(explode(',', $m['followers']))));
@@ -140,6 +140,7 @@ class CompanionPage extends GenericPage
 
             $out['chars'][] = $char;
         }
+        $out['items'] = (object)TemucraftMissions::items($itemIds);
         return $out;
     }
 

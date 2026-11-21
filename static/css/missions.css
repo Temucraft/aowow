@@ -1,0 +1,24 @@
+/* Temucraft mission table guide (?missions) and the chance box on ?companion */
+.tool-missions .ms-tabs { border-bottom: 1px solid #444; margin: 10px 0; }
+.tool-missions .ms-tabs a { display: inline-block; padding: 6px 12px; margin-right: 4px; border: 1px solid #444; border-bottom: none; border-radius: 4px 4px 0 0; }
+.tool-missions .ms-tabs a.on { background: #2a2410; color: #ffd100; }
+.tool-missions .ms-filter { margin: 6px 0 10px; }
+.tool-missions .ms-filter input, .tool-missions .ms-filter select { margin-right: 8px; }
+.tool-missions .ms-table { width: 100%; border-collapse: collapse; }
+.tool-missions .ms-table td, .tool-missions .ms-table th { padding: 4px 6px; border-bottom: 1px solid #333; text-align: left; vertical-align: top; }
+.tool-missions .ms-table th { color: #ffd100; cursor: pointer; white-space: nowrap; }
+.tool-missions .ms-dim, .ms-chance .ms-dim { color: #999; }
+.tool-missions .ms-good, .ms-chance .ms-good { color: #1eff00; }
+.tool-missions .ms-bad, .ms-chance .ms-bad { color: #ff6060; }
+.tool-missions .ms-tag { display: inline-block; padding: 0 5px; margin: 1px 2px 1px 0; border: 1px solid #555; border-radius: 3px; font-size: 11px; white-space: nowrap; }
+.tool-missions .ms-tag.hit { border-color: #1eff00; color: #1eff00; }
+.tool-missions .ms-cols { display: flex; gap: 16px; flex-wrap: wrap; }
+.tool-missions .ms-col { flex: 1; min-width: 300px; }
+.tool-missions .ms-unit { padding: 6px 8px; margin-bottom: 6px; border: 1px solid #333; border-radius: 4px; }
+.tool-missions .ms-unit select, .tool-missions .ms-unit input { margin: 2px 4px 2px 0; }
+.tool-missions .ms-unit input[type=number] { width: 52px; }
+.tool-missions .ms-icon { width: 18px; height: 18px; vertical-align: middle; margin-right: 3px; }
+.ms-chance { padding: 8px 10px; margin: 8px 0; border: 1px solid #444; border-radius: 4px; background: #161616; }
+.ms-chance .ms-big { font-size: 22px; font-weight: bold; }
+.ms-chance table { border-collapse: collapse; margin-top: 4px; }
+.ms-chance td { padding: 1px 8px 1px 0; }
