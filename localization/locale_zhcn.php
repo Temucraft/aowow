@@ -126,6 +126,7 @@ $lang = array(
         'realmStatus'   => "服务器状态",
         'playerMap'     => "玩家地图",
         'missions'      => "任务",
+        'launcherNews'  => "新闻",
         'gearPlanner'   => "装备规划",
         'chooseClass'   => "选择一个职业",
         'chooseFamily'  => "选择一个宠物家族",

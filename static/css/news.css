@@ -1,0 +1,16 @@
+/* Temucraft launcher news (?news) */
+.tool-news .nw-dim { color: #999; }
+.tool-news .nw-cols { display: flex; flex-wrap: wrap; gap: 24px; }
+.tool-news .nw-col { flex: 1 1 380px; min-width: 0; }
+.tool-news .nw-col h2 { margin: 8px 0 4px; }
+.tool-news .nw-date { margin: 14px 0 4px; font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
+.tool-news .nw-item { border: 1px solid #444; border-radius: 6px; background: #141414; padding: 10px 12px; margin: 0 0 10px; }
+.tool-news .nw-title { font-size: 15px; font-weight: bold; color: #ffd100; margin-bottom: 4px; }
+.tool-news .nw-num { color: #999; font-weight: normal; }
+.tool-news .nw-line { line-height: 1.5; white-space: pre-wrap; }
+.tool-news .nw-more { cursor: pointer; }
+.tool-news .nw-more:hover { color: #fff; }
+.tool-news .nw-arrow { color: #999; font-size: 11px; }
+.tool-news .nw-details { margin: 2px 0 4px 22px; padding: 0; color: #ccc; }
+.tool-news .nw-tag { font-weight: bold; }
+.tool-news .nw-link { margin-top: 6px; font-size: 12px; }

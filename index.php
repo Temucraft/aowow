@@ -98,6 +98,7 @@ switch ($pageCall)
     case 'raid-composition':                                // tool: raid buffs and debuffs of a group
         if ($pageCall == 'raid-composition')
             $altClass = 'raidcomposition';
+    case 'news':                                            // tool: the launcher's news and changelog
     case 'missions':                                        // tool: mission table guide (followers, missions, traits, chance calculator)
     case 'realm-status':                                    // tool: realms up or down, players online, peak, uptime
     case 'screenshot':                                      // prepare uploaded screenshots

@@ -23,6 +23,12 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
   chance calculator. `static/js/missionchance.js` is a port of the module's formula (checked against its Python
   twin); names and the trait table are in `includes/missions.class.php`. Keep both the same as
   mod-temucraft-followers. The chance settings are `missions_*` in `aowow_config` (`setup/updates/2026_11_21_10.sql`).
+- **Launcher news** (Tools → News, `?news`): the news and changelog the launcher shows, read from the same
+  `news.json` and `changelog.json` on the server's file host. Set `news_source` in `aowow_config` to the address of
+  the folder the launcher's `manifest.json` is in, or to that folder on this machine; the site keeps a copy for
+  `news_cache` seconds and shows the last good copy when the host is down (`setup/updates/2026_11_21_11.sql`).
+  Changelog tags ([New], [Changed], [Fixed], [Removed], [Planned], [Not live yet]) have the launcher's colours.
+  `?news=data` gives the same as JSON.
 - **Expansion tags**: items, NPCs, objects, quests, spells and zones show where they come from: a small badge in the
   lists (CATA, MOP, TEMU for our own content, LOST for the Lost Lands, FOREVER for the Forever maps), "Added in" in
   the infobox and an "Expansion" filter. `setup/tools/temucraft-expansions.py` reads the module SQL and tags every new

@@ -126,6 +126,7 @@ $lang = array(
         'realmStatus'   => "서버 상태",
         'playerMap'     => "플레이어 지도",
         'missions'      => "Missions",
+        'launcherNews'  => "소식",
         'gearPlanner'   => "Gear Planner",
         'chooseClass'   => "Choose a class",
         'chooseFamily'  => "Choose a pet family",

@@ -125,6 +125,7 @@ $lang = array(
         'realmStatus'   => "Состояние миров",
         'playerMap'     => "Карта игроков",
         'missions'      => "Задания",
+        'launcherNews'  => "Новости",
         'gearPlanner'   => "Планировщик экипировки",
         'chooseClass'   => "Выберите класс",
         'chooseFamily'  => "Выберите семейство питомцев",

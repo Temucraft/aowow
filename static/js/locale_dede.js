@@ -1191,6 +1191,7 @@ var mn_tools = [
     [18,"Realmstatus","?realm-status"],
     [19,"Spielerkarte","?player-map"],
     [20,"Missionen","?missions"],
+    [21,"Neuigkeiten","?news"],
     [3,"Gegenstandsvergleich","?compare"],
     [5,"Profiler","?profiler",[
         [0,"Charaktere","?profiles"],

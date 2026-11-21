@@ -1237,6 +1237,7 @@ var mn_tools = [
     [18,"服务器状态","?realm-status"],
     [19,"玩家地图","?player-map"],
     [20,"任务","?missions"],
+    [21,"新闻","?news"],
     [3,"物品比较","?compare"],
     [5,"Profiler","?profiler",[
         [0,"角色","?profiles"],

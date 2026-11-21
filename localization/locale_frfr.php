@@ -125,6 +125,7 @@ $lang = array(
         'realmStatus'   => "Statut des royaumes",
         'playerMap'     => "Carte des joueurs",
         'missions'      => "Missions",
+        'launcherNews'  => "Actualités",
         'gearPlanner'   => "Planificateur d'équipement",
         'chooseClass'   => "Choisissez une classe",
         'chooseFamily'  => "Choisissez un familier",

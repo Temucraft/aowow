@@ -1191,6 +1191,7 @@ var mn_tools = [
     [18,"Statut des royaumes","?realm-status"],
     [19,"Carte des joueurs","?player-map"],
     [20,"Missions","?missions"],
+    [21,"Actualités","?news"],
     [3,"Comparaison d'objets","?compare"],
     [5,"Profiler","?profiler",[
         [0,"Consulter","?profiles"],

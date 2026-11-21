@@ -125,6 +125,7 @@ $lang = array(
         'realmStatus'   => "Realmstatus",
         'playerMap'     => "Spielerkarte",
         'missions'      => "Missionen",
+        'launcherNews'  => "Neuigkeiten",
         'gearPlanner'   => "Ausrüstungsplaner",
         'chooseClass'   => "Wählt eine Klasse",
         'chooseFamily'  => "Wählt eine Tierart",
