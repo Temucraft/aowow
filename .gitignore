@@ -49,6 +49,7 @@
 /static/images/wow/loadingscreens/*
 /static/images/wow/maps/*
 !/static/images/wow/maps/overlay*
+!/static/images/wow/maps/poi
 /static/images/wow/talents/icons/*
 /static/images/wow/talents/backgrounds/*
 

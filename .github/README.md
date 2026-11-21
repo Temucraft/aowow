@@ -33,6 +33,10 @@ modules). On top of AoWoW it has the 3D viewer, dressing room, map and transport
   (title, kind, text); everyone can read them. Site admins and moderators set the status (open, planned, fixed, won't
   fix), reply, and can delete spam. Posts need the session's key (no posting from other sites) and are limited per user
   (`issues_post_*` in `aowow_config`). Tables `aowow_issues` and `aowow_issue_replies` (`setup/updates/2026_11_21_12.sql`).
+- **Map POI icons** (`static/images/wow/maps/poi/*.png`, used by the map page's townsfolk, vendor, travel and location
+  pins): made by `setup/tools/temucraft-poi-icons.py` from the 3.3.5 client's own minimap tracking, gossip and PvP
+  icons (extract those Interface files first); barber, portal, meeting stone, dungeon, raid, boat and zeppelin pins
+  have no small client icon and are drawn by the script.
 - **Expansion tags**: items, NPCs, objects, quests, spells and zones show where they come from: a small badge in the
   lists (CATA, MOP, TEMU for our own content, LOST for the Lost Lands, FOREVER for the Forever maps), "Added in" in
   the infobox and an "Expansion" filter. `setup/tools/temucraft-expansions.py` reads the module SQL and tags every new
