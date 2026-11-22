@@ -4637,115 +4637,115 @@ html[data-mode="light"] [id^="mapper-zone-"] a.selected { color: #000 !important
 /* Temucraft expansion badges: our own text badges (no game logos), for expansion 3 and up and our own content.
    g_GetExpansionClassName() in global.js gives icon-<x>-right; setup/temucraft/expansion-sources.json names them. */
 .icon-cata {
-    padding-left: 37px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='13'%20viewBox='0%200%2032%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='31'%20height='12'%20rx='3'%20fill='%23b5481f'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='16'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ECATA%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 43px;
+    background: url(../images/icons/expansions/cata.gif) left center / auto 12px no-repeat;
 }
 
 .icon-cata-right {
-    padding-right: 37px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='13'%20viewBox='0%200%2032%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='31'%20height='12'%20rx='3'%20fill='%23b5481f'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='16'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ECATA%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 43px;
+    background: url(../images/icons/expansions/cata.gif) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-cata-right {
-    padding-right: 37px;
+    padding-right: 43px;
 }
 
 .icon-mop {
-    padding-left: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%231d8a63'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EMOP%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 44px;
+    background: url(../images/icons/expansions/mop.png) left center / auto 12px no-repeat;
 }
 
 .icon-mop-right {
-    padding-right: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%231d8a63'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EMOP%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 44px;
+    background: url(../images/icons/expansions/mop.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-mop-right {
-    padding-right: 31px;
+    padding-right: 44px;
 }
 
 .icon-wod {
-    padding-left: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%238a5a2b'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EWOD%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 61px;
+    background: url(../images/icons/expansions/wod.png) left center / auto 12px no-repeat;
 }
 
 .icon-wod-right {
-    padding-right: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%238a5a2b'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EWOD%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 61px;
+    background: url(../images/icons/expansions/wod.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-wod-right {
-    padding-right: 31px;
+    padding-right: 61px;
 }
 
 .icon-legion {
-    padding-left: 49px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='44'%20height='13'%20viewBox='0%200%2044%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='43'%20height='12'%20rx='3'%20fill='%234b8a1d'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='22'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ELEGION%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 74px;
+    background: url(../images/icons/expansions/legion.png) left center / auto 12px no-repeat;
 }
 
 .icon-legion-right {
-    padding-right: 49px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='44'%20height='13'%20viewBox='0%200%2044%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='43'%20height='12'%20rx='3'%20fill='%234b8a1d'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='22'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ELEGION%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 74px;
+    background: url(../images/icons/expansions/legion.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-legion-right {
-    padding-right: 49px;
+    padding-right: 74px;
 }
 
 .icon-bfa {
-    padding-left: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%232b58a8'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EBFA%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 46px;
+    background: url(../images/icons/expansions/bfa.png) left center / auto 12px no-repeat;
 }
 
 .icon-bfa-right {
-    padding-right: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%232b58a8'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EBFA%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 46px;
+    background: url(../images/icons/expansions/bfa.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-bfa-right {
-    padding-right: 31px;
+    padding-right: 46px;
 }
 
 .icon-sl {
-    padding-left: 25px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='13'%20viewBox='0%200%2020%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='19'%20height='12'%20rx='3'%20fill='%2355607e'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='10'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ESL%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 41px;
+    background: url(../images/icons/expansions/sl.png) left center / auto 12px no-repeat;
 }
 
 .icon-sl-right {
-    padding-right: 25px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='13'%20viewBox='0%200%2020%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='19'%20height='12'%20rx='3'%20fill='%2355607e'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='10'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ESL%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 41px;
+    background: url(../images/icons/expansions/sl.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-sl-right {
-    padding-right: 25px;
+    padding-right: 41px;
 }
 
 .icon-df {
-    padding-left: 25px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='13'%20viewBox='0%200%2020%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='19'%20height='12'%20rx='3'%20fill='%23b07a1f'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='10'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EDF%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 34px;
+    background: url(../images/icons/expansions/df.png) left center / auto 12px no-repeat;
 }
 
 .icon-df-right {
-    padding-right: 25px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='13'%20viewBox='0%200%2020%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='19'%20height='12'%20rx='3'%20fill='%23b07a1f'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='10'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3EDF%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 34px;
+    background: url(../images/icons/expansions/df.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-df-right {
-    padding-right: 25px;
+    padding-right: 34px;
 }
 
 .icon-tww {
-    padding-left: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%237c5aa8'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ETWW%3C/text%3E%3C/svg%3E") left center no-repeat;
+    padding-left: 39px;
+    background: url(../images/icons/expansions/tww.png) left center / auto 12px no-repeat;
 }
 
 .icon-tww-right {
-    padding-right: 31px;
-    background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='26'%20height='13'%20viewBox='0%200%2026%2013'%3E%3Crect%20x='0.5'%20y='0.5'%20width='25'%20height='12'%20rx='3'%20fill='%237c5aa8'%20stroke='rgba(0,0,0,.45)'/%3E%3Ctext%20x='13'%20y='9.6'%20text-anchor='middle'%20font-family='Verdana,Arial,sans-serif'%20font-size='8'%20font-weight='bold'%20fill='white'%3ETWW%3C/text%3E%3C/svg%3E") right center no-repeat;
+    padding-right: 39px;
+    background: url(../images/icons/expansions/tww.png) right center / auto 12px no-repeat;
 }
 
 .menu a.icon-tww-right {
-    padding-right: 31px;
+    padding-right: 39px;
 }
 
 .icon-temu {
