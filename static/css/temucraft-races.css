@@ -1,0 +1,11 @@
+/* Temucraft: Races page grid (static/js/temucraft-races.js) */
+table.temucraft-race-grid { width: 100%; border-collapse: collapse; margin: 8px 0 4px; }
+table.temucraft-race-grid th { text-align: left; padding: 6px 10px; font-size: 13px; border-bottom: 1px solid #404040; }
+table.temucraft-race-grid td { padding: 8px 10px; height: 52px; vertical-align: middle; border-bottom: 1px solid #262626; }
+table.temucraft-race-grid tr:hover td { background: rgba(255, 255, 255, 0.03); }
+table.temucraft-race-grid td.race { white-space: nowrap; font-size: 14px; font-family: Verdana, sans-serif; }
+table.temucraft-race-grid td.race .icons { float: left; margin-right: 10px; }
+table.temucraft-race-grid td.race .icons .iconmedium { float: left; margin-right: 2px; }
+table.temucraft-race-grid td.race a { line-height: 44px; }
+table.temucraft-race-grid td.classes .iconsmall { float: left; margin: 2px; }
+table.temucraft-race-grid .side-start { border-left: 2px solid #404040; }

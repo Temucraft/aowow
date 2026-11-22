@@ -15,6 +15,7 @@ class RacesPage extends GenericPage
     protected $path          = [0, 13];
     protected $tabId         = 0;
     protected $mode          = CACHE_TYPE_PAGE;
+    protected $scripts       = [[SC_JS_FILE, 'js/temucraft-races.js'], [SC_CSS_FILE, 'css/temucraft-races.css']];
 
     public function __construct($pageCall, $pageParam)
     {
@@ -34,6 +35,14 @@ class RacesPage extends GenericPage
         $races = new CharRaceList($conditions);
         if (!$races->error)
             $data = array_values($races->getListviewData());
+
+        // Alliance | Classes | Horde | Classes: each side's races in a column, the classes they can be next to them
+        // (drawn in the browser with the site's own icons; the plain list stays below for sorting)
+        $this->extraHTML = '<div id="race-grid"></div>'.
+            '<script type="text/javascript">//<![CDATA['."\n".
+            'Temucraft_RaceGrid('.Util::toJSON($data).');'."\n".
+            '//]]></script>'.
+            '<div class="pad2"></div>';
 
         $this->lvTabs[] = [CharRaceList::$brickFile, ['data' => $data]];
     }

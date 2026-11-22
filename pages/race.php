@@ -103,7 +103,7 @@ class RacePage extends GenericPage
         /****************/
 
         $this->infobox    = '[ul][li]'.implode('[/li][li]', $infobox).'[/li][/ul]';
-        $this->expansion  = Util::$expansionString[$this->subject->getField('expansion')];
+        $this->expansion  = Util::$expansionString[CharRaceList::expansion($this->typeId, (int)$this->subject->getField('expansion'))] ?? null;
         $this->headIcons  = ['race_'.$ra->json().'_male', 'race_'.$ra->json().'_female'];
         $this->redButtons = array(
             BUTTON_WOWHEAD => true,
@@ -131,20 +131,52 @@ class RacePage extends GenericPage
         // Racials — by the race's own racial skill line (SkillLine.dbc): the race masks of some racials also
         // include other races (e.g. Draenei racials showed up on Humans)
         $racialSkill = [1 => 754, 2 => 125, 3 => 101, 4 => 126, 5 => 220, 6 => 124, 7 => 753, 8 => 733, 10 => 756, 11 => 760];
-        $conditions = isset($racialSkill[$this->typeId]) ? array(
-            ['typeCat', -4],                               // racial traits
-            ['skillLine1', $racialSkill[$this->typeId]]
-        ) : array(
-            ['typeCat', -4],
-            ['reqRaceMask', $ra->toMask(), '&']
-        );
+        // custom races: only the racials they start with, from the racial skill lines they get at creation
+        // (playercreateinfo_skills). Their racials' race masks include almost every race (WHE opens them up), so the
+        // mask alone listed everything a race can learn. Pandaren (13, 14) keep the full list: they can pick any racial.
+        $startSkills = [];
+        if (!isset($racialSkill[$this->typeId]) && !in_array($this->typeId, [13, 14]))
+            $startSkills = DB::World()->selectCol('SELECT DISTINCT `skill` FROM playercreateinfo_skills WHERE `raceMask` & ?d', $ra->toMask()) ?: [];
+        if (isset($racialSkill[$this->typeId]))
+            $conditions = array(
+                ['typeCat', -4],                               // racial traits
+                ['skillLine1', $racialSkill[$this->typeId]]
+            );
+        else if ($startSkills)
+            $conditions = array(
+                ['typeCat', -4],
+                ['skillLine1', $startSkills]
+            );
+        else
+            $conditions = array(
+                ['typeCat', -4],
+                ['reqRaceMask', $ra->toMask(), '&']
+            );
 
         $racials = new SpellList($conditions);
         if (!$racials->error)
         {
             $this->extendGlobalData($racials->getJSGlobals());
+            $racialData = $racials->getListviewData();
+            // a racial with one version per class (Arcane Torrent: mana, energy, runic power...) gets the class in its
+            // name, so the versions sort together and say who they're for
+            $byName = [];
+            foreach ($racials->iterate() as $id => $tpl)
+                $byName[$racials->getField('name', true)][] = $id;
+            foreach ($byName as $name => $ids)
+            {
+                if (count($ids) < 2)
+                    continue;
+                foreach ($ids as $id)
+                {
+                    $mask  = (int)($racials->getEntry($id)['reqClassMask'] ?? 0);
+                    $names = $mask ? array_map(fn($c) => Lang::game('cl', $c), ChrClass::fromMask($mask)) : [];
+                    if ($names && isset($racialData[$id]['name']))
+                        $racialData[$id]['name'] .= ' ('.implode(', ', array_filter($names)).')';
+                }
+            }
             $this->lvTabs[] = [SpellList::$brickFile, array(
-                'data'       => array_values($racials->getListviewData()),
+                'data'       => array_values($racialData),
                 'id'         => 'racial-traits',
                 'name'       => '$LANG.tab_racialtraits',
                 'hiddenCols' => ['reagents'],
