@@ -265,7 +265,7 @@ class User
                     if ($wow['hasBan'])
                         return AUTH_BANNED;
 
-                    if ($_ = self::checkOrCreateInDB($wow['id'], $name))
+                    if ($_ = self::checkOrCreateInDB($wow['id'], $name, self::gmUserGroups($wow['id'])))
                         $user = $_;
                     else
                         return AUTH_INTERNAL_ERR;
@@ -300,7 +300,7 @@ class User
                             throw new Exception('User is banned', AUTH_BANNED);
                 
                         // Check or create user in the database
-                        if (!($_ = self::checkOrCreateInDB($wow['id'], $name)))
+                        if (!($_ = self::checkOrCreateInDB($wow['id'], $name, self::gmUserGroups($wow['id']))))
                             throw new Exception('Internal error', AUTH_INTERNAL_ERR);
                 
                         $user = $_;
@@ -359,6 +359,15 @@ class User
     }
 
     // create a linked account for our settings if necessary
+    // Temucraft: a game account with any GM level is a site admin (like the old site-only admin account); losing the GM
+    // level takes it away again. The account's other site groups stay as they are.
+    private static function gmUserGroups(int $extId) : int
+    {
+        $gm      = (int)DB::Auth()->selectCell('SELECT MAX(`gmlevel`) FROM account_access WHERE `id` = ?d', $extId);
+        $current = (int)DB::Aowow()->selectCell('SELECT `userGroups` FROM ?_account WHERE `extId` = ?d', $extId);
+        return $gm > 0 ? ($current | U_GROUP_ADMIN) : ($current & ~U_GROUP_ADMIN);
+    }
+
     private static function checkOrCreateInDB(int $extId, string $name, int $userGroup = -1) : int
     {
         if ($_ = DB::Aowow()->selectCell('SELECT `id` FROM ?_account WHERE `extId` = ?d', $extId))

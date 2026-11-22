@@ -55,7 +55,9 @@
                     </table>
 
                     <br>
+<?php if (Cfg::get('ACC_AUTH_MODE') == AUTH_MODE_SELF): /* Temucraft: game accounts are recovered in the game, not here */ ?>
                     <div style="position: absolute; right: 5px; bottom: 5px;"><?=Lang::account('forgot').Lang::main('colon'); ?><a href="?account=forgotusername"><?=Lang::account('forgotUser'); ?></a> | <a href="?account=forgotpassword"><?=Lang::account('forgotPass'); ?></a></div>
+<?php endif; ?>
                 </div>
             </form>
 
