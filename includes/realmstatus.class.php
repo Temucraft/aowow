@@ -34,6 +34,17 @@ class RealmStatus
         return $v === null || $v === false || $v === '' ? $default : (int)$v;
     }
 
+    public static function cfgStr(string $key, string $default) : string
+    {
+        $v = DB::Aowow()->selectCell('SELECT `value` FROM ?_config WHERE `key` = ?', $key);
+        return $v === null || $v === false || $v === '' ? $default : (string)$v;
+    }
+
+    public const KIND_PLAYER = 0;                           // a real player
+    public const KIND_RNDBOT = 1;                           // a random bot (account name starts with the bot prefix)
+    public const KIND_OWNBOT = 2;                           // a player's own character run as a bot (alt bot)
+    public const KINDS       = [self::KIND_PLAYER => 'players', self::KIND_RNDBOT => 'rndbots', self::KIND_OWNBOT => 'ownbots'];
+
     public static function mapEnabled() : bool
     {
         return (bool)self::cfg('playermap_enable', 1);
@@ -117,13 +128,95 @@ class RealmStatus
 
         $staff  = array_flip(self::staffAccounts($realmId));
         $hidden = array_flip(self::hiddenGuids($realmId));
+        $kinds  = self::kinds($realmId, $rows);
         foreach ($rows as &$r)
         {
             $r['staff'] = isset($staff[$r['account']]) || ($r['extra_flags'] & self::EXTRA_GM);
             $r['hide']  = $r['staff'] || isset($hidden[$r['guid']]);
+            $r['kind']  = $kinds[$r['guid']] ?? self::KIND_PLAYER;
         }
 
         return $rows;
+    }
+
+    /*  guid => KIND_* for the online characters of a realm
+     *    random bots: the account name starts with playermap_rndbot_prefix (mod-playerbots' RandomBotAccountPrefix,
+     *                 default RNDBOT)
+     *    own bots:    a bot session has no game client, so it does not set auth account.online. An account with
+     *                 characters online but not online itself only has bots (logged in from a linked account).
+     *                 An online account with more than one character online has one player: the one leading a group
+     *                 with the others (bots join their owner's group), else the first one; the rest are its bots.
+     */
+    private static function kinds(int $realmId, array $rows) : array
+    {
+        if (!$rows)
+            return [];
+
+        $prefix   = strtoupper(self::cfgStr('playermap_rndbot_prefix', 'RNDBOT'));
+        $accounts = DB::Auth()->select('SELECT `id` AS ARRAY_KEY, `username`, `online` FROM account WHERE `id` IN (?a)', array_values(array_unique(array_column($rows, 'account')))) ?: [];
+
+        $byAcc = [];
+        foreach ($rows as $r)
+            $byAcc[$r['account']][] = (int)$r['guid'];
+
+        $leaders = [];                                      // member guid => leader guid
+        foreach (DB::Characters($realmId)->select('SELECT gm.`memberGuid`, g.`leaderGuid` FROM group_member gm JOIN `groups` g ON g.`guid` = gm.`guid` WHERE gm.`memberGuid` IN (?a)', array_column($rows, 'guid')) ?: [] as $g)
+            $leaders[(int)$g['memberGuid']] = (int)$g['leaderGuid'];
+
+        $out = [];
+        foreach ($byAcc as $acc => $guids)
+        {
+            $a = $accounts[$acc] ?? null;
+            if ($a && $prefix !== '' && str_starts_with(strtoupper($a['username']), $prefix))
+            {
+                foreach ($guids as $g)
+                    $out[$g] = self::KIND_RNDBOT;
+                continue;
+            }
+
+            if (!$a || !$a['online'])                       // no game client on this account: all bots
+            {
+                foreach ($guids as $g)
+                    $out[$g] = $a ? self::KIND_OWNBOT : self::KIND_PLAYER;
+                continue;
+            }
+
+            sort($guids);
+            $player = $guids[0];
+            if (count($guids) > 1)
+                foreach ($guids as $g)
+                    if (count(array_filter($guids, fn($o) => $o != $g && ($leaders[$o] ?? 0) == $g)))
+                    {
+                        $player = $g;
+                        break;
+                    }
+
+            foreach ($guids as $g)
+                $out[$g] = $g == $player ? self::KIND_PLAYER : self::KIND_OWNBOT;
+        }
+
+        return $out;
+    }
+
+    /* counts of a set of characters: sides, classes, races, levels */
+    private static function breakdown(array $chars) : array
+    {
+        $sides   = [SIDE_ALLIANCE => 0, SIDE_HORDE => 0];
+        $classes = $races = [];
+        $levels  = array_fill(0, 9, 0);                     // 1-9, 10-19, .. 70-79, 80+
+        foreach ($chars as $c)
+        {
+            $s = self::side($c['race']);
+            if (isset($sides[$s]))
+                $sides[$s]++;
+            $classes[$c['class']] = ($classes[$c['class']] ?? 0) + 1;
+            $races[$c['race']]    = ($races[$c['race']] ?? 0) + 1;
+            $levels[min(8, intdiv($c['level'], 10))]++;
+        }
+        ksort($classes);
+        ksort($races);
+
+        return ['n' => count($chars), 'alliance' => $sides[SIDE_ALLIANCE], 'horde' => $sides[SIDE_HORDE], 'classes' => $classes, 'races' => $races, 'levels' => $levels];
     }
 
     private static function side(int $race) : int
@@ -155,36 +248,30 @@ class RealmStatus
                     DB::Aowow()->query('REPLACE INTO ?_realm_peak (`realmId`, `peak`, `peakTime`) VALUES (?d, ?d, ?d)', $id, $peak['peak'], $peak['peakTime']);
                 }
 
-                $sides = [SIDE_ALLIANCE => 0, SIDE_HORDE => 0];
-                $classes = $races = [];
-                $levels  = array_fill(0, 9, 0);              // 1-9, 10-19, .. 70-79, 80+
-                foreach ($chars as $c)
-                {
-                    $s = self::side($c['race']);
-                    if (isset($sides[$s]))
-                        $sides[$s]++;
-                    $classes[$c['class']] = ($classes[$c['class']] ?? 0) + 1;
-                    $races[$c['race']]    = ($races[$c['race']] ?? 0) + 1;
-                    $levels[min(8, intdiv($c['level'], 10))]++;
-                }
-                ksort($classes);
-                ksort($races);
+                $all   = self::breakdown($chars);
+                $kinds = [];
+                foreach (self::KINDS as $k => $key)
+                    $kinds[$key] = self::breakdown(array_filter($chars, fn($c) => $c['kind'] == $k));
 
                 $started = $up && $uptime ? (int)$uptime['starttime'] : 0;
                 $out['realms'][] = array(
                     'id'        => (int)$id,
                     'name'      => $realm['name'],
                     'online'    => $up,
-                    'players'   => $n,
-                    'alliance'  => $sides[SIDE_ALLIANCE],
-                    'horde'     => $sides[SIDE_HORDE],
+                    'players'   => $n,                     // everyone online (players and bots), as before
+                    'real'      => $kinds['players']['n'],
+                    'rndbots'   => $kinds['rndbots']['n'],
+                    'ownbots'   => $kinds['ownbots']['n'],
+                    'alliance'  => $all['alliance'],
+                    'horde'     => $all['horde'],
                     'peak'      => (int)$peak['peak'],
                     'peakTime'  => (int)$peak['peakTime'],
                     'startedAt' => $started,
                     'uptime'    => $started ? max(0, time() - $started) : 0,
-                    'classes'   => $classes,
-                    'races'     => $races,
-                    'levels'    => $levels
+                    'classes'   => $all['classes'],
+                    'races'     => $all['races'],
+                    'levels'    => $all['levels'],
+                    'kinds'     => $kinds                  // players, rndbots, ownbots: the same counts per kind
                 );
             }
             return $out;
@@ -192,7 +279,11 @@ class RealmStatus
 
         // id => count stays an object in JSON, also when empty
         foreach ($data['realms'] as &$r)
+        {
             [$r['classes'], $r['races']] = [(object)$r['classes'], (object)$r['races']];
+            foreach ($r['kinds'] ?? [] as $k => $b)
+                [$r['kinds'][$k]['classes'], $r['kinds'][$k]['races']] = [(object)$b['classes'], (object)$b['races']];
+        }
 
         return $data;
     }
@@ -236,7 +327,8 @@ class RealmStatus
                         'class'  => (int)$c['class'],
                         'gender' => (int)$c['gender'],
                         'side'   => self::side($c['race']),
-                        'zone'   => (int)$c['zone']
+                        'zone'   => (int)$c['zone'],
+                        'kind'   => (int)$c['kind']         // 0 player, 1 random bot, 2 own bot
                     );
                     if ($guilds && $c['guild'])
                         $p['guild'] = $c['guild'];

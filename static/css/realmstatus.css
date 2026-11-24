@@ -55,3 +55,37 @@
 .tool-player-map .pm-msg { color: #ff6060; }
 .pm-c1 { color: #c79c6e; } .pm-c2 { color: #f58cba; } .pm-c3 { color: #abd473; } .pm-c4 { color: #fff569; } .pm-c5 { color: #ffffff; }
 .pm-c6 { color: #c41f3b; } .pm-c7 { color: #0070de; } .pm-c8 { color: #69ccf0; } .pm-c9 { color: #9482c9; } .pm-c11 { color: #ff7d0a; }
+
+/* players, random bots and players' own bots; race and class icons */
+.rs-ico { width: 15px; height: 15px; vertical-align: -3px; margin-right: 4px; border-radius: 2px; }
+.rs-k1 { color: #9a9a9a; }
+.rs-k2 { color: #c69bff; }
+.rs-kind { font-size: 10px; padding: 0 4px; margin-left: 5px; border-radius: 3px; border: 1px solid #555; vertical-align: 1px; }
+.rs-kind.rs-k1 { color: #aaa; border-color: #555; }
+.rs-kind.rs-k2 { color: #c69bff; border-color: #6a4c99; }
+.tool-realm-status .rs-bar-l { width: 150px; }
+.tool-realm-status .rs-views { margin: 4px 0 8px; font-size: 12px; }
+.tool-realm-status .rs-views a { display: inline-block; margin-left: 6px; padding: 2px 8px; border: 1px solid #444; border-radius: 10px; }
+.tool-realm-status .rs-views a.on { background: #2a2410; color: #ffd100; border-color: #7a6420; }
+.tool-realm-status .rs-views small { color: #999; }
+
+/* player map: one view, all continents side by side or one map at a time */
+.tool-player-map .pm-top { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.tool-player-map .pm-top select { min-width: 220px; }
+.tool-player-map .pm-sep { width: 1px; height: 16px; background: #444; }
+.tool-player-map .pm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 1002px; }
+.tool-player-map .pm-mini { cursor: zoom-in; }
+.tool-player-map .pm-label { position: absolute; left: 6px; top: 4px; z-index: 3; padding: 1px 6px; background: rgba(0, 0, 0, .65); border-radius: 3px; font-size: 12px; }
+.tool-player-map .pm-label small { color: #ccc; }
+.tool-player-map .pm-mini .pm-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; }
+.tool-player-map .pm-dot.pm-k1 { width: 5px; height: 5px; margin: -3px 0 0 -3px; opacity: .55; box-shadow: none; }
+.tool-player-map .pm-dot.pm-k2 { background: transparent; border-width: 2px; }
+.tool-player-map .pm-s1.pm-k2 { border-color: #3d8bff; }
+.tool-player-map .pm-s2.pm-k2 { border-color: #ff3b3b; }
+.tool-player-map .pm-key { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin: 0 4px 0 2px; background: #ddd; vertical-align: 0; }
+.tool-player-map .pm-key.pm-k1 { opacity: .55; width: 6px; height: 6px; }
+.tool-player-map .pm-key.pm-k2 { background: transparent; border: 2px solid #c69bff; width: 6px; height: 6px; }
+.tool-player-map .pm-tip.pm-up { transform: translateY(-100%); margin-top: -10px; }
+.tool-player-map .pm-tip.pm-left.pm-up { transform: translate(-100%, -100%); }
+.tool-player-map .pm-card-h { margin-bottom: 2px; }
+.tool-player-map .pm-row-k1 td { opacity: .75; }
