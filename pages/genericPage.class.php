@@ -676,7 +676,7 @@ class GenericPage
 
     protected function forwardToSignIn(string $next = '') : void
     {
-        $next = $next ? '&next='.$next : '';
+        $next = $next ? '&next='.rawurlencode(preg_replace('/(^|&)urlloc=[a-z]+/', '', $next)) : '';
         header('Location: ?account=signin'.$next, true, 302);
     }
 

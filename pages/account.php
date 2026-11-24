@@ -195,6 +195,7 @@ class AccountPage extends GenericPage
                 $this->head = sprintf(Lang::account('register'), $nStep);
                 break;
             case 'signout':
+                User::forget();
                 User::destroy();
             default:
                 header('Location: '.$this->getNext(true), true, 302);
@@ -384,7 +385,12 @@ Markup.printHtml("description text here", "description-generic", { allow: Markup
                 );
 
                 if (User::init())
+                {
                     User::save();                           // overwrites the current user
+                    User::forget();
+                    if ($this->_post['remember_me'] == 'yes')
+                        User::remember();                   // stays signed in for User::REMEMBER_DAYS days
+                }
 
                 return;
             case AUTH_BANNED:
@@ -593,18 +599,52 @@ Markup.printHtml("description text here", "description-generic", { allow: Markup
             return sprintf(Lang::main('intError2'), 'send mail');
     }
 
+    // where to go after signing in: the "next" parameter, else the page the user came from on this site.
+    // Only a page of this site is accepted (a query like "item=123"); anything else goes to the front page.
     private function getNext($forHeader = false)
     {
-        $next = $forHeader ? '.' : '';
-        if ($this->_get['next'])
-            $next = $this->_get['next'];
-        else if (isset($_SERVER['HTTP_REFERER']) && strstr($_SERVER['HTTP_REFERER'], '?'))
-            $next = explode('?', $_SERVER['HTTP_REFERER'])[1];
+        $next = self::safeNext($_GET['next'] ?? '');
+        if ($next === '' && !empty($_SERVER['HTTP_REFERER']))
+            $next = self::safeNext(self::refererPage($_SERVER['HTTP_REFERER']));
 
-        if ($forHeader && !$next)
-            $next = '.';
+        if ($forHeader)
+            return $next === '' ? '.' : '?'.$next;
 
-        return ($forHeader && $next != '.' ? '?' : '').$next;
+        return rawurlencode($next);
+    }
+
+    private static function safeNext(string $next) : string
+    {
+        $next = ltrim(trim($next), '?');
+        if ($next === '' || strlen($next) > 500 || !preg_match('#^[A-Za-z0-9\-_=.&%,:;+~!*()@]+$#', $next))
+            return '';
+        // never back to the sign in, sign up or sign out pages
+        if (preg_match('/^account(=|&|$)/i', $next))
+            return '';
+        return $next;
+    }
+
+    // the page part of a referer of this site: "?item=123" or a readable link "/en/item=123/name"
+    private static function refererPage(string $referer) : string
+    {
+        $u = parse_url($referer);
+        if (!$u || empty($u['host']))
+            return '';
+
+        $host = strtolower($u['host']).(isset($u['port']) ? ':'.$u['port'] : '');
+        $here = strtolower($_SERVER['HTTP_HOST'] ?? '');
+        if ($host !== $here && strtolower($u['host']) !== preg_replace('/:\d+$/', '', $here))
+            return '';
+
+        if (!empty($u['query']))
+            return preg_replace('/(^|&)urlloc=[a-z]+/', '', $u['query']);
+
+        $base = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? '/'), '/');
+        $path = (string)($u['path'] ?? '');
+        if ($base !== '' && str_starts_with($path, $base))
+            $path = substr($path, strlen($base));
+        $path = preg_replace('#^/(?:(?:en|fr|de|es|ru|cn|ko|tw|mx)/)?#', '', $path);
+        return explode('/', $path, 2)[0];
     }
 }
 

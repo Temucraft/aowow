@@ -183,6 +183,77 @@ class User
             DB::Aowow()->query('UPDATE ?_account SET `locale` = ? WHERE `id` = ?', self::$preferedLoc->value, self::$id);
     }
 
+    // "Remember me": a long lived cookie (selector:validator) that signs the user in again when the PHP session is
+    // gone (session files are cleaned up after a short idle time). Only a hash of the validator is stored.
+    public const REMEMBER_COOKIE = 'aowow_remember';
+    public const REMEMBER_DAYS   = 90;
+
+    private static function rememberCookie(string $value, int $expires) : void
+    {
+        setcookie(self::REMEMBER_COOKIE, $value, array(
+            'expires'  => $expires,
+            'path'     => '/',
+            'secure'   => (($_SERVER['HTTPS'] ?? 'off') != 'off') || Cfg::get('FORCE_SSL'),
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ));
+    }
+
+    public static function remember() : void
+    {
+        if (!self::$id)
+            return;
+
+        $selector  = bin2hex(random_bytes(12));
+        $validator = bin2hex(random_bytes(32));
+        $expires   = time() + self::REMEMBER_DAYS * DAY;
+
+        DB::Aowow()->query('DELETE FROM ?_account_remember WHERE `expires` < UNIX_TIMESTAMP()');
+        DB::Aowow()->query('INSERT INTO ?_account_remember (`selector`, `userId`, `hash`, `expires`) VALUES (?, ?d, ?, ?d)',
+            $selector, self::$id, hash('sha256', $validator), $expires);
+
+        self::rememberCookie($selector.':'.$validator, $expires);
+    }
+
+    // no signed in session but a remember cookie: check it, sign in and give the cookie a new validator
+    public static function restoreRemembered() : bool
+    {
+        $raw = $_COOKIE[self::REMEMBER_COOKIE] ?? '';
+        if (self::$id || !preg_match('/^([0-9a-f]{24}):([0-9a-f]{64})$/', $raw, $m))
+            return false;
+
+        $row = DB::Aowow()->selectRow('SELECT r.`userId`, r.`hash`, r.`expires`, a.`passHash` FROM ?_account_remember r JOIN ?_account a ON a.`id` = r.`userId` WHERE r.`selector` = ?', $m[1]);
+        if (!$row || $row['expires'] < time() || !hash_equals($row['hash'], hash('sha256', $m[2])))
+        {
+            if ($row)
+                DB::Aowow()->query('DELETE FROM ?_account_remember WHERE `selector` = ?', $m[1]);
+            self::rememberCookie('', time() - DAY);
+            return false;
+        }
+
+        session_regenerate_id(true);
+        $_SESSION['user'] = (int)$row['userId'];
+        $_SESSION['hash'] = $row['passHash'];
+        unset($_SESSION['timeout']);
+
+        if (!self::init())
+            return false;
+
+        $validator = bin2hex(random_bytes(32));
+        DB::Aowow()->query('UPDATE ?_account_remember SET `hash` = ? WHERE `selector` = ?', hash('sha256', $validator), $m[1]);
+        self::rememberCookie($m[1].':'.$validator, (int)$row['expires']);
+        return true;
+    }
+
+    public static function forget() : void
+    {
+        $raw = $_COOKIE[self::REMEMBER_COOKIE] ?? '';
+        if (preg_match('/^([0-9a-f]{24}):/', $raw, $m))
+            DB::Aowow()->query('DELETE FROM ?_account_remember WHERE `selector` = ?', $m[1]);
+        if ($raw !== '')
+            self::rememberCookie('', time() - DAY);
+    }
+
     public static function destroy()
     {
         session_regenerate_id(true);                        // session itself is not destroyed; status changed => regenerate id

@@ -341,7 +341,7 @@ if (!CLI) {
         (new GenericPage())->error();
     }
 
-    if (User::init())
+    if (User::init() || User::restoreRemembered())       // the session, or the "remember me" cookie
         User::save();                                       // save user-variables in session
 
     // hard override locale for this call (should this be here..?)
