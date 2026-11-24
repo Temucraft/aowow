@@ -9,7 +9,7 @@
 var AoQuestTracker = (function () {
     var KEY = 'aowow_qct', el, cfg, store = { done: {}, totals: {} }, zones = [], cur = null, data = null, cache = {}, details = {},
         chars = [], charIdx = 0, charSort = 'name', sel = null, mapper = null,
-        opt = { side: 0, repeatable: false, unavailable: false, q: '', show: { 0: true, 1: true, 2: true, 3: false, 4: true } };
+        opt = { side: 0, repeatable: false, unavailable: false, q: '', min: 0, max: 0, show: { 0: true, 1: true, 2: true, 3: false, 4: true } };
     var ST = ['Not started', 'In progress', 'Ready to turn in', 'Completed', 'Failed'];
 
     function esc(t) {
@@ -171,6 +171,8 @@ var AoQuestTracker = (function () {
 
     function visible(q) {
         if (opt.side && q[4] != 3 && q[4] != opt.side) return false;
+        if (opt.min && q[2] > 0 && q[2] < opt.min) return false;
+        if (opt.max && q[2] > 0 && q[2] > opt.max) return false;
         if (!opt.repeatable && (q[5] & 7)) return false;
         if (!opt.unavailable && (q[5] & 8)) return false;
         return !opt.q || q[1].toLowerCase().indexOf(opt.q) != -1 || String(q[0]) == opt.q;
@@ -199,6 +201,7 @@ var AoQuestTracker = (function () {
         // full list with filters
         html += '<div class="tc-tr-bar qt-opts"><input type="search" class="tc-tr-filter qt-qfilter" placeholder="Filter quests..." value="' + esc(opt.q) + '" />'
               + '<select class="qt-side"><option value="0">Both factions</option><option value="1"' + (opt.side == 1 ? ' selected' : '') + '>Alliance</option><option value="2"' + (opt.side == 2 ? ' selected' : '') + '>Horde</option></select>'
+              + '<label class="qt-lvl">Level <input type="number" min="0" max="80" class="qt-min" value="' + (opt.min || '') + '" placeholder="1" /> to <input type="number" min="0" max="80" class="qt-max" value="' + (opt.max || '') + '" placeholder="80" /></label>'
               + '<label class="pc-check"><input type="checkbox" class="qt-rep"' + (opt.repeatable ? ' checked' : '') + ' /> Show daily / repeatable</label>'
               + '<label class="pc-check"><input type="checkbox" class="qt-unav"' + (opt.unavailable ? ' checked' : '') + ' /> Show unavailable</label>'
               + (linked() ? '' : '<span class="qt-acts"><a href="javascript:;" class="tc-nav-btn qt-all">Tick all shown</a><a href="javascript:;" class="tc-nav-btn qt-none">Untick all shown</a></span>') + '</div>';
@@ -219,6 +222,7 @@ var AoQuestTracker = (function () {
         if (!shown.length) html += '<div class="qt-empty q0">No quests to show.</div>';
         body.innerHTML = html + '</div>';
 
+        body.innerHTML += guildBox();
         if (hasMap) drawMap();
         if (linked()) AoQuestStatus.bindDots(body);
         if (sel) showDetail(sel);
@@ -271,7 +275,7 @@ var AoQuestTracker = (function () {
                  + (giver ? '<div><span class="qt-mark">!</span><span class="q">' + esc(giver) + '</span>' + (pin ? ' <span class="q0">(' + pin[0] + ', ' + pin[1] + ')</span>' : '') + '</div>' : '')
                  + (linked() ? '<div class="qt-dstat"><span class="c' + chars[charIdx][4] + '">' + esc(chars[charIdx][2]) + ':</span> ' + statusIcon(st) + ' <span class="qc-st' + st + '">' + ST[st] + '</span></div>' : '');
         var fill = function (d) {
-            box.innerHTML = head + '<div class="qt-obj">' + (d.objectives || '') + '</div></div><div class="qt-dright"><h3>Description</h3><div>' + (d.details || '<span class="q0">No description.</span>') + '</div></div>';
+            box.innerHTML = head + guildDone(id) + '<div class="qt-obj">' + (d.objectives || '') + '</div></div><div class="qt-dright"><h3>Description</h3><div>' + (d.details || '<span class="q0">No description.</span>') + '</div></div>';
         };
         if (details[id]) fill(details[id]);
         else {
@@ -286,6 +290,10 @@ var AoQuestTracker = (function () {
         bindGivers();
         body.querySelector('.qt-qfilter').oninput = function () { opt.q = this.value.trim().toLowerCase(); renderBody(); var f = el.querySelector('.qt-qfilter'); f.focus(); f.setSelectionRange(f.value.length, f.value.length); };
         body.querySelector('.qt-side').onchange = function () { opt.side = +this.value; renderBody(); };
+        body.querySelector('.qt-min').onchange = function () { opt.min = Math.max(0, +this.value || 0); renderBody(); };
+        body.querySelector('.qt-max').onchange = function () { opt.max = Math.max(0, +this.value || 0); renderBody(); };
+        var gb = body.querySelector('.qt-guild-load');
+        if (gb) gb.onclick = function () { loadGuild(); };
         body.querySelector('.qt-rep').onchange = function () { opt.repeatable = this.checked; renderBody(); };
         body.querySelector('.qt-unav').onchange = function () { opt.unavailable = this.checked; renderBody(); };
         body.querySelectorAll('.qt-row[data-q]').forEach(function (r) {
@@ -305,6 +313,47 @@ var AoQuestTracker = (function () {
                 save(); renderBody(); renderZones(el.querySelector('.qt-zfilter').value.trim().toLowerCase());
             };
         });
+    }
+
+    // ── guild progress: members of your own guilds (linked game account) and the quests of this zone they turned in ──
+    var guild = {};                                         // zone => {guilds: [..]} once loaded
+    function guildBox() {
+        if (!linked()) return '';
+        var g = guild[cur];
+        if (!g) return '<div class="qt-guild"><a href="javascript:;" class="tc-nav-btn qt-guild-load">Show my guild\'s progress here</a></div>';
+        if (g.loading) return '<div class="qt-guild q0">Loading your guild&hellip;</div>';
+        if (g.error) return '<div class="qt-guild q10">' + esc(g.error) + '</div>';
+        if (!g.guilds.length) return '<div class="qt-guild q0">None of your characters is in a guild.</div>';
+        var ids = counted(data.quests).filter(visible).map(function (q) { return q[0]; });
+        return g.guilds.map(function (G) {
+            var per = G.members.map(function () { return 0; });
+            ids.forEach(function (id) { (G.done[id] || []).forEach(function (m) { per[m]++; }); });
+            var order = G.members.map(function (m, i) { return i; }).sort(function (a, b) { return per[b] - per[a] || G.members[a][0].localeCompare(G.members[b][0]); });
+            return '<div class="qt-guild"><h3>&lt;' + esc(G.guild) + '&gt; <span class="q0">' + esc(G.realmName) + ', ' + G.members.length + ' members</span></h3>'
+                + '<div class="qt-guild-list">' + order.map(function (i) {
+                    var m = G.members[i], pct = ids.length ? Math.round(100 * per[i] / ids.length) : 0;
+                    return '<div class="qt-gm"><span class="c' + m[1] + '">' + esc(m[0]) + '</span> <span class="q0">' + m[2] + '</span>'
+                        + '<span class="qt-gbar"><i style="width:' + pct + '%"></i></span><span class="qt-num">' + per[i] + ' / ' + ids.length + '</span></div>';
+                }).join('') + '</div></div>';
+        }).join('');
+    }
+    function loadGuild() {
+        var zone = cur;
+        guild[zone] = { loading: true };
+        renderBody();
+        fetch(host() + '?quest-tracker=guildzone.' + zone, { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) {
+            guild[zone] = d.error ? { error: d.error } : { guilds: d.guilds };
+            if (cur == zone) renderBody();
+        }, function () { guild[zone] = { error: 'Could not load your guild.' }; if (cur == zone) renderBody(); });
+    }
+    // guild members who turned in one quest (detail box)
+    function guildDone(id) {
+        var g = guild[cur];
+        if (!g || !g.guilds) return '';
+        return g.guilds.map(function (G) {
+            var who = (G.done[id] || []).map(function (m) { return '<span class="c' + G.members[m][1] + '">' + esc(G.members[m][0]) + '</span>'; });
+            return '<div class="qt-dguild"><b>&lt;' + esc(G.guild) + '&gt;</b> ' + (who.length ? who.length + ' done: ' + who.join(', ') : '<span class="q0">nobody has done it yet</span>') + '</div>';
+        }).join('');
     }
 
     function refreshGivers() { el.querySelector('.qt-glist').innerHTML = giverList(); bindGivers(); }

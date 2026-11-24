@@ -128,6 +128,49 @@ class QuestCompletion
         return self::$status;
     }
 
+    // the guilds of the linked account's characters: [[realmId, guildId, guildName, realmName], ..] (one per guild)
+    public static function guilds() : array
+    {
+        $out = [];
+        foreach (self::characters() as [$realmId, $guid, , , , , $realmName])
+        {
+            $g = DB::Characters($realmId)->selectRow('SELECT g.`guildid`, g.`name` FROM guild_member gm JOIN guild g ON g.`guildid` = gm.`guildid` WHERE gm.`guid` = ?d', $guid);
+            if ($g)
+                $out[$realmId.':'.$g['guildid']] = [(int)$realmId, (int)$g['guildid'], $g['name'], $realmName];
+        }
+        return array_values($out);
+    }
+
+    // which members of the viewer's own guilds finished these quests (character_queststatus_rewarded only: turned in)
+    //   [{realm, realmName, guild, members: [[name, class, level, race], ..], done: {questId: [member index, ..]}}, ..]
+    //   only guilds one of the linked account's characters is in; nothing about other guilds
+    public static function guildProgress(array $questIds) : array
+    {
+        $questIds = array_values(array_unique(array_filter(array_map('intval', $questIds))));
+        $out = [];
+        foreach (self::guilds() as [$realmId, $guildId, $name, $realmName])
+        {
+            $db      = DB::Characters($realmId);
+            $members = $db->select('SELECT c.`guid` AS ARRAY_KEY, c.`name`, c.`class`, c.`level`, c.`race` FROM guild_member gm JOIN characters c ON c.`guid` = gm.`guid` WHERE gm.`guildid` = ?d ORDER BY c.`name` LIMIT 1000', $guildId) ?: [];
+            $index   = [];
+            $list    = [];
+            foreach ($members as $guid => $m)
+            {
+                $index[$guid] = count($list);
+                $list[]       = [$m['name'], (int)$m['class'], (int)$m['level'], (int)$m['race']];
+            }
+
+            $done = [];
+            if ($questIds && $members)
+                foreach (array_chunk($questIds, 2000) as $chunk)
+                    foreach ($db->select('SELECT `guid`, `quest` FROM character_queststatus_rewarded WHERE `guid` IN (?a) AND `quest` IN (?a)', array_keys($members), $chunk) ?: [] as $r)
+                        $done[(int)$r['quest']][] = $index[$r['guid']];
+
+            $out[] = ['realm' => $realmId, 'realmName' => $realmName, 'guild' => $name, 'members' => $list, 'done' => $done ?: new stdClass()];
+        }
+        return $out;
+    }
+
     // g_questStatus for the page scripts: {c: characters, q: {questId: "-prc"}}, one letter per character: - none, p in progress, r ready, c completed, f failed
     public static function toJS() : string
     {

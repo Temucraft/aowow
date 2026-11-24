@@ -12,3 +12,14 @@
 .qc-s4::after { left: 3px; top: 6px; width: 8px; height: 2px; background: #fff; transform: rotate(45deg); box-shadow: 0 0 0 0 #fff; }
 .qc-s4::before { content: ''; position: absolute; left: 3px; top: 6px; width: 8px; height: 2px; background: #fff; transform: rotate(-45deg); }
 .qc-st0 { color: #777; } .qc-st1 { color: #8cc7ff; } .qc-st2 { color: #ffd100; } .qc-st3 { color: #5cf25c; } .qc-st4 { color: #ff5555; }
+
+/* quest tracker: level filter and guild progress */
+.qt-lvl input { width: 44px; }
+.qt-guild { margin: 10px 0; padding: 8px 10px; border: 1px solid #444; border-radius: 4px; }
+.qt-guild h3 { margin: 0 0 6px; font-size: 13px; }
+.qt-guild-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 14px; max-height: 320px; overflow: auto; }
+.qt-gm { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.qt-gm > span:first-child { min-width: 90px; }
+.qt-gbar { flex: 1; height: 8px; background: #222; border-radius: 2px; }
+.qt-gbar i { display: block; height: 100%; background: #1eff00; border-radius: 2px; }
+.qt-dguild { margin: 4px 0; font-size: 12px; }

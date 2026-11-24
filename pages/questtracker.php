@@ -10,6 +10,7 @@ if (!defined('AOWOW_REVISION'))
 //   ?quest-tracker=zone.<zoneOrSort>   quests of one category, their quest givers and map pins (JSON)
 //   ?quest-tracker=quest.<id>          objectives and description of one quest (JSON)
 //   ?quest-tracker=status              g_questStatus for the linked account (JS)
+//   ?quest-tracker=guildzone.<zoneOrSort> / guildquest.<id>   which members of your own guilds turned these quests in (JSON)
 //   ?quest-tracker=link / unlink       POST: link the game account (name, pass) or drop the link (JSON)
 class QuesttrackerPage extends GenericPage
 {
@@ -53,6 +54,18 @@ class QuesttrackerPage extends GenericPage
             }
 
             exit(Util::toJSON(['error' => QuestCompletion::link((string)($_POST['name'] ?? ''), (string)($_POST['pass'] ?? ''))]));
+        }
+
+        // guild progress: only for a signed in user with a linked game account, only their own guilds
+        if (preg_match('/^guild(zone|quest)\.(-?\d+)$/', $param, $m))
+        {
+            header('Content-Type: application/json; charset=utf-8');
+            header('Cache-Control: private, max-age=60');
+            if (!User::$id || !QuestCompletion::account())
+                exit(Util::toJSON(['error' => 'Sign in and link your game account to see your guild.', 'guilds' => []]));
+
+            $ids = $m[1] == 'quest' ? [(int)$m[2]] : array_column(self::zone((int)$m[2])['quests'], 0);
+            exit(Util::toJSON(['error' => '', 'guilds' => QuestCompletion::guildProgress($ids)]));
         }
 
         $json = null;

@@ -91,6 +91,7 @@ var AoQuestStatus = (function () {
             li.innerHTML = '<div>Completion: ' + dots(g_pageInfo.typeId) + '</div>';
             box.appendChild(li);
             bindDots(li);
+            guildLine(box, g_pageInfo.typeId);
             return;
         }
 
@@ -113,6 +114,24 @@ var AoQuestStatus = (function () {
                 })(els[k]);
             }
         }
+    }
+
+    // quest page: how many members of your own guilds turned this quest in (hover for the names)
+    function guildLine(box, questId) {
+        var base = (typeof g_host != 'undefined' ? g_host : '').replace(/\/?$/, '/');
+        fetch(base + '?quest-tracker=guildquest.' + questId, { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) {
+            (d.guilds || []).forEach(function (G) {
+                var who = (G.done[questId] || []).map(function (m) { return G.members[m]; });
+                var li = document.createElement('li');
+                li.innerHTML = '<div>&lt;' + esc(G.guild) + '&gt;: <a href="javascript:;" class="qc-guild">' + who.length + ' / ' + G.members.length + ' members done</a></div>';
+                box.appendChild(li);
+                var a = li.querySelector('.qc-guild');
+                a.onmouseover = function () {
+                    $WH.Tooltip.show(a, who.length ? who.map(function (m) { return '<span class="c' + m[1] + '">' + esc(m[0]) + '</span> <span class="q0">' + m[2] + '</span>'; }).join('<br />') : 'Nobody in your guild has done it yet.');
+                };
+                a.onmouseout = $WH.Tooltip.hide;
+            });
+        }).catch(function () {});
     }
 
     addColumn();
