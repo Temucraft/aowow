@@ -26,3 +26,14 @@
         if (typeof g_file_races != 'undefined') g_file_races[id] = r.file;
     }
 })();
+/* g_disabled_races, g_disabled_classes: races and classes this server turned off (no character can be one, or an
+   admin listed them in aowow_chr_disabled): taken out of the menus; their pages still open */
+(function () {
+    function drop(menu, ids) {
+        if (typeof menu == 'undefined' || !ids || !ids.length) return;
+        for (var i = menu.length - 1; i >= 0; i--)
+            if (menu[i] && ids.indexOf(parseInt(menu[i][0])) != -1) menu.splice(i, 1);
+    }
+    if (typeof g_disabled_races != 'undefined' && typeof mn_races != 'undefined') drop(mn_races, g_disabled_races);
+    if (typeof g_disabled_classes != 'undefined' && typeof mn_classes != 'undefined') drop(mn_classes, g_disabled_classes);
+})();

@@ -400,7 +400,13 @@ enum ChrClass : int
     case WARLOCK     = 9;
     case DRUID       = 11;
 
-    public const MASK_ALL    = 0x5FF;
+    public const MASK_ALL    = AOWOW_CLASS_MASK_ALL;        // without the classes this server turned off
+
+    /** The classes players can be on this server. */
+    public static function playable() : array
+    {
+        return array_values(array_filter(self::cases(), fn(self $c) => $c->toMask() & self::MASK_ALL));
+    }
 
     public function matches(int $classMask) : bool
     {
@@ -415,7 +421,7 @@ enum ChrClass : int
     public static function fromMask(int $classMask = self::MASK_ALL) : array
     {
         $x = [];
-        foreach (self::cases() as $cl)
+        foreach (self::playable() as $cl)
             if ($cl->toMask() & $classMask)
                 $x[] = $cl->value;
 
@@ -447,6 +453,7 @@ if (!defined('AOWOW_RACE_MASK_ALL') && file_exists(__DIR__.'/../config/races.inc
 defined('AOWOW_RACE_MASK_ALLIANCE') || define('AOWOW_RACE_MASK_ALLIANCE', 0x44D);
 defined('AOWOW_RACE_MASK_HORDE')    || define('AOWOW_RACE_MASK_HORDE',    0x2B2);
 defined('AOWOW_RACE_MASK_ALL')      || define('AOWOW_RACE_MASK_ALL',      0x6FF);
+defined('AOWOW_CLASS_MASK_ALL')     || define('AOWOW_CLASS_MASK_ALL',     0x5FF);   // classes the server lets players be
 
 enum ChrRace : int
 {
