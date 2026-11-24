@@ -560,6 +560,9 @@ Markup.printHtml("description text here", "description-generic", { allow: Markup
 
         if (!DB::Aowow()->query('UPDATE ?_account SET passHash = ?, status = ?d WHERE id = ?d', User::hashCrypt($this->_post['c_password']), ACC_STATUS_OK, $uId))
             return Lang::main('intError');
+
+        // a new password signs out every browser that was remembered
+        DB::Aowow()->query('DELETE FROM ?_account_remember WHERE `userId` = ?d', $uId);
     }
 
     private function doRecoverUser()
