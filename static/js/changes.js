@@ -79,9 +79,96 @@ var AoChanges = (function () {
         return h + '</div>';
     }
 
+    // plain text with the spell names it mentions turned into links (cfg.data.links: name => spell id)
+    var linkRe = null;
+    function linked(t) {
+        var links = cfg.data && cfg.data.links;
+        if (!links) return esc(t);
+        if (linkRe === null) {
+            var names = Object.keys(links).sort(function (a, b) { return b.length - a.length; })
+                .map(function (n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+            linkRe = names.length ? new RegExp('\\b(' + names.join('|') + ')\\b', 'g') : false;
+        }
+        var e = esc(t);
+        // [spell=123], [item=123], [quest=123], [npc=123] written in a note
+        e = e.replace(/\[(spell|item|quest|npc|achievement)=(\d+)\]/g, function (m, type, id) { return '<a href="' + host() + '?' + type + '=' + id + '">' + type + ' ' + id + '</a>'; });
+        if (linkRe) e = e.replace(linkRe, function (m) { return links[m] ? '<a href="' + host() + '?spell=' + links[m] + '">' + m + '</a>' : m; });
+        return e;
+    }
+
     function notes(list, title) {
         if (!list || !list.length) return '';
-        return '<h2>' + esc(title) + '</h2><ul class="chg-notes">' + list.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
+        return '<h2>' + esc(title) + '</h2><ul class="chg-notes">' + list.map(function (t) { return '<li>' + linked(t) + '</li>'; }).join('') + '</ul>';
+    }
+
+    // ── the release change log: newest first, one block per date, filter by area and search ──
+    var logFilter = { tag: '', q: '' };
+    function logTags() {
+        var tags = {};
+        (cfg.data.log || []).forEach(function (e) { e.lines.forEach(function (l) { if (l.tag) tags[l.tag] = (tags[l.tag] || 0) + 1; }); });
+        return Object.keys(tags).sort();
+    }
+    function logHtml() {
+        var log = cfg.data.log || [], q = logFilter.q, h = '', shown = 0, byDate = {}, dates = [];
+        log.forEach(function (e) { if (!byDate[e.date]) { byDate[e.date] = []; dates.push(e.date); } byDate[e.date].push(e); });
+        dates.forEach(function (d) {
+            var block = '';
+            byDate[d].forEach(function (e) {
+                var lines = e.lines.filter(function (l) {
+                    if (logFilter.tag && l.tag != logFilter.tag) return false;
+                    if (q && (e.title + ' ' + l.text + ' ' + l.sub.join(' ')).toLowerCase().indexOf(q) == -1) return false;
+                    return true;
+                });
+                if (!lines.length) return;
+                shown += lines.length;
+                block += '<div class="chg-log-entry"><h4>' + esc(e.title) + '</h4><ul>' + lines.map(function (l) {
+                    return '<li>' + (l.tag ? '<span class="chg-tag chg-tag-' + esc(l.tag.toLowerCase().replace(/\W+/g, '')) + '">' + esc(l.tag) + '</span> ' : '') + linked(l.text) +
+                        (l.sub.length ? '<ul>' + l.sub.map(function (x) { return '<li>' + linked(x) + '</li>'; }).join('') + '</ul>' : '') + '</li>';
+                }).join('') + '</ul></div>';
+            });
+            if (block) h += '<div class="chg-log-day"><div class="chg-log-date">' + esc(d) + '</div>' + block + '</div>';
+        });
+        return h || '<p class="chg-dim">Nothing matches.</p>';
+    }
+    function logSection() {
+        if (!cfg.data.log || !cfg.data.log.length) return '';
+        var h = '<h2>Release notes <small>newest first</small></h2><div class="chg-log-bar"><input type="search" class="chg-log-q" placeholder="Search the release notes" />' +
+            ' <select class="chg-log-tag"><option value="">Every area</option>' + logTags().map(function (t) { return '<option>' + esc(t) + '</option>'; }).join('') + '</select></div>';
+        return h + '<div class="chg-log">' + logHtml() + '</div>';
+    }
+
+    // ── one search over every class change ──
+    function searchSection() {
+        if (!cfg.data.search || !cfg.data.search.length) return '';
+        var classes = {};
+        cfg.data.classes.forEach(function (c) { classes[c.id] = c.name; });
+        return '<h2>Find a change</h2><div class="chg-find"><input type="search" class="chg-find-q" placeholder="Spell or talent name" />' +
+            ' <select class="chg-find-c"><option value="0">Every class</option>' + cfg.data.classes.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('') + '</select>' +
+            ' <select class="chg-find-k"><option value="">New, updated and removed</option>' + KINDS.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select>' +
+            '<div class="chg-find-r"></div></div>';
+    }
+    function runSearch() {
+        var box = el.querySelector('.chg-find');
+        if (!box) return;
+        var q = box.querySelector('.chg-find-q').value.trim().toLowerCase(), c = +box.querySelector('.chg-find-c').value, k = box.querySelector('.chg-find-k').value;
+        var out = box.querySelector('.chg-find-r');
+        if (!q && !c && !k) { out.innerHTML = ''; return; }
+        var names = {}; cfg.data.classes.forEach(function (x) { names[x.id] = x.name; });
+        var hits = cfg.data.search.filter(function (s) { return (!q || s[0].toLowerCase().indexOf(q) != -1) && (!c || s[1] == c) && (!k || s[2] == k); });
+        var kindName = {}; KINDS.forEach(function (x) { kindName[x[0]] = x[1]; });
+        out.innerHTML = hits.length ? '<table class="chg-find-t"><tr><th>Change</th><th>Class</th><th>What</th><th></th></tr>' + hits.slice(0, 200).map(function (s) {
+            return '<tr><td>' + (s[4] ? '<a href="' + host() + '?spell=' + s[4] + '">' + esc(s[0]) + '</a>' : esc(s[0])) + '</td><td class="c' + s[1] + '">' + esc(names[s[1]]) + '</td>' +
+                '<td class="chg-k-' + s[2] + '">' + kindName[s[2]] + ' ' + (s[3] == 'talents' ? 'talent' : 'spell') + '</td>' +
+                '<td><a href="' + host() + '?changes=' + s[3] + '.' + slug(s[1]) + '">see it</a></td></tr>';
+        }).join('') + '</table>' + (hits.length > 200 ? '<p class="chg-dim">' + (hits.length - 200) + ' more: type more of the name.</p>' : '')
+            : '<p class="chg-dim">Nothing matches.</p>';
+    }
+    function bindOverview() {
+        var f = el.querySelector('.chg-find');
+        if (f) f.addEventListener('input', runSearch);
+        var lq = el.querySelector('.chg-log-q'), lt = el.querySelector('.chg-log-tag');
+        function relog() { logFilter.q = lq.value.trim().toLowerCase(); logFilter.tag = lt.value; el.querySelector('.chg-log').innerHTML = logHtml(); }
+        if (lq) { lq.addEventListener('input', relog); lt.addEventListener('change', relog); }
     }
 
     function backLinks(view) {
@@ -95,8 +182,9 @@ var AoChanges = (function () {
 
     function overview() {
         var d = cfg.data, h = '';
-        h += '<p class="chg-intro">Everything Temucraft does differently from the original Wrath of the Lich King 3.3.5, made from the game files and the server database. Pick a class to see its spells and talents, with the old and new versions side by side.</p>';
-        h += notes(d.notes, 'For every class');
+        h += '<p class="chg-intro">Everything Temucraft does differently from the original Wrath of the Lich King 3.3.5, made from the game files and the server database. Pick a class to see its spells and talents, with the old and new versions side by side, or search below.</p>';
+        h += '<div class="chg-jump">Jump to: <a href="#chg-all">For every class</a> &middot; <a href="#chg-classes">Classes</a> &middot; <a href="#chg-find">Find a change</a>' + (d.log && d.log.length ? ' &middot; <a href="#chg-log">Release notes</a>' : '') + '</div>';
+        h += '<a id="chg-all"></a>' + notes(d.notes, 'For every class');
         if (d.skills && d.skills.length) {
             h += '<h2>Weapon and armor skills</h2><table class="chg-skills"><tr><th>Skill</th><th>Before</th><th>Now</th></tr>';
             d.skills.forEach(function (s) {
@@ -105,7 +193,7 @@ var AoChanges = (function () {
             });
             h += '</table>';
         }
-        h += '<h2>Classes</h2><div class="chg-classes">';
+        h += '<a id="chg-classes"></a><h2>Classes</h2><div class="chg-classes">';
         d.classes.forEach(function (c) {
             var url = host() + '?changes=';
             h += '<div class="chg-class c' + c.id + '">';
@@ -116,6 +204,8 @@ var AoChanges = (function () {
             h += '</div>';
         });
         h += '</div>';
+        h += '<a id="chg-find"></a>' + searchSection();
+        h += '<a id="chg-log"></a>' + logSection();
         return h;
     }
 
@@ -227,6 +317,7 @@ var AoChanges = (function () {
                 h = overview();
             if (cfg.generated) h += '<p class="chg-gen">Made ' + esc(cfg.generated) + '.</p>';
             el.innerHTML = h;
+            if (cfg.view == 'overview') bindOverview();
         }
     };
 })();

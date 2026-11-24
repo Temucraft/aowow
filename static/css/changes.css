@@ -52,3 +52,19 @@
 .chg-t-new, .chg-legend .chg-t-new { box-shadow: 0 0 0 2px #1eff00; }
 .chg-t-moved, .chg-legend .chg-t-moved { box-shadow: 0 0 0 2px #ffd100; }
 .chg-legend span { display: inline-block; padding: 1px 6px; margin-right: 10px; border-radius: 3px; }
+
+/* overview: jump links, search over every change, release notes by date */
+.chg-jump { margin: 6px 0 12px; color: #999; }
+.chg-find input[type=search], .chg-log-bar input[type=search] { width: 260px; }
+.chg-find-t { border-collapse: collapse; margin-top: 8px; min-width: 520px; }
+.chg-find-t td, .chg-find-t th { padding: 3px 8px; border-bottom: 1px solid #333; text-align: left; }
+.chg-k-new { color: #1eff00; } .chg-k-updated { color: #ffd100; } .chg-k-removed { color: #ff6060; }
+.chg-dim { color: #999; }
+.chg-log-day { display: flex; gap: 14px; border-top: 1px solid #333; padding: 8px 0; }
+.chg-log-date { flex: 0 0 90px; color: #ffd100; font-weight: bold; }
+.chg-log-entry { flex: 1; }
+.chg-log-entry h4 { margin: 0 0 4px; }
+.chg-log-entry ul { margin: 2px 0 6px 18px; padding: 0; }
+.chg-log-entry ul ul { color: #bbb; }
+.chg-tag { display: inline-block; font-size: 10px; padding: 0 5px; border-radius: 3px; background: #333; color: #ddd; vertical-align: 1px; }
+.chg-tag-new { background: #1d5a1d; } .chg-tag-fixed, .chg-tag-fix { background: #5a4a1d; } .chg-tag-changed, .chg-tag-change { background: #1d3f5a; } .chg-tag-removed { background: #5a1d1d; }

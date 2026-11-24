@@ -76,7 +76,83 @@ class ChangesPage extends GenericPage
             );
         }
         $this->config['view'] = 'overview';
-        $this->config['data'] = ['notes' => $data['notes'] ?? [], 'skills' => $data['skills'] ?? [], 'classes' => $classes];
+        $this->config['data'] = array(
+            'notes'   => $data['notes'] ?? [],
+            'skills'  => $data['skills'] ?? [],
+            'classes' => $classes,
+            'search'  => self::searchList($data),
+            'links'   => self::linkNames($data),
+            'log'     => self::changelog()
+        );
+    }
+
+    // every class change in one flat list for the search box: [name, class id, kind, view, spell id]
+    private static function searchList(array $data) : array
+    {
+        $out = [];
+        foreach ($data['classes'] as $id => $c)
+        {
+            foreach (['new', 'updated', 'removed'] as $kind)
+            {
+                foreach ($c['spells'][$kind] ?? [] as $g)
+                    $out[] = [$g['name'], (int)$id, $kind, 'spellbook', (int)($g['ranks'][0]['id'] ?? 0)];
+                foreach ($c['talents'][$kind] ?? [] as $t)
+                    $out[] = [$t['name'], (int)$id, $kind, 'talents', (int)(($t['new'] ?? $t['old'])['ranks'][0] ?? 0)];
+            }
+        }
+        return $out;
+    }
+
+    // spell names the notes and the change log may name: name => spell id (names of 4 letters or more, used once)
+    private static function linkNames(array $data) : array
+    {
+        $seen = [];
+        foreach ($data['classes'] as $c)
+            foreach (['new', 'updated'] as $kind)
+            {
+                foreach ($c['spells'][$kind] ?? [] as $g)
+                    $seen[$g['name']][(int)($g['ranks'][0]['id'] ?? 0)] = 1;
+                foreach ($c['talents'][$kind] ?? [] as $t)
+                    $seen[$t['name']][(int)(($t['new'] ?? $t['old'])['ranks'][0] ?? 0)] = 1;
+            }
+
+        $out = [];
+        foreach ($seen as $name => $ids)
+            if (mb_strlen($name) >= 4 && count($ids) == 1 && key($ids))
+                $out[$name] = key($ids);
+        return $out;
+    }
+
+    // the release change log (the launcher's changelog.json, see includes/news.class.php): date, title and lines,
+    // each line with its area tag ("[New] ...", "[Fixed] ...") split off
+    private static function changelog() : array
+    {
+        if (!class_exists('TemucraftNews'))
+            require_once 'includes/news.class.php';
+
+        $out = [];
+        foreach (TemucraftNews::entries('changelog') as $e)
+        {
+            $lines = [];
+            foreach (preg_split('/\r?\n/', $e['text']) as $line)
+            {
+                if (trim($line) === '')
+                    continue;
+                $sub = (bool)preg_match('/^\s+[-*]/', $line);
+                $line = trim(preg_replace('/^\s*(?:[\x{2022}*-]\s*)/u', '', $line));
+                $tag  = '';
+                if (preg_match('/^\[([^\]]{1,24})\]\s*(.*)$/u', $line, $m))
+                    [$tag, $line] = [$m[1], $m[2]];
+                if ($sub && $lines)
+                    $lines[count($lines) - 1]['sub'][] = $line;
+                else
+                    $lines[] = ['tag' => $tag, 'text' => $line, 'sub' => []];
+            }
+            $out[] = ['date' => $e['date'], 'title' => $e['title'], 'lines' => $lines];
+        }
+
+        usort($out, fn($a, $b) => strcmp($b['date'], $a['date']));
+        return $out;
     }
 
     private static function load() : ?array
